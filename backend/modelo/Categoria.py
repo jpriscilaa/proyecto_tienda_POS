@@ -9,38 +9,51 @@ class Categoria:
         return self.nombre
     
     
-def crear_tabla_categoria():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Categoria (
-            categoria_id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL
+def guardar(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Categoria (categoria_id, nombre) VALUES (?, ?)",
+            (self.categoria_id, self.nombre)
         )
-    ''')
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
 
+@classmethod
+def crear_tabla(cls):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Categoria (
+                categoria_id TEXT PRIMARY KEY,
+                nombre TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
-def listar_categorias():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT categoria_id, nombre FROM Categoria")
-    categorias = [Categoria(row[0], row[1]) for row in cursor.fetchall()]
-    conn.close()
-    return categorias
+    # ✅ Método de clase para obtener todas las categorías como objetos Categoria
+@classmethod
+def listar_todas(cls):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT categoria_id, nombre FROM Categoria")
+        filas = cursor.fetchall()
+        conn.close()
 
-def crear_categoria(id, nombre):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO Categoria (categoria_id, nombre) VALUES (?, ?)", (id, nombre))
-    conn.commit()
-    conn.close()
+        # Creamos objetos Categoria con cls
+        categorias = []
+        for fila in filas:
+            categoria = cls(fila[0], fila[1])  # cls = Categoria
+            categorias.append(categoria)
 
+        return categorias
 
-def borrar_categoria(categoria_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM Categoria WHERE categoria_id = ?", (categoria_id,))
-    conn.commit()
-    conn.close()
+    # ✅ Método de clase para borrar una categoría
+@classmethod
+def borrar_por_id(cls, categoria_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Categoria WHERE categoria_id = ?", (categoria_id,))
+        conn.commit()
+        conn.close()

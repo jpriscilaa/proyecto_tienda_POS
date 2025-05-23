@@ -13,63 +13,47 @@ class Config_Empresa:
     def __str__(self):
         return self.nombre
 
-def crear_tabla_config_empresa():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Config_Empresa (
-            empresa_id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            direccion TEXT NOT NULL,
-            telefono TEXT NOT NULL,
-            iva_id TEXT NOT NULL,
-            moneda TEXT NOT NULL,
-            FOREIGN KEY (iva_id) REFERENCES Iva(iva_id)
+def guardar(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            '''REPLACE INTO Config_Empresa
+               (empresa_id, nombre, direccion, telefono, iva_id, moneda)
+               VALUES (?, ?, ?, ?, ?, ?)''',
+            (self.empresa_id, self.nombre, self.direccion, self.telefono, self.iva.iva_id, self.moneda)
         )
-    ''')
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
 
-def guardar_config_empresa(config_empresa):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        REPLACE INTO Config_Empresa 
-        (empresa_id, nombre, direccion, telefono, iva_id, moneda)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (
-        config_empresa.empresa_id,
-        config_empresa.nombre,
-        config_empresa.direccion,
-        config_empresa.telefono,
-        config_empresa.iva_id.iva_id,  
-        config_empresa.moneda
-    ))
-    conn.commit()
-    conn.close()
-def obtener_config_empresa():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT empresa_id, nombre, direccion, telefono, iva_id, moneda 
-        FROM Config_Empresa 
-        WHERE empresa_id = ?
-    ''', ("empresa_001",))
-    row = cursor.fetchone()
-    conn.close()
-    
-    if row:
-        return {
-            "empresa_id": row[0],
-            "nombre": row[1],
-            "direccion": row[2],
-            "telefono": row[3],
-            "iva_id": row[4],
-            "moneda": row[5]
-        }
-    return None
+@classmethod
+def crear_tabla(cls):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Config_Empresa (
+                empresa_id TEXT PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                direccion TEXT NOT NULL,
+                telefono TEXT NOT NULL,
+                iva_id TEXT NOT NULL,
+                moneda TEXT NOT NULL,
+                FOREIGN KEY (iva_id) REFERENCES Iva(iva_id)
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
-    
+@classmethod
+def obtener(cls, empresa_id="empresa_001"):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Config_Empresa WHERE empresa_id = ?", (empresa_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            iva_obj = Iva(row[4], "", 0)  # puedes completar los datos con una búsqueda si lo prefieres
+            return cls(row[0], row[1], row[2], row[3], iva_obj, row[5])
+        return None
     #def listarInfoEpresa(id):
         #bd = select * from bd where id = self.id
     
