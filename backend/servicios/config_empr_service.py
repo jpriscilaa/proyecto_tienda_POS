@@ -6,3 +6,5 @@ def inicializar_config_empresa():
 
 def guardar_datos_empresa(config_empresa):
     Config_Empresa.guardar(config_empresa)
+def obtener_datos_empresa():
+    return Config_Empresa.obtener()
