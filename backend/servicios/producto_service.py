@@ -1,5 +1,3 @@
-# backend/service/producto_service.py
-
 from backend.modelo.Producto import Producto
 
 def inicializar_producto():
@@ -12,7 +10,7 @@ def obtener_producto(producto_id: str):
     return Producto.obtener_por_id(producto_id)
 
 def actualizar_producto(producto: Producto):
-    return producto.actualizar()
+    return producto.actualizar()  # Asegúrate que exista este método
 
 def eliminar_producto(producto_id: str):
     return Producto.eliminar(producto_id)

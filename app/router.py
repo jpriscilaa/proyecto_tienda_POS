@@ -1,6 +1,8 @@
+from app import producto_view
 from .login_view import login_view
 from .dashboard_view import dashboard_view
 from .config_empresa_view import config_empresa_view  # si ya lo tienes
+from app.producto_view import producto_view
 
 def route_app(page):
     page.bgcolor = "#FFFFFF"  # Cambia el color de fondo de toda la ventana
@@ -13,9 +15,9 @@ def route_app(page):
             page.views.append(login_view(page))
         elif page.route == "/dashboard":
             page.views.append(dashboard_view(page))
-        #elif page.route == "/productos":
-            #page.views.append(producto_view(page))
-        elif page.route == "/config_empr":
+        elif page.route == "/productos":
+            page.views.append(producto_view(page))
+        elif page.route == "/config":
             page.views.append(config_empresa_view(page))
         else:
             page.views.append(login_view(page))  # fallback

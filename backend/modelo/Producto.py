@@ -157,6 +157,23 @@ class Producto:
             if conn:
                 conn.close()
 
+    def actualizar(self):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+            "UPDATE Producto SET nombre=?, precio=?, categoria_id=?, iva_id=? WHERE id=?",
+            (self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id, self.id)
+        )
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            print(f"Error al actualizar producto: {e}")
+            return False
+        finally:
+            conn.close()
+
+
     # --- Métodos adicionales útiles ---
 
     @classmethod
