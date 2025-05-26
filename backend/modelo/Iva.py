@@ -1,5 +1,5 @@
 from backend.bddTienda import get_connection
-
+import sqlite3
 class Iva:
     def __init__(self, iva_id, nombre, porcentaje):
         self.iva_id = iva_id
@@ -32,27 +32,15 @@ class Iva:
                 conn.close()
 
     # READ (Obtener)
-    @classmethod
-    def obtener_por_id(cls, iva_id):
-        """Obtiene un tipo de IVA por su ID"""
-        conn = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT iva_id, nombre, porcentaje FROM Iva WHERE iva_id = ?",
-                (iva_id,)
-            )
-            fila = cursor.fetchone()
-            if fila:
-                return cls(fila[0], fila[1], fila[2])
-            return None
-        except Exception as e:
-            print(f"Error al obtener IVA: {e}")
-            return None
-        finally:
-            if conn:
-                conn.close()
+    def obtener_iva_por_id(iva_id):
+        con = con.connect("bddTienda.db")
+        cur = con.cursor()
+        cur.execute("SELECT * FROM iva WHERE iva_id = ?", (iva_id,))
+        fila = cur.fetchone()
+        con.close()
+        if fila:
+            return Iva(iva_id=fila[0], nombre=fila[1], porcentaje=fila[2])
+        return None
 
     # UPDATE (Actualizar)
     def actualizar(self):

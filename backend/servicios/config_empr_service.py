@@ -1,21 +1,33 @@
-# backend/service/config_empresa_service.py
-
+from backend.modelo.Config_Empresa import (
+    crear_tabla_config_empresa,
+    guardar_config_empresa,
+    obtener_config_empresa,
+    borrar_config_empresa,
+)
+from backend.modelo.Iva import obtener_iva_por_id
 from backend.modelo.Config_Empresa import Config_Empresa
 
+
 def inicializar_config_empresa():
-    Config_Empresa.crear_tabla()
+    crear_tabla_config_empresa()
 
-def guardar_config_empresa(config: Config_Empresa):
-    config.guardar()
 
-def obtener_config_empresa(empresa_id="empresa_001"):
-    return Config_Empresa.obtener(empresa_id)
+def guardar_config(empresa_id, nombre, direccion, telefono, iva_id, moneda):
+    iva = obtener_iva_por_id(iva_id)
+    config = Config_Empresa(
+        empresa_id=empresa_id,
+        nombre=nombre,
+        direccion=direccion,
+        telefono=telefono,
+        iva=iva,
+        moneda=moneda
+    )
+    guardar_config_empresa(config)
 
-def existe_config_empresa(empresa_id="empresa_001"):
-    return Config_Empresa.existe_empresa(empresa_id)
 
-def eliminar_config_empresa(empresa_id="empresa_001"):
-    return Config_Empresa.eliminar(empresa_id)
+def obtener_config():
+    return obtener_config_empresa()
 
-def actualizar_moneda_empresa(empresa_id, nueva_moneda):
-    return Config_Empresa.actualizar_moneda(empresa_id, nueva_moneda)
+
+def borrar_config():
+    borrar_config_empresa()

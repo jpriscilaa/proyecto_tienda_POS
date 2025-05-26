@@ -1,4 +1,4 @@
-from backend.modelo.VentaLine import VentaLine
+from backend.modelo.Venta_line import VentaLine
 import uuid
 
 class ventaLine_Service:

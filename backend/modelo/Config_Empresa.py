@@ -1,13 +1,12 @@
-from backend.modelo.Iva import Iva
-from backend.bddTienda import get_connection
 
+from backend.bddTienda import get_connection
+import sqlite3
 class Config_Empresa:
-    def __init__(self, empresa_id, nombre, direccion, telefono, iva: Iva, moneda):
+    def __init__(self, empresa_id, nombre, direccion, telefono, moneda):
         self.empresa_id = empresa_id
         self.nombre = nombre
         self.direccion = direccion
         self.telefono = telefono
-        self.iva = iva
         self.moneda = moneda
 
     def __str__(self):
@@ -15,151 +14,64 @@ class Config_Empresa:
 
     # --- Métodos CRUD ---
 
-    @classmethod
-    def crear_tabla(cls):
-        """Crea la tabla Config_Empresa con sus relaciones"""
-        conn = get_connection()
+    def crear_tabla_config_empresa():
         try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Config_Empresa (
-                    empresa_id TEXT PRIMARY KEY,
-                    nombre TEXT NOT NULL,
-                    direccion TEXT NOT NULL,
-                    telefono TEXT NOT NULL,
-                    iva_id TEXT NOT NULL,
-                    moneda TEXT NOT NULL,
-                    FOREIGN KEY (iva_id) REFERENCES Iva(iva_id)
-                )
-            ''')
-            conn.commit()
-        except Exception as e:
-            print(f"Error al crear tabla Config_Empresa: {e}")
-            raise
+            con = get_connection()
+            cur = con.cursor()
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS config_empresa (
+                empresa_id TEXT PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                direccion TEXT,
+                telefono TEXT,
+                moneda TEXT
+            )
+        """)
+            con.commit()
+        except sqlite3.Error as e:
+            print(f"Error creando tabla config_empresa: {e}")
         finally:
-            if conn:
-                conn.close()
+            con.close()
 
-    def guardar(self):
-        """Guarda o actualiza la configuración de la empresa"""
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT OR REPLACE INTO Config_Empresa
-                (empresa_id, nombre, direccion, telefono, iva_id, moneda)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (
-                self.empresa_id,
-                self.nombre,
-                self.direccion,
-                self.telefono,
-                self.iva.iva_id,
-                self.moneda
-            ))
-            conn.commit()
-        except Exception as e:
-            print(f"Error al guardar configuración de empresa: {e}")
-            raise
-        finally:
-            if conn:
-                conn.close()
 
-    @classmethod
-    def obtener(cls, empresa_id="empresa_001"):
-        """Obtiene la configuración de la empresa por ID"""
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT 
-                    ce.empresa_id, 
-                    ce.nombre, 
-                    ce.direccion, 
-                    ce.telefono, 
-                    ce.iva_id, 
-                    ce.moneda,
-                    i.nombre as iva_nombre,
-                    i.valor as iva_valor
-                FROM Config_Empresa ce
-                JOIN Iva i ON ce.iva_id = i.iva_id
-                WHERE ce.empresa_id = ?
-            ''', (empresa_id,))
-            
-            row = cursor.fetchone()
-            if row:
-                iva_obj = Iva(row[4], row[6], row[7])  # iva_id, nombre, valor
-                return cls(
-                    empresa_id=row[0],
-                    nombre=row[1],
-                    direccion=row[2],
-                    telefono=row[3],
-                    iva=iva_obj,
-                    moneda=row[5]
-                )
-            return None
-        except Exception as e:
-            print(f"Error al obtener configuración de empresa: {e}")
-            return None
-        finally:
-            if conn:
-                conn.close()
+    def guardar_config_empresa(config: "Config_Empresa"):
+        con = get_connection()
+        cur = con.cursor()
+        cur.execute("""
+        INSERT OR REPLACE INTO config_empresa (
+            empresa_id, nombre, direccion, telefono, moneda
+        ) VALUES (?, ?, ?, ?, ?)
+    """, (
+        config.empresa_id,
+        config.nombre,
+        config.direccion,
+        config.telefono,
+        config.moneda
+    ))
+        con.commit()
+        con.close()
 
-    @classmethod
-    def actualizar_moneda(cls, empresa_id, nueva_moneda):
-        """Actualiza solo la moneda de la empresa"""
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE Config_Empresa 
-                SET moneda = ? 
-                WHERE empresa_id = ?
-            ''', (nueva_moneda, empresa_id))
-            conn.commit()
-            return cursor.rowcount > 0
-        except Exception as e:
-            print(f"Error al actualizar moneda: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
 
-    @classmethod
-    def eliminar(cls, empresa_id):
-        """Elimina la configuración de la empresa"""
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                DELETE FROM Config_Empresa 
-                WHERE empresa_id = ?
-            ''', (empresa_id,))
-            conn.commit()
-            return cursor.rowcount > 0
-        except Exception as e:
-            print(f"Error al eliminar configuración de empresa: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
+    def obtener_config_empresa():
+        con = get_connection()
+        cur = con.cursor()
+        cur.execute("SELECT * FROM config_empresa LIMIT 1")
+        fila = cur.fetchone()
+        con.close()
+        if fila:
+            return Config_Empresa(
+            empresa_id=fila[0],
+            nombre=fila[1],
+            direccion=fila[2],
+            telefono=fila[3],
+            moneda=fila[5]
+        )
+        return None
 
-    # --- Métodos adicionales ---
 
-    @classmethod
-    def existe_empresa(cls, empresa_id="empresa_001"):
-        """Verifica si existe la configuración de la empresa"""
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT 1 FROM Config_Empresa 
-                WHERE empresa_id = ?
-            ''', (empresa_id,))
-            return cursor.fetchone() is not None
-        except Exception as e:
-            print(f"Error al verificar empresa: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
+    def borrar_config_empresa():
+        con = get_connection()
+        cur = con.cursor()
+        cur.execute("DELETE FROM config_empresa")
+        con.commit()
+        con.close()
