@@ -33,7 +33,7 @@ class Iva:
 
     # READ (Obtener)
     def obtener_iva_por_id(iva_id):
-        con = con.connect("bddTienda.db")
+        con = get_connection()
         cur = con.cursor()
         cur.execute("SELECT * FROM iva WHERE iva_id = ?", (iva_id,))
         fila = cur.fetchone()

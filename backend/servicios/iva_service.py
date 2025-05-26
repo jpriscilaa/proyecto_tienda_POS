@@ -7,9 +7,8 @@ def inicializar_iva():
 
 def crear_iva(iva: Iva):
     return iva.guardar()
-
 def obtener_iva(iva_id):
-    return Iva.obtener_por_id(iva_id)
+    return Iva.obtener_iva_por_id(iva_id)
 
 def actualizar_iva(iva: Iva):
     return iva.actualizar()

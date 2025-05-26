@@ -64,7 +64,7 @@ class Config_Empresa:
             nombre=fila[1],
             direccion=fila[2],
             telefono=fila[3],
-            moneda=fila[5]
+            moneda=fila[4]
         )
         return None
 
