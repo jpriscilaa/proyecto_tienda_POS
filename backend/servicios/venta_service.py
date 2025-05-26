@@ -1,33 +1,43 @@
-from backend.bddTienda import get_connection
-def crear_tabla_venta():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Venta (
-            id TEXT PRIMARY KEY,
-            cliente_id TEXT,
-            vendedor_id TEXT,
-            fecha TEXT,
-            total REAL,
-            FOREIGN KEY (cliente_id) REFERENCES Cliente(id),
-            FOREIGN KEY (vendedor_id) REFERENCES Usuario(id)
-        )
-    ''')
-    conn.commit()
-    conn.close()
+from backend.modelo.Venta import Venta
+import uuid
 
-def agregar_venta(venta):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO Venta (id, cliente_id, vendedor_id, fecha, total) VALUES (?, ?, ?, ?, ?)",
-                   (venta.id, venta.cliente.id, venta.vendedor.id, venta.fecha, venta.total))
-    conn.commit()
-    conn.close()
+class venta_Service:
 
-def listar_ventas():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, cliente_id, vendedor_id, fecha, total FROM Venta")
-    ventas = cursor.fetchall()
-    conn.close()
-    return ventas
+    @staticmethod
+    def crear_tabla():
+        """Crea la tabla Venta"""
+        Venta.crear_tabla()
+
+    @staticmethod
+    def guardar(venta: Venta):
+        """Guarda una venta"""
+        venta.guardar()
+
+    @staticmethod
+    def eliminar(id):
+        """Elimina una venta y sus líneas"""
+        Venta.borrar(id)
+
+    @staticmethod
+    def obtener(id):
+        """Obtiene una venta por su ID"""
+        return Venta.obtener_por_id(id)
+
+    @staticmethod
+    def listar():
+        """Lista todas las ventas"""
+        return Venta.listar_todas()
+
+    @staticmethod
+    def crear_venta(cliente, vendedor, lineas, fecha):
+        """
+        Crea una venta nueva con UUID y guarda.
+        Las líneas deben estar preparadas (con cantidades, precios).
+        """
+        venta_id = str(uuid.uuid4())
+        # Asignar IDs únicos a las líneas de venta (venta_id.1, venta_id.2...)
+        for i, linea in enumerate(lineas):
+            linea.linea_id = f"{venta_id}.{i+1}"
+        venta = Venta(venta_id, cliente, vendedor, lineas, fecha)
+        venta.guardar()
+        return venta

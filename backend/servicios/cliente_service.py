@@ -1,38 +1,27 @@
-from backend.bddTienda import get_connection
+# backend/service/cliente_service.py
 
-def crear_tabla_cliente():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Cliente (
-            id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            documento TEXT,
-            telefono TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+from backend.modelo.Cliente import Cliente
 
-def agregar_cliente(cliente):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO Cliente (id, nombre, documento, telefono) VALUES (?, ?, ?, ?)", 
-                   (cliente.id, cliente.nombre, cliente.documento, cliente.telefono))
-    conn.commit()
-    conn.close()
+def inicializar_cliente():
+    Cliente.crear_tabla()
+
+def guardar_cliente(cliente: Cliente):
+    cliente.guardar()
 
 def listar_clientes():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, nombre, documento, telefono FROM Cliente")
-    clientes = cursor.fetchall()
-    conn.close()
-    return clientes
+    return Cliente.listar_todos()
 
-def borrar_cliente(cliente_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM Cliente WHERE id = ?", (cliente_id,))
-    conn.commit()
-    conn.close()
+def obtener_cliente_por_id(id):
+    return Cliente.obtener_por_id(id)
+
+def obtener_cliente_por_documento(documento):
+    return Cliente.obtener_por_documento(documento)
+
+def eliminar_cliente(id):
+    return Cliente.eliminar(id)
+
+def actualizar_telefono_cliente(cliente: Cliente, nuevo_telefono: str):
+    return cliente.actualizar_telefono(nuevo_telefono)
+
+def existe_cliente_con_documento(documento):
+    return Cliente.existe_documento(documento)

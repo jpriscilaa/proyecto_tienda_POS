@@ -1,33 +1,21 @@
-from backend.bddTienda import get_connection
+# backend/service/iva_service.py
+
 from backend.modelo.Iva import Iva
 
-def crear_tabla_iva():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Iva (
-            iva_id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            porcentaje REAL NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
+def inicializar_iva():
+    return Iva.crear_tabla()
 
-def agregar_iva(iva):
-    print("conectando a la base de datos")
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO Iva (iva_id, nombre, porcentaje) VALUES (?, ?, ?)",
-                   (iva.iva_id, iva.nombre, iva.porcentaje))
-    print("inserta")
-    conn.commit()
-    conn.close()
+def crear_iva(iva: Iva):
+    return iva.guardar()
+
+def obtener_iva(iva_id):
+    return Iva.obtener_por_id(iva_id)
+
+def actualizar_iva(iva: Iva):
+    return iva.actualizar()
+
+def eliminar_iva(iva_id):
+    return Iva.borrar_por_id(iva_id)
 
 def listar_ivas():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT iva_id, nombre, porcentaje FROM Iva")
-    ivas = [Iva(row[0], row[1], row[2]) for row in cursor.fetchall()]
-    conn.close()
-    return ivas
+    return Iva.listar_todos()

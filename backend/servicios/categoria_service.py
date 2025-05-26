@@ -1,38 +1,21 @@
-from backend.bddTienda import get_connection
+# backend/service/categoria_service.py
+
 from backend.modelo.Categoria import Categoria
 
-def crear_tabla_categoria():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Categoria (
-            categoria_id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
+def inicializar_categoria():
+    Categoria.crear_tabla()
 
+def guardar_categoria(categoria: Categoria):
+    categoria.guardar()
 
 def listar_categorias():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT categoria_id, nombre FROM Categoria")
-    categorias = [Categoria(row[0], row[1]) for row in cursor.fetchall()]
-    conn.close()
-    return categorias
+    return Categoria.listar_todas()
 
-def crear_categoria(id, nombre):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO Categoria (categoria_id, nombre) VALUES (?, ?)", (id, nombre))
-    conn.commit()
-    conn.close()
+def obtener_categoria_por_id(categoria_id):
+    return Categoria.obtener_por_id(categoria_id)
 
+def actualizar_categoria(categoria: Categoria):
+    return categoria.actualizar()
 
 def borrar_categoria(categoria_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM Categoria WHERE categoria_id = ?", (categoria_id,))
-    conn.commit()
-    conn.close()
+    return Categoria.borrar_por_id(categoria_id)

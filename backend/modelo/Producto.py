@@ -43,13 +43,16 @@ class Producto:
                 conn.close()
 
     def guardar(self):
-        """Guarda o actualiza el producto en la base de datos"""
         conn = get_connection()
         try:
+        # Validación previa: verificar si ya existe un producto con ese ID
+            if Producto.obtener_por_id(self.id):
+                print(f"Producto con ID {self.id} ya existe. Usa actualizar() si deseas modificarlo.")
+                return False
+
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT OR REPLACE INTO Producto
-                (id, nombre, precio, categoria_id, iva_id)
+                INSERT INTO Producto (id, nombre, precio, categoria_id, iva_id)
                 VALUES (?, ?, ?, ?, ?)
             ''', (
                 self.id,
@@ -67,6 +70,7 @@ class Producto:
         finally:
             if conn:
                 conn.close()
+
 
     @classmethod
     def obtener_por_id(cls, producto_id):

@@ -1,31 +1,44 @@
-from backend.bddTienda import get_connection
-def crear_tabla_venta_line():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS VentaLine (
-            linea_id TEXT PRIMARY KEY,
-            producto_id TEXT,
-            cantidad INTEGER,
-            precio_stamp REAL,
-            FOREIGN KEY (producto_id) REFERENCES Producto(id)
-        )
-    ''')
-    conn.commit()
-    conn.close()
+from backend.modelo.VentaLine import VentaLine
+import uuid
 
-def agregar_venta_line(linea):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO VentaLine (linea_id, producto_id, cantidad, precio_stamp) VALUES (?, ?, ?, ?)",
-                   (linea.linea_id, linea.producto_id.id, linea.cantidad, linea.precio_stamp))
-    conn.commit()
-    conn.close()
+class ventaLine_Service:
 
-def listar_venta_lines():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT linea_id, producto_id, cantidad, precio_stamp FROM VentaLine")
-    lineas = cursor.fetchall()
-    conn.close()
-    return lineas
+    @staticmethod
+    def crear_tabla():
+        """Crea la tabla VentaLine si no existe"""
+        return VentaLine.crear_tabla()
+
+    @staticmethod
+    def guardar(venta_line: VentaLine):
+        """Guarda una línea de venta"""
+        return venta_line.guardar()
+
+    @staticmethod
+    def actualizar(venta_line: VentaLine):
+        """Actualiza una línea de venta existente"""
+        return venta_line.actualizar()
+
+    @staticmethod
+    def obtener(linea_id):
+        """Obtiene una línea de venta por su ID"""
+        return VentaLine.obtener_por_id(linea_id)
+
+    @staticmethod
+    def eliminar(linea_id):
+        """Elimina una línea de venta por su ID"""
+        return VentaLine.eliminar(linea_id)
+
+    @staticmethod
+    def listar():
+        """Lista todas las líneas de venta"""
+        return VentaLine.listar_todas()
+
+    @staticmethod
+    def crear_linea(producto, cantidad, precio_stamp):
+        """
+        Crea una línea de venta con ID aleatorio y la guarda.
+        Se espera un objeto Producto ya cargado.
+        """
+        linea_id = str(uuid.uuid4())
+        linea = VentaLine(linea_id, producto, cantidad, precio_stamp)
+        return linea.guardar()

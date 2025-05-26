@@ -16,9 +16,11 @@ class Categoria:
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO Categoria (categoria_id, nombre) VALUES (?, ?)",
-                (self.categoria_id, self.nombre)
-            )
+    "INSERT OR REPLACE INTO Categoria (categoria_id, nombre) VALUES (?, ?)",
+    (self.categoria_id, self.nombre)
+)
+
+            
             conn.commit()
         except Exception as e:
             print(f"Error al guardar categoría: {e}")

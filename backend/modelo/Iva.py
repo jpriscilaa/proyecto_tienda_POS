@@ -12,6 +12,7 @@ class Iva:
     # CREATE (Guardar)
     def guardar(self):
         """Guarda un nuevo tipo de IVA en la base de datos"""
+        
         conn = None
         try:
             conn = get_connection()
