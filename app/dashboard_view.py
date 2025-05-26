@@ -9,7 +9,7 @@ def dashboard_view(page: ft.Page):
                     ft.Text("Bienvenido al Dashboard", size=30),
                     ft.ElevatedButton(
                         "Configuración de la Empresa",
-                        on_click=lambda e: page.go("/config_empr"),
+                        on_click=lambda e: page.go("/config"),
                         width=300,
                         height=60,
                     ),
