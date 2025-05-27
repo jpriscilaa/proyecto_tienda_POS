@@ -1,4 +1,4 @@
-from app import producto_view
+from app.clientes_view import clientes_view
 from .login_view import login_view
 from .dashboard_view import dashboard_view
 from .config_empresa_view import config_empresa_view  # si ya lo tienes
@@ -19,6 +19,8 @@ def route_app(page):
             page.views.append(producto_view(page))
         elif page.route == "/config":
             page.views.append(config_empresa_view(page))
+        elif page.route == "/clientes":
+            page.views.append(clientes_view(page))  # Asegúrate de importar clientes_view
         else:
             page.views.append(login_view(page))  # fallback
 

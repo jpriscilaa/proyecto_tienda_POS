@@ -20,11 +20,18 @@ def dashboard_view(page: ft.Page):
                         height=60,
                     ),
                     ft.ElevatedButton(
+                        "Ir a Clientes",
+                        on_click=lambda e: page.go("/clientes"),
+                        width=300,
+                        height=60,
+                    ),
+                    ft.ElevatedButton(
                         "Cerrar sesión",
                         on_click=lambda e: page.go("/"),
                         width=300,
                         height=60,
                     ),
+                    
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
