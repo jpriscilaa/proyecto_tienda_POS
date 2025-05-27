@@ -1,4 +1,5 @@
 import flet as ft
+import uuid
 from backend.servicios.producto_service import crear_producto, listar_productos, actualizar_producto
 from backend.servicios.categoria_service import listar_categorias
 from backend.servicios.iva_service import listar_ivas
@@ -8,6 +9,7 @@ def producto_view(page: ft.Page):
     inicializar_tablas()
 
     # Campos de entrada
+    n_ref = ft.TextField(label="Referencia")
     nombre = ft.TextField(label="Nombre")
     precio = ft.TextField(label="Precio")
     categoria_dropdown = ft.Dropdown(label="Categoría")
@@ -30,6 +32,7 @@ def producto_view(page: ft.Page):
         border_radius=10,
         columns=[
             ft.DataColumn(ft.Text("ID")),
+            ft.DataColumn(ft.Text("Referencia")),
             ft.DataColumn(ft.Text("Nombre")),
             ft.DataColumn(ft.Text("Precio")),
             ft.DataColumn(ft.Text("Categoría")),
@@ -50,6 +53,7 @@ def producto_view(page: ft.Page):
                         ft.DataCell(ft.Text(str(p[2]))),
                         ft.DataCell(ft.Text(p[3])),
                         ft.DataCell(ft.Text(p[4])),
+                        ft.DataCell(ft.Text(p[5])),
                     ]
                 )
             )
@@ -58,10 +62,11 @@ def producto_view(page: ft.Page):
     def get_index(e):
         if e.control.selected:
             producto_seleccionado["id"] = e.control.cells[0].content.value
-            nombre.value = e.control.cells[1].content.value
-            precio.value = e.control.cells[2].content.value
-            categoria_dropdown.value = e.control.cells[3].content.value
-            iva_dropdown.value = e.control.cells[4].content.value
+            n_ref.value = e.control.cells[1].content.value
+            nombre.value = e.control.cells[2].content.value
+            precio.value = e.control.cells[3].content.value
+            categoria_dropdown.value = e.control.cells[4].content.value
+            iva_dropdown.value = e.control.cells[5].content.value
         else:
             producto_seleccionado["id"] = None
         page.update()
@@ -75,6 +80,7 @@ def producto_view(page: ft.Page):
             mostrar_productos(filtrados)
 
     def agregar_producto_click(e):
+        print("Agregando producto...")
         if nombre.value == "" or precio.value == "":
             page.snack_bar = ft.SnackBar(ft.Text("Faltan el nombre o el precio"))
             page.snack_bar.open = True
@@ -86,15 +92,19 @@ def producto_view(page: ft.Page):
             page.snack_bar.open = True
             page.update()
             return
-
+        print("Validación de campos completada")
+        print("entra en crear producto")
         try:
             crear_producto(
-                id="prod_" + nombre.value[:3].lower(),
-                nombre=nombre.value,
-                precio=float(precio.value),
-                categoria_id=categoria_dropdown.value,
-                iva_id=iva_dropdown.value
+            print("Creando producto..."),
+            id=str(uuid.uuid4()), # Esto genera un ID único cada vez
+            n_referencia=n_ref.value,
+            nombre=nombre.value,
+            precio=float(precio.value),
+            categoria_id=categoria_dropdown.value,
+            iva_id=iva_dropdown.value
             )
+            print
             limpiar_formulario()
             recargar()
             page.snack_bar = ft.SnackBar(ft.Text("Producto agregado"))
@@ -115,6 +125,7 @@ def producto_view(page: ft.Page):
         try:
             actualizar_producto(
                 id=producto_seleccionado["id"],
+                n_referencia=n_ref.value,
                 nombre=nombre.value,
                 precio=float(precio.value),
                 categoria_id=categoria_dropdown.value,
@@ -132,6 +143,7 @@ def producto_view(page: ft.Page):
 
     def limpiar_formulario():
         producto_seleccionado["id"] = None
+        n_ref.value = ""
         nombre.value = ""
         precio.value = ""
         categoria_dropdown.value = None
@@ -153,6 +165,7 @@ def producto_view(page: ft.Page):
             filtro,
             ft.Row([
                 ft.Column([
+                    n_ref,
                     nombre,
                     precio,
                     categoria_dropdown,

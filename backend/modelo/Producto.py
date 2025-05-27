@@ -3,8 +3,9 @@ from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
 
 class Producto:
-    def __init__(self, id, nombre, precio, categoria: Categoria, iva: Iva):
+    def __init__(self, id, n_referencia, nombre, precio, categoria: Categoria, iva: Iva):
         self.id = id
+        self.n_referencia = n_referencia
         self.nombre = nombre
         self.precio = precio
         self.categoria = categoria
@@ -12,8 +13,6 @@ class Producto:
 
     def __str__(self):
         return f"{self.nombre} - {self.precio}€ ({self.categoria}) - IVA: {self.iva}"
-
-    # --- CRUD ---
 
     @classmethod
     def crear_tabla(cls):
@@ -24,6 +23,7 @@ class Producto:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS Producto (
                     id TEXT PRIMARY KEY,
+                    n_referencia TEXT UNIQUE,
                     nombre TEXT NOT NULL,
                     precio REAL NOT NULL CHECK(precio >= 0),
                     categoria_id TEXT NOT NULL,
@@ -45,167 +45,121 @@ class Producto:
     def guardar(self):
         conn = get_connection()
         try:
-        # Validación previa: verificar si ya existe un producto con ese ID
-            if Producto.obtener_por_id(self.id):
-                print(f"Producto con ID {self.id} ya existe. Usa actualizar() si deseas modificarlo.")
-                return False
-
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO Producto (id, nombre, precio, categoria_id, iva_id)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO Producto (id, n_referencia, nombre, precio, categoria_id, iva_id)
+                VALUES (?, ?, ?, ?, ?, ?)
             ''', (
                 self.id,
+                self.n_referencia,
                 self.nombre,
                 self.precio,
                 self.categoria.categoria_id,
                 self.iva.iva_id
             ))
             conn.commit()
-            print(f"Producto {self.nombre} guardado correctamente")
             return True
         except Exception as e:
             print(f"Error al guardar producto: {e}")
             return False
         finally:
-            if conn:
-                conn.close()
-
+            conn.close()
 
     @classmethod
-    def obtener_por_id(cls, producto_id):
-        """Obtiene un producto por su ID con todas sus relaciones"""
+    def obtener(cls, id):
         conn = get_connection()
         try:
             cursor = conn.cursor()
-            
-            # Consulta con JOIN para obtener datos relacionados
             cursor.execute('''
-                SELECT 
-                    p.id, p.nombre, p.precio, 
-                    p.categoria_id, c.nombre as categoria_nombre,
-                    p.iva_id, i.nombre as iva_nombre, i.porcentaje as iva_porcentaje
-                FROM Producto p
-                LEFT JOIN Categoria c ON p.categoria_id = c.categoria_id
-                LEFT JOIN Iva i ON p.iva_id = i.iva_id
-                WHERE p.id = ?
-            ''', (producto_id,))
-            
+                SELECT id, n_referencia, nombre, precio, categoria_id, iva_id
+                FROM Producto WHERE id = ?
+            ''', (id,))
             row = cursor.fetchone()
             if row:
-                categoria = Categoria(row[3], row[4])
-                iva = Iva(row[5], row[6], row[7])
-                return cls(row[0], row[1], row[2], categoria, iva)
+                cat = Categoria.obtener(row[4])
+                iva = Iva.obtener(row[5])
+                return Producto(row[0], row[1], row[2], row[3], cat, iva)
             return None
         except Exception as e:
             print(f"Error al obtener producto: {e}")
             return None
         finally:
-            if conn:
-                conn.close()
+            conn.close()
 
     @classmethod
-    def listar_todos(cls):
-        """Obtiene todos los productos con sus relaciones"""
+    def listar(cls):
         conn = get_connection()
+        productos = []
         try:
             cursor = conn.cursor()
-            
-            # Consulta con JOIN para obtener datos relacionados
             cursor.execute('''
-                SELECT 
-                    p.id, p.nombre, p.precio, 
-                    p.categoria_id, c.nombre as categoria_nombre,
-                    p.iva_id, i.nombre as iva_nombre, i.porcentaje as iva_porcentaje
-                FROM Producto p
-                LEFT JOIN Categoria c ON p.categoria_id = c.categoria_id
-                LEFT JOIN Iva i ON p.iva_id = i.iva_id
+                SELECT id, n_referencia, nombre, precio, categoria_id, iva_id FROM Producto
             ''')
-            
-            productos = []
-            for row in cursor.fetchall():
-                categoria = Categoria(row[3], row[4])
-                iva = Iva(row[5], row[6], row[7])
-                producto = cls(row[0], row[1], row[2], categoria, iva)
+            rows = cursor.fetchall()
+            for row in rows:
+                cat = Categoria.obtener(row[4])
+                iva = Iva.obtener(row[5])
+                producto = Producto(row[0], row[1], row[2], row[3], cat, iva)
                 productos.append(producto)
-            
             return productos
         except Exception as e:
             print(f"Error al listar productos: {e}")
             return []
         finally:
-            if conn:
-                conn.close()
+            conn.close()
 
     @classmethod
-    def eliminar(cls, producto_id):
-        """Elimina un producto por su ID"""
+    def borrar(cls, id):
         conn = get_connection()
         try:
             cursor = conn.cursor()
-            cursor.execute(
-                "DELETE FROM Producto WHERE id = ?",
-                (producto_id,)
-            )
-            conn.commit()
-            print(f"Producto {producto_id} eliminado correctamente")
-            return cursor.rowcount > 0
-        except Exception as e:
-            print(f"Error al eliminar producto: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
-
-    def actualizar(self):
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute(
-            "UPDATE Producto SET nombre=?, precio=?, categoria_id=?, iva_id=? WHERE id=?",
-            (self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id, self.id)
-        )
+            cursor.execute('DELETE FROM Producto WHERE id = ?', (id,))
             conn.commit()
             return cursor.rowcount > 0
         except Exception as e:
-            print(f"Error al actualizar producto: {e}")
+            print(f"Error al borrar producto: {e}")
             return False
         finally:
             conn.close()
-
-
-    # --- Métodos adicionales útiles ---
-
     @classmethod
-    def obtener_por_categoria(cls, categoria_id):
-        """Obtiene todos los productos de una categoría específica"""
+    def buscar_por_referencia(cls, n_referencia):
         conn = get_connection()
         try:
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT p.id, p.nombre, p.precio, 
-                       p.categoria_id, c.nombre as categoria_nombre,
-                       p.iva_id, i.nombre as iva_nombre, i.porcentaje
-                FROM Producto p
-                LEFT JOIN Categoria c ON p.categoria_id = c.categoria_id
-                LEFT JOIN Iva i ON p.iva_id = i.iva_id
-                WHERE p.categoria_id = ?
+                SELECT id, n_referencia, nombre, precio, categoria_id, iva_id
+                FROM Producto WHERE n_referencia = ?
+            ''', (n_referencia,))
+            row = cursor.fetchone()
+            if row:
+                cat = Categoria.obtener(row[4])
+                iva = Iva.obtener(row[5])
+                return Producto(row[0], row[1], row[2], row[3], cat, iva)
+            return None
+        except Exception as e:
+            print(f"Error al buscar por referencia: {e}")
+            return None
+        finally:
+            conn.close()
+    
+    @classmethod
+    def obtener_por_categoria(cls, categoria_id):
+        conn = get_connection()
+        productos = []
+        try:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT id, n_referencia, nombre, precio, categoria_id, iva_id
+                FROM Producto WHERE categoria_id = ?
             ''', (categoria_id,))
-            
-            productos = []
-            for row in cursor.fetchall():
-                categoria = Categoria(row[3], row[4])
-                iva = Iva(row[5], row[6], row[7])
-                productos.append(cls(row[0], row[1], row[2], categoria, iva))
-            
+            rows = cursor.fetchall()
+            for row in rows:
+                cat = Categoria.obtener(row[4])
+                iva = Iva.obtener(row[5])
+                productos.append(Producto(row[0], row[1], row[2], row[3], cat, iva))
             return productos
         except Exception as e:
             print(f"Error al obtener productos por categoría: {e}")
             return []
         finally:
-            if conn:
-                conn.close()
-
-    def calcular_precio_con_iva(self):
-        """Calcula el precio del producto con IVA incluido"""
-        return self.precio * (1 + (self.iva.porcentaje / 100))
+            conn.close()    

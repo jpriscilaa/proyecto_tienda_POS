@@ -7,16 +7,16 @@ def crear_producto(producto: Producto):
     return producto.guardar()
 
 def obtener_producto(producto_id: str):
-    return Producto.obtener_por_id(producto_id)
+    return Producto.obtener(producto_id)
 
 def actualizar_producto(producto: Producto):
-    return producto.actualizar()  # Asegúrate que exista este método
+    return producto.guardar()
 
 def eliminar_producto(producto_id: str):
-    return Producto.eliminar(producto_id)
+    return Producto.borrar(producto_id)
 
 def listar_productos():
-    return Producto.listar_todos()
+    return Producto.listar()
 
 def productos_por_categoria(categoria_id: str):
     return Producto.obtener_por_categoria(categoria_id)

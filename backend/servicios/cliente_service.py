@@ -7,6 +7,13 @@ def inicializar_cliente():
 
 def guardar_cliente(cliente: Cliente):
     cliente.guardar()
+def actualizar_cliente(cliente: Cliente):
+    return cliente.actualizar()
+
+def guardar_cliente_unico(cliente: Cliente):
+    if Cliente.existe_documento(cliente.documento):
+        raise ValueError("Ya existe un cliente con ese documento.")
+    cliente.guardar()
 
 def listar_clientes():
     return Cliente.listar_todos()

@@ -40,7 +40,7 @@ class Cliente:
         try:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT OR REPLACE INTO Cliente 
+                INSERT INTO Cliente 
                 (id, nombre, documento, telefono)
                 VALUES (?, ?, ?, ?)
             ''', (self.id, self.nombre, self.documento, self.telefono))
@@ -51,6 +51,25 @@ class Cliente:
         finally:
             if conn:
                 conn.close()
+
+    def actualizar(self):
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute('''
+            UPDATE Cliente 
+            SET nombre = ?, documento = ?, telefono = ?
+            WHERE id = ?
+        ''', (self.nombre, self.documento, self.telefono, self.id))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            print(f"Error al actualizar cliente: {e}")
+            return False
+        finally:
+            if conn:
+                conn.close()
+
 
     @classmethod
     def obtener_por_id(cls, id):
