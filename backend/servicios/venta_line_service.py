@@ -42,3 +42,10 @@ class ventaLine_Service:
         linea_id = str(uuid.uuid4())
         linea = VentaLine(linea_id, producto, cantidad, precio_stamp)
         return linea.guardar()
+    @staticmethod
+    def crear_linea(producto, cantidad, precio_stamp):
+        linea_id = str(uuid.uuid4())
+        linea = VentaLine(linea_id, producto, cantidad, precio_stamp)
+        linea.guardar()
+        return linea
+

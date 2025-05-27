@@ -2,7 +2,7 @@ from backend.bddTienda import get_connection
 from backend.modelo.Producto import Producto
 
 class VentaLine:
-    def __init__(self, linea_id, producto: Producto, cantidad, precio_stamp):
+    def __init__(self, linea_id, producto: Producto, cantidad, precio_stamp,):
         self.linea_id = linea_id
         self.producto = producto
         self.cantidad = cantidad
@@ -85,8 +85,8 @@ class VentaLine:
                     id=datos[1],
                     nombre=datos[4],
                     precio=datos[5],
-                    categoria=None,  # Podrías completar esto si lo necesitas
-                    iva=None       # Lo mismo aquí
+                    categoria=None,  
+                    iva=None      
                 )
                 return VentaLine(datos[0], producto, datos[2], datos[3])
             return None

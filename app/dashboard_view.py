@@ -26,6 +26,12 @@ def dashboard_view(page: ft.Page):
                         height=60,
                     ),
                     ft.ElevatedButton(
+                        "Ir a TPV",
+                        on_click=lambda e: page.go("/venta_line"),
+                        width=300,
+                        height=60,
+                    ),
+                    ft.ElevatedButton(
                         "Cerrar sesión",
                         on_click=lambda e: page.go("/"),
                         width=300,
