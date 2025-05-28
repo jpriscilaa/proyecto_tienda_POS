@@ -132,8 +132,8 @@ class Producto:
             ''', (n_referencia,))
             row = cursor.fetchone()
             if row:
-                cat = Categoria.obtener(row[4])
-                iva = Iva.obtener(row[5])
+                cat = Categoria.obtener_por_id(row[4])
+                iva = Iva.obtener_iva_por_id(row[5])
                 return Producto(row[0], row[1], row[2], row[3], cat, iva)
             return None
         except Exception as e:
