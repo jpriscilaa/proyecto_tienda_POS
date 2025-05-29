@@ -6,6 +6,7 @@ from backend.servicios.categoria_service import listar_categorias, guardar_categ
 from backend.modelo.Categoria import Categoria
 import random
 import uuid
+from backend.Constantes import NOMBRE_APP
 
 def config_empresa_view(page: ft.Page):
     def mostrar_dialogo(texto, titulo="Mensaje", color=ft.Colors.PRIMARY):
@@ -179,7 +180,7 @@ def config_empresa_view(page: ft.Page):
                 content=ft.Column(
                     scroll=True,
                     controls=[
-                        ft.Text("Configuración Empresa", size=25, weight=ft.FontWeight.BOLD),
+                        ft.Text(NOMBRE_APP, size=25, weight=ft.FontWeight.BOLD),
 
                         ft.Row([
                             ft.Container(nombre_input, width=300),

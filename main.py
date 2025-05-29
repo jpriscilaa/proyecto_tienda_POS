@@ -1,20 +1,27 @@
 import flet as ft
 from app.router import route_app
+from backend.servicios import config_app
+from app.iniciar_app import iniciar_app
 
 def main(page: ft.Page):
-    comprobarConfiguracion()
     route_app(page)
 
 def comprobarConfiguracion():
-    ha_sido_inicializado()
+    if config_app.crearSQLITE() == False:
+        if existeEmpresa():
+            print("Si la salida del metodo es true significa que los datos de la empresa existen por ende podemos iniciar la app")
+            return True
+    else: 
+        print("Si crearSQLITE devuelve true es porque justo ahora se acaba de crear la BD y por tanto no hay ningun dato en la tabla EMPRESA habrá que rellenarlo" \
+        "eso significa que toca abrir la ventana de inicio donde poner la info de la empresa y ajustes de la app")
 
+def existeEmpresa():
+    print("Aqui pongo la logica para validar si existen datos de la empresa en BD o está corrupta")
 
-def ha_sido_inicializado():
-    # Aquí puedes agregar la lógica para verificar si la aplicación ha sido inicializada
-    # Por ejemplo, podrías verificar si un archivo de configuración existe o si una base de datos está disponible
-    print("Verificando configuración...BD...infoPantalla...datosDeLaEmpresa")  # Placeholder para la lógica de verificación
-    # Si no ha sido inicializado, puedes redirigir a una página de configuración o mostrar un mensaje
-    # page.go("/configuracion")  # Descomentar y ajustar según sea necesario
+    return True
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    if comprobarConfiguracion():
+        #ft.app(target=main)
+        print("Iniciamos APP")
+    else: print("Ha fallado la iniciación de la APP")

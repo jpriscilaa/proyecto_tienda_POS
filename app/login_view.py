@@ -34,6 +34,6 @@ def login_view(page: ft.Page):
     )
 
     return ft.View(
-        route="/",
+        route="/login_view",
         controls=[fondo]
     )

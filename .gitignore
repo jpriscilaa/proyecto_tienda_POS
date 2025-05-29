@@ -1,0 +1,11 @@
+conf/
+**/__pycache__/
+**/*.py[cod]
+.vscode/
+venv/
+.env/
+mientorno/
+.DS_Store
+bddGestionTienda.db
+__pycache__/
+*.pyc
