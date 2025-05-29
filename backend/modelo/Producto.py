@@ -76,8 +76,8 @@ class Producto:
             ''', (id,))
             row = cursor.fetchone()
             if row:
-                cat = Categoria.obtener(row[4])
-                iva = Iva.obtener(row[5])
+                cat = Categoria.obtener_por_id(row[4])
+                iva = Iva.obtener_iva_por_id(row[5])
                 return Producto(row[0], row[1], row[2], row[3], cat, iva)
             return None
         except Exception as e:
@@ -97,10 +97,10 @@ class Producto:
             ''')
             rows = cursor.fetchall()
             for row in rows:
-                cat = Categoria.obtener(row[4])
-                iva = Iva.obtener(row[5])
+                cat = Categoria.obtener_por_id(row[4])
+                iva = Iva.obtener_iva_por_id(row[5])
                 producto = Producto(row[0], row[1], row[2], row[3], cat, iva)
-                productos.append(producto)
+
             return productos
         except Exception as e:
             print(f"Error al listar productos: {e}")
@@ -154,8 +154,8 @@ class Producto:
             ''', (categoria_id,))
             rows = cursor.fetchall()
             for row in rows:
-                cat = Categoria.obtener(row[4])
-                iva = Iva.obtener(row[5])
+                cat = Categoria.obtener_por_id(row[4])
+                iva = Iva.obtener_iva_por_id(row[5])
                 productos.append(Producto(row[0], row[1], row[2], row[3], cat, iva))
             return productos
         except Exception as e:

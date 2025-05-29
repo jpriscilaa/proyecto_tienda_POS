@@ -47,22 +47,20 @@ class Categoria:
 
     # READ (Obtener categoría por ID)
     @classmethod
-    def obtener_por_id(cls, categoria_id):
+    def obtener_por_id(cls, id):
         conn = get_connection()
         try:
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT categoria_id, nombre FROM Categoria WHERE categoria_id = ?",
-                (categoria_id,)
-            )
+            cursor.execute("SELECT categoria_id, nombre FROM Categoria WHERE categoria_id = ?", (id,))
             fila = cursor.fetchone()
-            return cls(fila[0], fila[1]) if fila else None
+            if fila:
+                return cls(fila[0], fila[1])  # Esto está bien si __init__ tiene (id, nombre)
+            return None
         except Exception as e:
-            print(f"Error al obtener categoría: {e}")
+            print(f"Error al obtener categoría por ID: {e}")
             return None
         finally:
-            if conn:
-                conn.close()
+            conn.close()
 
     # UPDATE (Actualizar categoría)
     def actualizar(self):
