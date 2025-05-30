@@ -11,7 +11,7 @@ class Config_Empresa:
         self.moneda = moneda
 
     def guardar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
 
         if Config_Empresa.existe(self.empresa_id):
@@ -23,7 +23,7 @@ class Config_Empresa:
         conexion.close()
 
     def eliminar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("DELETE FROM CONFIG_EMPRESA WHERE EMPRESA_ID = ?", (self.empresa_id,))
         conexion.commit()
@@ -31,20 +31,20 @@ class Config_Empresa:
 
     @staticmethod
     def buscar_por_id(empresa_id):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM CONFIG_EMPRESA WHERE EMPRESA_ID = ?", (empresa_id,))
         fila = cursor.fetchone()
         conexion.close()
 
         if fila:
-            return Empresa(*fila)
+            return Config_Empresa(*fila)
         else:
             return None
 
     @staticmethod
     def existe(empresa_id):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("SELECT 1 FROM CONFIG_EMPRESA WHERE EMPRESA_ID = ?", (empresa_id,))
         resultado = cursor.fetchone()

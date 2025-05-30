@@ -1,5 +1,5 @@
 #Ruta base de datos SQLite
-RUTA_BD = "/conf/BD_MI_EMPRESA.DB"
+RUTA_BD = "conf/BD_MI_EMPRESA.DB"
 RUTA_CARPETA_CONF = "conf"
 #Nombre de la app (por ejemplo, para ventanas o logs)
 NOMBRE_APP = "P.O.S TIENDA BY PRIS"

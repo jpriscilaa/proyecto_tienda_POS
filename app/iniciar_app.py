@@ -4,30 +4,50 @@ from backend.servicios import config_empr_service
 from backend.modelo.Config_Empresa import Config_Empresa
 
 def iniciar_app(page: ft.Page):
-
+    nombre_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9)
+    nombre_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre usuario", border_radius=9)
+    contrasenna_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Contraseña usuario", border_radius=9, password=True, can_reveal_password=True)
+    pais_combo=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="País", options=[
+            ft.dropdown.Option("México"),
+            ft.dropdown.Option("Argentina"),
+            ft.dropdown.Option("España")
+        ])
+    direccion_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Dirección empresa", border_radius=9)
+    telefono_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE,label="Teléfono empresa", border_radius=9)
+    moneda=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="Moneda", options=[
+            ft.dropdown.Option("EUR€"),
+            ft.dropdown.Option("DOLR$")
+        ])
     
+    def guardarEmpresa():
+        empresa1 = Config_Empresa(
+            empresa_id=1,
+            nombre=nombre_empresa.value,
+            direccion=direccion_empresa.value,
+            telefono=telefono_empresa.value,
+            moneda=moneda.value
+        )
+        config_empr_service.crearEmpresa(empresa1)
+        print("Se ha guardado empresa: ")
+        from app.login_view import login_view
+        page.clean()
+        page.add(login_view(page))
+
     page.title = "Primera configuración"
     page.horizontal_alignment = ft.MainAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.bgcolor = Constantes.COLOR_FONDO_PRINCIPAL
-    empresa = ["Tienda Mari", "Villarrobledo"]
     
     #Creo una lista donde iran todos los elementos, luego si lo guardo en un column se pone en modo vertial, si lo guardo en row se guarda en horizontal
+   
     form_controls = [
-        ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9),
-        ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre usuario", border_radius=9),
-        ft.TextField(border=ft.InputBorder.UNDERLINE, label="Contraseña usuario", border_radius=9, password=True, can_reveal_password=True),
-        ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="País", options=[
-            ft.dropdown.Option("México"),
-            ft.dropdown.Option("Argentina"),
-            ft.dropdown.Option("España")
-        ]),
-        ft.TextField(border=ft.InputBorder.UNDERLINE, label="Dirección empresa", border_radius=9),
-        ft.TextField(border=ft.InputBorder.UNDERLINE,label="Teléfono empresa", border_radius=9),
-        ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="Moneda", options=[
-            ft.dropdown.Option("EUR€"),
-            ft.dropdown.Option("DOLR$")
-        ]),
+        nombre_empresa,
+        nombre_usuario,
+        contrasenna_usuario,
+        pais_combo,
+        direccion_empresa,
+        telefono_empresa,
+        moneda,
         ft.ElevatedButton(text="Guardar", width=180, height=50, on_click=lambda e: guardarEmpresa())
     ]
 
@@ -45,13 +65,4 @@ def iniciar_app(page: ft.Page):
     
     return contenedor
 
-def guardarEmpresa():
-    empresa1 = Config_Empresa(
-        id=1,
-        nombre="Tienda Mari",
-        direccion="Calle Principal 123",
-        telefono="654321987",
-        moneda="EUR€"
-    )
-    config_empr_service.crearEmpresa(empresa1)
-    print("Se ha guardado empresa: ")
+

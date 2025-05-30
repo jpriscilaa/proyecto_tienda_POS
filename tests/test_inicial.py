@@ -1,6 +1,7 @@
 import sys
 import os
 from backend.servicios import producto_service
+from backend.modelo.Categoria import Categoria
 
 def test1 ():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -17,9 +18,24 @@ def test1 ():
     print(productos[0])
 
 def test2():
-    producto_service producto1=null;
-    producto1.setNombre("Agua")
-    producto1.guardar()
+    pass
+
+def test3():
+    #Crear categorias
+    categoria1=Categoria(
+        nombre="Bebidas",
+    )
+    categoria1.guardar()
+
+    categoria2=Categoria(
+    nombre="Comida",
+    )
+    categoria2.guardar()
+
+    listaDeCats=Categoria.obtener_todos()
+    print(len(listaDeCats))
+    for cat in listaDeCats:
+        print(cat.nombre)
 
 def main():
     # Código principal

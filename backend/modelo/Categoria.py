@@ -8,7 +8,7 @@ class Categoria:
         self.nombre = nombre
 
     def guardar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
 
         if Categoria.existe(self.categoria_id):
@@ -27,7 +27,7 @@ class Categoria:
         conexion.close()
 
     def eliminar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("DELETE FROM CATEGORIA WHERE CATEGORIA_ID = ?", (self.categoria_id,))
         conexion.commit()
@@ -35,7 +35,7 @@ class Categoria:
 
     @staticmethod
     def buscar_por_id(categoria_id):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM CATEGORIA WHERE CATEGORIA_ID = ?", (categoria_id,))
         fila = cursor.fetchone()
@@ -48,7 +48,7 @@ class Categoria:
 
     @staticmethod
     def obtener_todos():
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM CATEGORIA")
         filas = cursor.fetchall()
@@ -58,7 +58,7 @@ class Categoria:
 
     @staticmethod
     def existe(categoria_id):
-        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         cursor.execute("SELECT 1 FROM CATEGORIA WHERE CATEGORIA_ID = ?", (categoria_id,))
         resultado = cursor.fetchone()

@@ -20,7 +20,7 @@ def login_view(page: ft.Page):
                 ft.Text("Iniciar Sesión", size=28, weight="bold"),
                 ft.TextField(label="Usuario"),
                 ft.TextField(label="Contraseña", password=True, can_reveal_password=True),
-                ft.ElevatedButton("Entrar", on_click=ir_a_menu),
+                ft.ElevatedButton("Entrar", on_click=lambda e: ir_a_menu()),
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.CENTER,
