@@ -1,70 +1,72 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+import flet as ft
 
-Base = declarative_base()
 
-# Modelos
-class Categoria(Base):
-    __tablename__ = 'categorias'
-    id = Column(Integer, primary_key=True)
-    nombre = Column(String, nullable=False)
-    descripcion = Column(String)
-    productos = relationship("Producto", back_populates="categoria")
+def main(page: ft.Page):
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.scroll = True
 
-class Precio(Base):
-    __tablename__ = 'precios'
-    id = Column(Integer, primary_key=True)
-    valor = Column(Float, nullable=False)
-    impuesto = Column(Float, nullable=False)
-    total = Column(Float, nullable=False)
-    producto = relationship("Producto", back_populates="precio", uselist=False)
+    def handle_action_click(e):
+        page.add(ft.Text(f"Action clicked: {e.control.text}"))
+        # e.control is the clicked action button, e.control.parent is the corresponding parent dialog of the button
+        page.close(e.control.parent)
 
-class Producto(Base):
-    __tablename__ = 'productos'
-    id = Column(Integer, primary_key=True)
-    nombre = Column(String, nullable=False)
-    precio_id = Column(Integer, ForeignKey('precios.id'))
-    categoria_id = Column(Integer, ForeignKey('categorias.id'))
+    cupertino_actions = [
+        ft.CupertinoDialogAction(
+            "Yes",
+            is_destructive_action=True,
+            on_click=handle_action_click,
+        ),
+        ft.CupertinoDialogAction(
+            text="No",
+            is_default_action=False,
+            on_click=handle_action_click,
+        ),
+    ]
 
-    precio = relationship("Precio", back_populates="producto")
-    categoria = relationship("Categoria", back_populates="productos")
+    material_actions = [
+        ft.TextButton(text="Yes", on_click=handle_action_click),
+        ft.TextButton(text="No", on_click=handle_action_click),
+    ]
 
-# Configuración DB
-engine = create_engine('sqlite:///productos.db')
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
+    page.add(
+        ft.FilledButton(
+            text="Open Material Dialog",
+            on_click=lambda e: page.open(
+                ft.AlertDialog(
+                    title=ft.Text("Material Alert Dialog"),
+                    content=ft.Text("Do you want to delete this file?"),
+                    actions=material_actions,
+                )
+            ),
+        ),
+        ft.CupertinoFilledButton(
+            text="Open Cupertino Dialog",
+            on_click=lambda e: page.open(
+                ft.CupertinoAlertDialog(
+                    title=ft.Text("Cupertino Alert Dialog"),
+                    content=ft.Text("Do you want to delete this file?"),
+                    actions=cupertino_actions,
+                )
+            ),
+        ),
+        ft.FilledButton(
+            text="Open Adaptive Dialog",
+            adaptive=True,
+            bgcolor=ft.Colors.BLUE_ACCENT,
+            on_click=lambda e: page.open(
+                ft.AlertDialog(
+                    adaptive=True,
+                    title=ft.Text("Adaptive Alert Dialog"),
+                    content=ft.Text("Do you want to delete this file?"),
+                    actions=(
+                        cupertino_actions
+                        if page.platform in [ft.PagePlatform.IOS, ft.PagePlatform.MACOS]
+                        else material_actions
+                    ),
+                )
+            ),
+        ),
+    )
 
-# Funciones CRUD
-def crear_producto(nombre, precio, impuesto, categoria_id):
-    session = Session()
-    total = precio + impuesto
-    nuevo_precio = Precio(valor=precio, impuesto=impuesto, total=total)
-    session.add(nuevo_precio)
-    session.commit()
 
-    nuevo_producto = Producto(nombre=nombre, precio_id=nuevo_precio.id, categoria_id=categoria_id)
-    session.add(nuevo_producto)
-    session.commit()
-    session.close()
-
-def listar_productos():
-    session = Session()
-    productos = session.query(Producto).all()
-    for p in productos:
-        print(f"Producto: {p.nombre}, Precio: {p.precio.total}, Categoría: {p.categoria.nombre}")
-    session.close()
-
-def eliminar_producto(id_producto):
-    session = Session()
-    producto = session.query(Producto).get(id_producto)
-    if producto:
-        session.delete(producto)
-        session.commit()
-    session.close()
-
-def crear_categoria(nombre, descripcion):
-    session = Session()
-    categoria = Categoria(nombre=nombre, descripcion=descripcion)
-    session.add(categoria)
-    session.commit()
-    session.close()
+ft.app(main)
