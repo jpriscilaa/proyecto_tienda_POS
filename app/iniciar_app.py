@@ -1,6 +1,7 @@
 import flet as ft
 from backend import Constantes
 from backend.servicios import config_empr_service
+from backend.modelo.Config_Empresa import Config_Empresa
 
 def iniciar_app(page: ft.Page):
 
@@ -45,6 +46,12 @@ def iniciar_app(page: ft.Page):
     return contenedor
 
 def guardarEmpresa():
-    empresa = []
-    config_empr_service.crearEmpresa(empresa)
+    empresa1 = Config_Empresa(
+        id=1,
+        nombre="Tienda Mari",
+        direccion="Calle Principal 123",
+        telefono="654321987",
+        moneda="EUR€"
+    )
+    config_empr_service.crearEmpresa(empresa1)
     print("Se ha guardado empresa: ")

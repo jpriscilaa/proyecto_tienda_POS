@@ -6,8 +6,10 @@
 # )
 # from backend.modelo.Iva import obtener_iva_por_id
 # from backend.modelo.Config_Empresa import Config_Empresa
+from backend.modelo.Config_Empresa import Config_Empresa
 
-def crearEmpresa(empresa):
+def crearEmpresa(empresa: Config_Empresa):
+    empresa.guardar()
     print("recibimos empresa e imprimos")
     pass
 
