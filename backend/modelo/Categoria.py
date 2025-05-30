@@ -1,119 +1,66 @@
-from backend.bddTienda import get_connection
+import sqlite3
+import uuid
+from backend import Constantes
 
 class Categoria:
-    def __init__(self, categoria_id, nombre):
-        self.categoria_id = categoria_id
+    def __init__(self, categoria_id=None, nombre=""):
+        self.categoria_id = categoria_id or str(uuid.uuid4())
         self.nombre = nombre
 
-    def __str__(self):
-        return f"Categoría: {self.nombre} (ID: {self.categoria_id})"
-
-    # --- CRUD ---
-
-    # CREATE (Guardar categoría)
     def guardar(self):
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute(
-    "INSERT OR REPLACE INTO Categoria (categoria_id, nombre) VALUES (?, ?)",
-    (self.categoria_id, self.nombre)
-)
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
 
-            
-            conn.commit()
-        except Exception as e:
-            print(f"Error al guardar categoría: {e}")
-            raise
-        finally:
-            if conn:
-                conn.close()
-
-    # READ (Obtener todas las categorías)
-    @classmethod
-    def listar_todas(cls):
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT categoria_id, nombre FROM Categoria")
-            filas = cursor.fetchall()
-            return [cls(fila[0], fila[1]) for fila in filas]  # Lista de objetos Categoria
-        except Exception as e:
-            print(f"Error al listar categorías: {e}")
-            return []
-        finally:
-            if conn:
-                conn.close()
-
-    # READ (Obtener categoría por ID)
-    @classmethod
-    def obtener_por_id(cls, id):
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT categoria_id, nombre FROM Categoria WHERE categoria_id = ?", (id,))
-            fila = cursor.fetchone()
-            if fila:
-                return cls(fila[0], fila[1])  # Esto está bien si __init__ tiene (id, nombre)
-            return None
-        except Exception as e:
-            print(f"Error al obtener categoría por ID: {e}")
-            return None
-        finally:
-            conn.close()
-
-    # UPDATE (Actualizar categoría)
-    def actualizar(self):
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE Categoria SET nombre = ? WHERE categoria_id = ?",
-                (self.nombre, self.categoria_id)
-            )
-            conn.commit()
-            return True
-        except Exception as e:
-            print(f"Error al actualizar categoría: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
-
-    # DELETE (Eliminar categoría)
-    @classmethod
-    def borrar_por_id(cls, categoria_id):
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute(
-                "DELETE FROM Categoria WHERE categoria_id = ?",
-                (categoria_id,)
-            )
-            conn.commit()
-            return True
-        except Exception as e:
-            print(f"Error al borrar categoría: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
-
-    # --- Métodos auxiliares ---
-    @classmethod
-    def crear_tabla(cls):
-        conn = get_connection()
-        try:
-            cursor = conn.cursor()
+        if Categoria.existe(self.categoria_id):
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Categoria (
-                    categoria_id TEXT PRIMARY KEY,
-                    nombre TEXT NOT NULL
-                )
-            ''')
-            conn.commit()
-        except Exception as e:
-            print(f"Error al crear tabla: {e}")
-        finally:
-            if conn:
-                conn.close()
+                UPDATE CATEGORIA
+                SET NOMBRE = ?
+                WHERE CATEGORIA_ID = ?
+            ''', (self.nombre, self.categoria_id))
+        else:
+            cursor.execute('''
+                INSERT INTO CATEGORIA (CATEGORIA_ID, NOMBRE)
+                VALUES (?, ?)
+            ''', (self.categoria_id, self.nombre))
+
+        conexion.commit()
+        conexion.close()
+
+    def eliminar(self):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM CATEGORIA WHERE CATEGORIA_ID = ?", (self.categoria_id,))
+        conexion.commit()
+        conexion.close()
+
+    @staticmethod
+    def buscar_por_id(categoria_id):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM CATEGORIA WHERE CATEGORIA_ID = ?", (categoria_id,))
+        fila = cursor.fetchone()
+        conexion.close()
+
+        if fila:
+            return Categoria(*fila)
+        else:
+            return None
+
+    @staticmethod
+    def obtener_todos():
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM CATEGORIA")
+        filas = cursor.fetchall()
+        conexion.close()
+
+        return [Categoria(*fila) for fila in filas]
+
+    @staticmethod
+    def existe(categoria_id):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT 1 FROM CATEGORIA WHERE CATEGORIA_ID = ?", (categoria_id,))
+        resultado = cursor.fetchone()
+        conexion.close()
+        return resultado is not None

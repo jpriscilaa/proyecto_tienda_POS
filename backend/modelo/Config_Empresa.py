@@ -1,77 +1,52 @@
-
-from backend.bddTienda import get_connection
 import sqlite3
+import uuid
+from backend import Constantes
+
 class Config_Empresa:
-    def __init__(self, empresa_id, nombre, direccion, telefono, moneda):
-        self.empresa_id = empresa_id
+    def __init__(self, empresa_id=None, nombre="", direccion="", telefono="", moneda=""):
+        self.empresa_id = empresa_id or str(uuid.uuid4())
         self.nombre = nombre
         self.direccion = direccion
         self.telefono = telefono
         self.moneda = moneda
 
-    def __str__(self):
-        return f"{self.nombre} - {self.direccion} ({self.moneda})"
+    def guardar(self):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
 
-    # --- Métodos CRUD ---
+        if Config_Empresa.existe(self.empresa_id):
+            cursor.execute(Constantes.UPDATE_CONFIG_EMPRESA, (self.nombre, self.direccion, self.telefono, self.moneda, self.empresa_id))
+        else:
+            cursor.execute(Constantes.INSERT_CONFIG_EMPRESA, (self.empresa_id, self.nombre, self.direccion, self.telefono, self.moneda))
 
-    def crear_tabla_config_empresa():
-        try:
-            con = get_connection()
-            cur = con.cursor()
-            cur.execute("""
-            CREATE TABLE IF NOT EXISTS config_empresa (
-                empresa_id TEXT PRIMARY KEY,
-                nombre TEXT NOT NULL,
-                direccion TEXT,
-                telefono TEXT,
-                moneda TEXT
-            )
-        """)
-            con.commit()
-        except sqlite3.Error as e:
-            print(f"Error creando tabla config_empresa: {e}")
-        finally:
-            con.close()
+        conexion.commit()
+        conexion.close()
 
+    def eliminar(self):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM CONFIG_EMPRESA WHERE EMPRESA_ID = ?", (self.empresa_id,))
+        conexion.commit()
+        conexion.close()
 
-    def guardar_config_empresa(config: "Config_Empresa"):
-        con = get_connection()
-        cur = con.cursor()
-        cur.execute("""
-        INSERT OR REPLACE INTO config_empresa (
-            empresa_id, nombre, direccion, telefono, moneda
-        ) VALUES (?, ?, ?, ?, ?)
-    """, (
-        config.empresa_id,
-        config.nombre,
-        config.direccion,
-        config.telefono,
-        config.moneda
-    ))
-        con.commit()
-        con.close()
+    @staticmethod
+    def buscar_por_id(empresa_id):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM CONFIG_EMPRESA WHERE EMPRESA_ID = ?", (empresa_id,))
+        fila = cursor.fetchone()
+        conexion.close()
 
-
-    def obtener_config_empresa():
-        con = get_connection()
-        cur = con.cursor()
-        cur.execute("SELECT * FROM config_empresa LIMIT 1")
-        fila = cur.fetchone()
-        con.close()
         if fila:
-            return Config_Empresa(
-            empresa_id=fila[0],
-            nombre=fila[1],
-            direccion=fila[2],
-            telefono=fila[3],
-            moneda=fila[4]
-        )
-        return None
+            return Empresa(*fila)
+        else:
+            return None
 
-
-    def borrar_config_empresa():
-        con = get_connection()
-        cur = con.cursor()
-        cur.execute("DELETE FROM config_empresa")
-        con.commit()
-        con.close()
+    @staticmethod
+    def existe(empresa_id):
+        conexion = sqlite3.connect(Constantes.RUTA_CARPETA_CONF + Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT 1 FROM CONFIG_EMPRESA WHERE EMPRESA_ID = ?", (empresa_id,))
+        resultado = cursor.fetchone()
+        conexion.close()
+        return resultado is not None

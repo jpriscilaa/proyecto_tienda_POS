@@ -2,17 +2,15 @@ import os
 from backend import Constantes
 import sqlite3
 
-ruta_ejecucion = os.getcwd()
-print("---------------------")
-print("La ruta de la APP es: " + ruta_ejecucion)
-print("---------------------")
+def ruta_ejecucion():
+    return os.getcwd()
 
 def crearSQLITE():
-    #Crear la carpeta conf si no existe
+    #Crear la carpeta conf si no existe, el exist ok es como decir, quieres que exista si o si no?
     os.makedirs(Constantes.RUTA_CARPETA_CONF, exist_ok=True)
 
-    #Crear la ruta de la bd agregando la carpeta conf y bd
-    rutaSQLITE = ruta_ejecucion + Constantes.RUTA_BD
+    #Crear la ruta de la bd agregando la carpeta conf y bd, uso os.path para que funciona bien en todos los sistemas operativos
+    rutaSQLITE = os.path.join(ruta_ejecucion(), Constantes.RUTA_BD)
     print("---------------------")
     print("La ruta de la BD es: " + rutaSQLITE)
     print("---------------------")
@@ -39,3 +37,7 @@ def crearTabla(cursor):
         cursor.execute(Constantes.CREATE_TABLA_PRODUCTO)
         cursor.execute(Constantes.CREATE_TABLA_VENTA)
         cursor.execute(Constantes.CREATE_TABLA_VENTA_LINEA)
+
+if __name__ == "__main__":
+     pass
+     
