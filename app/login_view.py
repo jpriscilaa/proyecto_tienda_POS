@@ -1,6 +1,12 @@
 import flet as ft
 
 def login_view(page: ft.Page):
+    def ir_a_menu(e):
+        print("CLICAMOS EN ENTRAR")
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        page.add(dashboard_view(page))
+        print("Hemos accedido al dashboard")
 
     login_container = ft.Container(
         width=320,
@@ -14,7 +20,7 @@ def login_view(page: ft.Page):
                 ft.Text("Iniciar Sesión", size=28, weight="bold"),
                 ft.TextField(label="Usuario"),
                 ft.TextField(label="Contraseña", password=True, can_reveal_password=True),
-                ft.ElevatedButton("Entrar", on_click=lambda e: page.go("/dashboard")),
+                ft.ElevatedButton("Entrar", on_click=ir_a_menu),
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.CENTER,
@@ -33,7 +39,4 @@ def login_view(page: ft.Page):
         content=login_container
     )
 
-    return ft.View(
-        route="/login_view",
-        controls=[fondo]
-    )
+    return fondo
