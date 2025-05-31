@@ -2,11 +2,13 @@ import flet as ft
 from backend import Constantes
 from backend.servicios import config_empr_service
 from backend.modelo.Config_Empresa import Config_Empresa
+from backend.modelo.Usuario import Usuario
 
 def iniciar_app(page: ft.Page):
     nombre_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9)
     nombre_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre usuario", border_radius=9)
     contrasenna_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Contraseña usuario", border_radius=9, password=True, can_reveal_password=True)
+    rol_usuario=ft.TextField(value="Administrador",border=ft.InputBorder.UNDERLINE, label="Rol del Usuario", border_radius=9,read_only=True)
     pais_combo=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="País", options=[
             ft.dropdown.Option("México"),
             ft.dropdown.Option("Argentina"),
@@ -28,11 +30,21 @@ def iniciar_app(page: ft.Page):
             moneda=moneda.value
         )
         config_empr_service.crearEmpresa(empresa1)
-        print("Se ha guardado empresa: ")
+
+        from backend.modelo.Usuario import Usuario
+        usuarioAdmin1 = Usuario(
+        nombre_usuario=nombre_usuario.value,
+        contrasena=contrasenna_usuario.value,
+        rol=rol_usuario.value
+        )
+        usuarioAdmin1.guardar()
+        
+        print("Se ha guardado empresa y usuario: ")
         from app.login_view import login_view
         page.clean()
         page.add(login_view(page))
 
+    
     page.title = "Primera configuración"
     page.horizontal_alignment = ft.MainAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -44,6 +56,7 @@ def iniciar_app(page: ft.Page):
         nombre_empresa,
         nombre_usuario,
         contrasenna_usuario,
+        rol_usuario,
         pais_combo,
         direccion_empresa,
         telefono_empresa,

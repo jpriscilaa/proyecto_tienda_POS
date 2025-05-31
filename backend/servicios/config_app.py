@@ -37,6 +37,7 @@ def crearTabla(cursor):
         cursor.execute(Constantes.CREATE_TABLA_PRODUCTO)
         cursor.execute(Constantes.CREATE_TABLA_VENTA)
         cursor.execute(Constantes.CREATE_TABLA_VENTA_LINEA)
+        cursor.execute(Constantes.CREATE_TABLA_USUARIO)
 
 if __name__ == "__main__":
      pass

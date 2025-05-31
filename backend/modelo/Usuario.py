@@ -1,8 +1,11 @@
+import sqlite3
+import uuid
+from backend import Constantes
 from backend.bddTienda import get_connection
 
 class Usuario:
-    def __init__(self, id, nombre_usuario, contrasena, rol):
-        self.id = id
+    def __init__(self, id_usuario = None, nombre_usuario="", contrasena="", rol=""):
+        self.id = id_usuario or str(uuid.uuid4())  
         self.nombre_usuario = nombre_usuario
         self.contrasena = contrasena
         self.rol = rol
@@ -35,27 +38,14 @@ class Usuario:
 
     # --- GUARDAR USUARIO ---
     def guardar(self):
-        """Guarda un nuevo usuario si no existe otro con el mismo ID"""
-        try:
-            if Usuario.obtener_por_id(self.id):
-                print(f"El usuario con ID {self.id} ya existe. Usa actualizar().")
-                return False
-
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO Usuario (id, nombre_usuario, contrasena, rol)
-                VALUES (?, ?, ?, ?)
-            ''', (self.id, self.nombre_usuario, self.contrasena, self.rol))
-            conn.commit()
-            print(f"Usuario {self.nombre_usuario} guardado correctamente")
-            return True
-        except Exception as e:
-            print(f"Error al guardar usuario: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute(
+        "INSERT INTO USUARIO (USUARIO_ID, NOMBRE, CONTRASENA, ROL) VALUES (?, ?, ?, ?)",
+        (self.id, self.nombre_usuario, self.contrasena, self.rol)
+    )
+        conexion.commit()
+        conexion.close()
 
     # --- OBTENER USUARIO POR ID ---
     @classmethod
@@ -81,19 +71,20 @@ class Usuario:
     def obtener_por_nombre_usuario(cls, nombre_usuario):
         """Busca un usuario por su nombre de usuario (para login)"""
         try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM Usuario WHERE nombre_usuario = ?", (nombre_usuario,))
+            conexion = sqlite3.connect(Constantes.RUTA_BD)
+            cursor = conexion.cursor()
+
+            cursor.execute("SELECT USUARIO_ID, NOMBRE, CONTRASENA, ROL FROM USUARIO WHERE NOMBRE = ?", (nombre_usuario,))
             fila = cursor.fetchone()
             if fila:
-                return cls(*fila)
+                return cls(*fila)  # esto equivale a: Usuario(id, nombre_usuario, contrasena, rol)
             return None
         except Exception as e:
             print(f"Error al buscar usuario por nombre: {e}")
             return None
         finally:
-            if conn:
-                conn.close()
+            if conexion:
+                conexion.close()
 
     # --- ACTUALIZAR USUARIO ---
     def actualizar(self):
@@ -150,3 +141,13 @@ class Usuario:
         finally:
             if conn:
                 conn.close()
+
+
+    @staticmethod
+    def existe(id_usuario):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT 1 FROM USUARIO WHERE USUARIO_ID  = ?", (id_usuario,))
+        resultado = cursor.fetchone()
+        conexion.close()
+        return resultado is not None
