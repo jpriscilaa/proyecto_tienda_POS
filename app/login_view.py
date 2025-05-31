@@ -2,11 +2,24 @@ import flet as ft
 
 from backend.modelo.Usuario import Usuario
 
-def login_view(page: ft.Page):
+def login_view(page: ft.Page, mostrar_dialogo):
     usuario_login = ft.TextField(label="Usuario")
     contrasena_login = ft.TextField(label="Contraseña", password=True, can_reveal_password=True)
-    error_text = ft.Text("", color=ft.Colors.RED)
-
+    #dlg_alerta = ft.AlertDialog(
+    #    modal=True,
+    #    title=ft.Text("Error inicio de sesión"),
+    #    content=ft.Text("Usuario o contraseña incorrectos"),
+    #    actions=[
+    #        ft.TextButton("Ok", on_click=lambda e: cerrar_dialogo()),
+    #    ],s
+    #    actions_alignment=ft.MainAxisAlignment.END,
+    #    on_dismiss=lambda e: print("Modal dialog dismissed!"),
+    #)
+#
+    #def cerrar_dialogo():
+    #    dlg_alerta.open = False
+    #    page.update()
+#
     def ir_a_menu(e):
         usuario = Usuario.obtener_por_nombre_usuario(usuario_login.value)
         if usuario and usuario.contrasena == contrasena_login.value:
@@ -14,8 +27,7 @@ def login_view(page: ft.Page):
             page.clean()
             page.add(dashboard_view(page))
         else:
-            error_text.value = "Usuario o contraseña incorrectos"
-        page.update()
+            mostrar_dialogo()
             
        # print("CLICAMOS EN ENTRAR")
        # from app.dashboard_view import dashboard_view
