@@ -40,8 +40,14 @@ def config_empresa_view(page: ft.Page):
     tabla_categorias = ft.Column()
 
     def seleccionar_categoria(categoria: Categoria):
+        categoria_nombre_input.value = categoria.nombre
         print("Categoría seleccionada:", categoria.nombre)
+        page.update()
         
+    def campos_categoria_abrir_cerrar(e, abierto: bool):
+        categoria_nombre_input.disabled = abierto
+        page.update()
+        pass
 
     def actualizar_tabla(filtro=None):
         lista = Categoria.obtener_todos()
@@ -68,6 +74,7 @@ def config_empresa_view(page: ft.Page):
                     )
                 )],
                 selected=False,
+                data=c,  # Guardamos la categoría en el DataRo  w
                 on_select_changed=lambda e: seleccionar_categoria(e.control.data)
                 )
             filas.append(fila)
@@ -97,7 +104,9 @@ def config_empresa_view(page: ft.Page):
         if categoria_nombre_input.value.strip():
             Categoria(nombre=categoria_nombre_input.value.strip()).guardar()
             categoria_nombre_input.value = ""
+            campos_categoria_abrir_cerrar(e, True)
             actualizar_tabla(buscador_input.value)
+
 
     buscador_input.on_change = lambda e: actualizar_tabla(buscador_input.value)
 
