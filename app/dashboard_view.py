@@ -33,6 +33,9 @@ def dashboard_view(page: ft.Page):
         page.add(login_view(page))
 
     menu = ft.Container(
+        padding=20,
+        border_radius=20,
+        alignment=ft.alignment.top_center,
         content=ft.Column(
             controls=[
                 ft.ElevatedButton("CONFIGURACION DE EMPRESA", on_click=abrir_config_empresa),
