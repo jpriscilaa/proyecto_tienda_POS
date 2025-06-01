@@ -64,3 +64,11 @@ class Categoria:
         resultado = cursor.fetchone()
         conexion.close()
         return resultado is not None
+    
+    @classmethod
+    def borrar_por_id(cls, id):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute(Constantes.DELETE_CATEGORIA, (id,))
+        conexion.commit()
+        conexion.close()

@@ -50,12 +50,51 @@ def config_empresa_view(page: ft.Page):
     btn_editar = ft.ElevatedButton(text="Editar", on_click=habilitar_edicion)
     btn_guardar = ft.ElevatedButton(text="Guardar", on_click=guardar_empresa)
 
-    #Apartado Categorías
+    #------------------------------------------Apartado Categorías----------------------------------
     def guardar_categoria(e):
         cat = Categoria(nombre=categoria_nombre_input.value)
         cat.guardar()
-        categoria_nombre_input.value = ""
+        categoria_nombre_input.value = " "
         page.update()
+        tabla_categorias.controls.clear()
+        tabla_categorias.controls.append(listar_categorias())
+        page.update()
+
+    
+    tabla_categorias = ft.Column()
+
+    def listar_categorias():
+        listaDeCats = Categoria.obtener_todos()
+        def eliminar_categoria(e, categoria_id):
+            Categoria.borrar_por_id(categoria_id)
+            tabla_categorias.controls.clear()
+            tabla_categorias.controls.append(listar_categorias())
+            page.update()
+
+        filas = [
+            ft.DataRow(cells=[
+                ft.DataCell(ft.Text(c.nombre)),
+                ft.DataCell(
+                    ft.IconButton(
+                        icon=ft.Icons.DELETE,
+                        icon_color=ft.Colors.RED,
+                        tooltip="Eliminar categoría",
+                        on_click=lambda e, id=c.categoria_id: eliminar_categoria(e, id)
+                    )
+                )
+            ])
+            for c in listaDeCats
+        ]
+        return ft.DataTable(
+            columns=[
+                ft.DataColumn(label=ft.Text("Nombre")),
+                ft.DataColumn(label=ft.Text("Acciones")),
+
+            ],
+            rows=filas
+        )
+    
+    tabla_categorias.controls.append(listar_categorias())
 
 
     
@@ -66,13 +105,18 @@ def config_empresa_view(page: ft.Page):
         telefono_empresa,
         moneda,
         ft.Row([btn_editar, btn_guardar], alignment=ft.MainAxisAlignment.CENTER),
-        # --- Categoría ---
         ft.Text("Gestión de Categorías", size=18, weight="bold"),
-        categoria_nombre_input,
         ft.Row([
-            ft.ElevatedButton("Guardar Categoría", on_click=guardar_categoria)
-        ], alignment=ft.MainAxisAlignment.CENTER),
-        ft.Divider(height=30, color="transparent"),
+            ft.Column([
+                categoria_nombre_input,
+                ft.ElevatedButton("Guardar Categoría", on_click=guardar_categoria),
+            ], spacing=10),
+
+            ft.Column([
+                ft.Text("Categorías registradas:", weight="bold"),
+                tabla_categorias
+            ], spacing=10)
+        ], alignment=ft.MainAxisAlignment.SPACE_AROUND),
     ], spacing=15)
 
 
