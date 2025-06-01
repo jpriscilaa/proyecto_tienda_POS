@@ -1,8 +1,13 @@
 import flet as ft
 
 from backend.modelo.Usuario import Usuario
+from app import ventana_alerta
 
-def login_view(page: ft.Page, mostrar_dialogo):
+def login_view(page: ft.Page):
+    def mostrar_dialogo():
+        page.open(ventana_alerta.alerta_login())
+        pass
+
     usuario_login = ft.TextField(label="Usuario")
     contrasena_login = ft.TextField(label="Contraseña", password=True, can_reveal_password=True)
     #dlg_alerta = ft.AlertDialog(
@@ -22,6 +27,7 @@ def login_view(page: ft.Page, mostrar_dialogo):
 #
     def ir_a_menu(e):
         usuario = Usuario.obtener_por_nombre_usuario(usuario_login.value)
+        #usuario va a recibir el usuario si existe, si no, devuelve none con eso valido con un if si existe y luego la contraseña
         if usuario and usuario.contrasena == contrasena_login.value:
             from app.dashboard_view import dashboard_view
             page.clean()

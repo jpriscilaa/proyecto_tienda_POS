@@ -3,6 +3,7 @@ from backend import Constantes
 from backend.servicios import config_empr_service
 from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Usuario import Usuario
+from app.login_view import login_view
 
 def iniciar_app(page: ft.Page):
     nombre_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9)
@@ -31,7 +32,7 @@ def iniciar_app(page: ft.Page):
         )
         config_empr_service.crearEmpresa(empresa1)
 
-        from backend.modelo.Usuario import Usuario
+        #creamos usuario admin
         usuarioAdmin1 = Usuario(
         nombre_usuario=nombre_usuario.value,
         contrasena=contrasenna_usuario.value,
@@ -40,7 +41,7 @@ def iniciar_app(page: ft.Page):
         usuarioAdmin1.guardar()
         
         print("Se ha guardado empresa y usuario: ")
-        from app.login_view import login_view
+        
         page.clean()
         page.add(login_view(page))
 
@@ -51,7 +52,6 @@ def iniciar_app(page: ft.Page):
     page.bgcolor = Constantes.COLOR_FONDO_PRINCIPAL
     
     #Creo una lista donde iran todos los elementos, luego si lo guardo en un column se pone en modo vertial, si lo guardo en row se guarda en horizontal
-   
     form_controls = [
         nombre_empresa,
         nombre_usuario,

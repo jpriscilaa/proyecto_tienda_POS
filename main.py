@@ -1,32 +1,11 @@
 import flet as ft
-from app.router import route_app
 from backend.servicios import config_app
 from app.iniciar_app import iniciar_app
 from app.login_view import login_view
 
 
 def main(page: ft.Page):   
-    page.clean() 
-    # Creo los dialogos necesarios para el login
-    dlg_alerta = ft.AlertDialog(
-        modal=True,
-        title=ft.Text("Error de inicio de sesión"),
-        content=ft.Text("Usuario o contraseña incorrectos"),
-        actions=[ft.TextButton("OK", on_click=lambda e: cerrar_dialogo())],
-        actions_alignment=ft.MainAxisAlignment.END
-    )
-    def mostrar_dialogo():
-        print("Mostrando dialogo de alerta")
-        page.dialog = dlg_alerta
-        dlg_alerta.open = True
-        page.update()
-        print("Dialogo mostrado")
-
-    def cerrar_dialogo():
-        dlg_alerta.open = False
-        page.update()
-
-    #----------------------------------------------------------------------
+    page.clean()
 
     # page.add(iniciar_app(page))
 
@@ -35,7 +14,7 @@ def main(page: ft.Page):
             print("Si la salida del metodo es true significa que los datos de la empresa existen por ende podemos iniciar la app")
             print("LANZAR LOGIN_VIEW")
             page.clean()
-            page.add((login_view(page, mostrar_dialogo)))
+            page.add((login_view(page)))
             return True
     else: 
         print("Si crearSQLITE devuelve true es porque justo ahora se acaba de crear la BD y por tanto no hay ningun dato en la tabla EMPRESA habrá que rellenarlo" \
