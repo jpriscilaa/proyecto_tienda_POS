@@ -10,7 +10,7 @@ class Config_Empresa:
         self.telefono = telefono
         self.moneda = moneda
 
-    def guardar(self):
+    def guardar(self):  
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
 
@@ -50,3 +50,16 @@ class Config_Empresa:
         resultado = cursor.fetchone()
         conexion.close()
         return resultado is not None
+    
+    @staticmethod
+    def obtener_config_empresa():
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM CONFIG_EMPRESA LIMIT 1")
+        fila = cursor.fetchone()
+        conexion.close()
+
+        if fila:
+            return Config_Empresa(*fila)
+        else:
+            return None
