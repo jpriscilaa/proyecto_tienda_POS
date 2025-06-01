@@ -1,129 +1,78 @@
-from backend.bddTienda import get_connection
 import sqlite3
+import uuid
+from backend import Constantes
+
 class Iva:
-    def __init__(self, iva_id, nombre, porcentaje):
-        self.iva_id = iva_id
+    def __init__(self, iva_id=None, nombre="", porcentaje=""):
+        self.iva_id = iva_id or str(uuid.uuid4())
         self.nombre = nombre
-        self.porcentaje = porcentaje
+        self.porcentaje = porcentaje  # puede ser string o float; tú eliges
 
     def __str__(self):
         return f"{self.nombre} ({self.porcentaje}%)"
 
-    # CREATE (Guardar)
     def guardar(self):
-        """Guarda un nuevo tipo de IVA en la base de datos"""
-        
-        conn = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO Iva (iva_id, nombre, porcentaje) VALUES (?, ?, ?)",
-                (self.iva_id, self.nombre, self.porcentaje)
-            )
-            conn.commit()
-            print(f"IVA {self.nombre} guardado correctamente")
-            return True
-        except Exception as e:
-            print(f"Error al guardar IVA: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
 
-    # READ (Obtener)
-    def obtener_iva_por_id(iva_id):
-        con = get_connection()
-        cur = con.cursor()
-        cur.execute("SELECT * FROM iva WHERE iva_id = ?", (iva_id,))
-        fila = cur.fetchone()
-        con.close()
-        if fila:
-            return Iva(iva_id=fila[0], nombre=fila[1], porcentaje=fila[2])
-        return None
-
-    # UPDATE (Actualizar)
-    def actualizar(self):
-        """Actualiza los datos del IVA en la base de datos"""
-        conn = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE Iva SET nombre = ?, porcentaje = ? WHERE iva_id = ?",
-                (self.nombre, self.porcentaje, self.iva_id)
-            )
-            conn.commit()
-            print(f"IVA {self.iva_id} actualizado correctamente")
-            return True
-        except Exception as e:
-            print(f"Error al actualizar IVA: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
-
-    # DELETE (Eliminar)
-    @classmethod
-    def borrar_por_id(cls, iva_id):
-        """Elimina un tipo de IVA por su ID"""
-        conn = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute(
-                "DELETE FROM Iva WHERE iva_id = ?",
-                (iva_id,)
-            )
-            conn.commit()
-            print(f"IVA {iva_id} eliminado correctamente")
-            return True
-        except Exception as e:
-            print(f"Error al eliminar IVA: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
-
-    # LISTAR TODOS
-    @classmethod
-    def listar_todos(cls):
-        """Obtiene todos los tipos de IVA"""
-        conn = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT iva_id, nombre, porcentaje FROM Iva")
-            filas = cursor.fetchall()
-            return [cls(fila[0], fila[1], fila[2]) for fila in filas]
-        except Exception as e:
-            print(f"Error al listar IVAs: {e}")
-            return []
-        finally:
-            if conn:
-                conn.close()
-
-    # CREAR TABLA
-    @classmethod
-    def crear_tabla(cls):
-        """Crea la tabla Iva si no existe"""
-        conn = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
+        if Iva.existe(self.iva_id):
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Iva (
-                    iva_id TEXT PRIMARY KEY,
-                    nombre TEXT NOT NULL,
-                    porcentaje REAL NOT NULL
-                )
-            ''')
-            conn.commit()
-            print("Tabla Iva creada/verificada correctamente")
-            return True
-        except Exception as e:
-            print(f"Error al crear tabla Iva: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
+                UPDATE IVA
+                SET NOMBRE = ?, PORCENTAJE = ?
+                WHERE IVA_ID = ?
+            ''', (self.nombre, self.porcentaje, self.iva_id))
+        else:
+            cursor.execute('''
+                INSERT INTO IVA (IVA_ID, NOMBRE, PORCENTAJE)
+                VALUES (?, ?, ?)
+            ''', (self.iva_id, self.nombre, self.porcentaje))
+
+        conexion.commit()
+        conexion.close()
+
+    def eliminar(self):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM IVA WHERE IVA_ID = ?", (self.iva_id,))
+        conexion.commit()
+        conexion.close()
+
+    @staticmethod
+    def buscar_por_id(iva_id):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM IVA WHERE IVA_ID = ?", (iva_id,))
+        fila = cursor.fetchone()
+        conexion.close()
+
+        if fila:
+            return Iva(*fila)
+        else:
+            return None
+
+    @staticmethod
+    def obtener_todos():
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM IVA")
+        filas = cursor.fetchall()
+        conexion.close()
+
+        return [Iva(*fila) for fila in filas]
+
+    @staticmethod
+    def existe(iva_id):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT 1 FROM IVA WHERE IVA_ID = ?", (iva_id,))
+        resultado = cursor.fetchone()
+        conexion.close()
+        return resultado is not None
+
+    @classmethod
+    def borrar_por_id(cls, id):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM IVA WHERE IVA_ID = ?", (id,))
+        conexion.commit()
+        conexion.close()
