@@ -10,13 +10,14 @@ def config_empresa_view(page: ft.Page):
     direccion_empresa = ft.TextField(label="Dirección empresa", value=empresa.direccion, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
     telefono_empresa = ft.TextField(label="Teléfono empresa", value=empresa.telefono, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
     moneda = ft.Dropdown(label="Moneda",border=ft.InputBorder.UNDERLINE,border_radius=9,disabled=True,value=empresa.moneda,options=[ft.dropdown.Option("EUR€"), ft.dropdown.Option("DOLR$")])
-    categoria_seleccionada = None
-    def habilitar_edicion(e):
-        nombre_empresa.disabled = False
-        direccion_empresa.disabled = False
-        telefono_empresa.disabled = False
-        moneda.disabled = False
+    
+    def campos_empresa_abrir_cerrar(e, abierto: bool):
+        nombre_empresa.disabled = abierto
+        direccion_empresa.disabled = abierto
+        telefono_empresa.disabled = abierto
+        moneda.disabled = abierto
         page.update()
+        pass
 
     def guardar_empresa(e):
         empresa_actualizada = Config_Empresa(
@@ -27,13 +28,9 @@ def config_empresa_view(page: ft.Page):
             moneda=moneda.value
         )
         empresa_actualizada.guardar()
-        nombre_empresa.disabled = True
-        direccion_empresa.disabled = True
-        telefono_empresa.disabled = True
-        moneda.disabled = True
-        page.update()
+        campos_empresa_abrir_cerrar(e, True)
 
-    btn_editar = ft.ElevatedButton(text="Editar", on_click=habilitar_edicion)
+    btn_editar = ft.ElevatedButton(text="Editar", on_click=lambda e: campos_empresa_abrir_cerrar(e, False))
     btn_guardar = ft.ElevatedButton(text="Guardar", on_click=guardar_empresa)
 
     # ------------------------------------------ Categorías ------------------------------------------
@@ -42,20 +39,14 @@ def config_empresa_view(page: ft.Page):
 
     tabla_categorias = ft.Column()
 
+    def seleccionar_categoria(categoria: Categoria):
+        print("Categoría seleccionada:", categoria.nombre)
+        
 
-    def get_index(e):
-        if e.control.select:
-            e.control.select = False
-        else:
-            e.control.select = True
-
-        page.update()
-
-
-    def actualizar_tabla(filtro=""):
+    def actualizar_tabla(filtro=None):
         lista = Categoria.obtener_todos()
         if filtro:
-            lista = [c for c in lista if filtro.lower() in c.nombre.lower()]
+            lista = [c for c in lista if filtro.upper() in c.nombre]
 
         def eliminar_categoria(e, categoria_id):
             Categoria.borrar_por_id(categoria_id)
@@ -63,24 +54,26 @@ def config_empresa_view(page: ft.Page):
 
         page.update()
 
-        filas = [
-            ft.DataRow(
-
-                cells=[
-                    ft.DataCell(ft.Text(c.nombre)),
-                    ft.DataCell(
-                        ft.IconButton(
-                            icon=ft.Icons.DELETE,
-                            icon_color=ft.Colors.RED,
-                            tooltip="Eliminar categoría",
-                            on_click=lambda e, id=c.categoria_id: eliminar_categoria(e, id)
-                        )
+        #creamos lista para meter datarow
+        filas=[]
+        for c in lista:
+            fila = ft.DataRow([
+                ft.DataCell(ft.Text(c.nombre)), 
+                ft.DataCell(
+                    ft.IconButton(
+                        icon=ft.Icons.DELETE,
+                        icon_color=ft.Colors.RED,
+                        tooltip="Eliminar categoría",
+                        on_click=lambda e, id=c.categoria_id: eliminar_categoria(e, id)
                     )
-                ]
-            ) for c in lista
-        ]
+                )],
+                selected=False,
+                on_select_changed=lambda e: seleccionar_categoria(e.control.data)
+                )
+            filas.append(fila)
 
         data_table = ft.DataTable(
+            data_row_color={ft.ControlState.HOVERED: "#0000FF"},
             columns=[
                 ft.DataColumn(label=ft.Text("Nombre")),
                 ft.DataColumn(label=ft.Text("Acciones")),

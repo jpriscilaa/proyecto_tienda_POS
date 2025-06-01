@@ -5,10 +5,10 @@ from backend import Constantes
 class Config_Empresa:
     def __init__(self, empresa_id=None, nombre="", direccion="", telefono="", moneda=""):
         self.empresa_id = empresa_id or str(uuid.uuid4())
-        self.nombre = nombre
-        self.direccion = direccion
-        self.telefono = telefono
-        self.moneda = moneda
+        self.nombre = nombre.upper()
+        self.direccion = direccion.upper()
+        self.telefono = telefono.upper()
+        self.moneda = moneda.upper()
 
     def guardar(self):  
         conexion = sqlite3.connect(Constantes.RUTA_BD)
