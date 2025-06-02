@@ -1,163 +1,192 @@
-import flet as ft
-from backend.servicios.producto_service import crear_producto, listar_productos, actualizar_producto
-from backend.servicios.categoria_service import listar_categorias
-from backend.servicios.iva_service import listar_ivas
-from backend.servicios.crear_tablas import inicializar_tablas
+import flet as ft  # Esto es lo correcto, no 'import flet as flet'
+from backend.modelo.Producto import Producto
+from backend.modelo.Iva import Iva
+from backend.modelo.Categoria import Categoria
 import uuid
 
-def producto_view(page: ft.Page):
-    # Inicializar tablas si no existen
-    inicializar_tablas()    
-    # Campos
+def producto_view(page: ft.Page):  
+ 
+ '''   # Campos
     n_ref = ft.TextField(label="Referencia")
     nombre = ft.TextField(label="Nombre")
     precio = ft.TextField(label="Precio")
     categoria_dropdown = ft.Dropdown(label="Categoría")
     iva_dropdown = ft.Dropdown(label="IVA")
-    filtro = ft.TextField(label="Buscar producto")
+    prod_id_actual = ft.TextField(label="ID del producto", visible=False)
+    buscador_input = ft.TextField(label="Buscar producto", prefix_icon=ft.Icons.SEARCH)
 
-    producto_seleccionado = {"id": None}
-    categorias = listar_categorias()
-    ivas = listar_ivas()
+    categorias = Categoria.obtener_todos()
+    ivas = Iva.obtener_todos()
 
-    categoria_dropdown.options = [ft.dropdown.Option(c.categoria_id, c.nombre) for c in categorias]
+    categoria_dropdown.options = [ft.dropdown.Option(c.nombre) for c in categorias]
     iva_dropdown.options = [ft.dropdown.Option(i.iva_id, f"{i.nombre} ({i.porcentaje}%)") for i in ivas]
+    tabla_productos = ft.Column()
 
-
-    # Tabla de productos
-    tabla = ft.DataTable(
-        expand=True,
-        columns=[
-            ft.DataColumn(ft.Text("ID")),
-            ft.DataColumn(ft.Text("Referencia")),
-            ft.DataColumn(ft.Text("Nombre")),
-            ft.DataColumn(ft.Text("Precio")),
-            ft.DataColumn(ft.Text("Categoría")),
-            ft.DataColumn(ft.Text("IVA")),
-        ],
-        rows=[]
-    )
-
-    def seleccionar_producto(e, prod):
-        if e.control.selected:
-            producto_seleccionado["id"] = prod[0]
-            n_ref.value, nombre.value, precio.value = prod[1], prod[2], str(prod[3])
-            categoria_dropdown.value = next((c.categoria_id for c in categorias if c.nombre == prod[4]), None)
-            iva_dropdown.value = next((i.iva_id for i in ivas if f"{i.nombre} ({i.porcentaje}%)" == prod[5]), None)
-        else:
-            limpiar_formulario()
+    def limpiar_campos():
+        prod_id_actual.value = ""
+        n_ref.value = ""
+        nombre.value = ""
+        precio.value = ""
+        categoria_dropdown.value = None
+        iva_dropdown.value = None
         page.update()
 
-    def mostrar_productos(lista):
+    def habilitar_campos(e):
+        n_ref.disabled = False
+        nombre.disabled = False
+        precio.disabled = False
+        categoria_dropdown.disabled = False
+        iva_dropdown.disabled = False
+        page.update()
+    
+    btn_editar_prod = ft.IconButton(
+        icon=ft.Icons.EDIT,
+        tooltip="Editar producto",
+        on_click=habilitar_campos
+    )
+
+    def seleccionar_producto(producto: Producto):
+        prod_id_actual.value = str(producto.id)
+        n_ref.value = producto.n_referencia
+        nombre.value = producto.nombre
+        precio.value = str(producto.precio)
+        categoria_dropdown.value = producto.categoria.nombre
+        iva_dropdown.value = producto.iva.iva_id
+        page.update()
+    
+    def actualizar_tabla(filtro=None):
+        lista = Producto.obtener_todos()
+        if filtro:
+            lista = [p for p in lista if filtro.lower() in p.nombre.lower()]
+
+        def eliminar_producto(e, producto_id):
+            Producto.borrar_por_id(producto_id)
+            actualizar_tabla(buscador_input.value)
+            page.update()
+
+        filas = []
+
         for p in lista:
             fila = ft.DataRow(
-                cells=[ft.DataCell(ft.Text(str(col))) for col in p],
-                on_select_changed=lambda e, prod=p: seleccionar_producto(e, prod)
+                cells=[
+                    ft.DataCell(ft.Text(p.n_referencia)),
+                    ft.DataCell(ft.Text(p.nombre)),
+                    ft.DataCell(ft.Text(f"{p.precio} €")),
+                    ft.DataCell(ft.Text(p.categoria.nombre)),
+                    ft.DataCell(ft.Text(f"{p.iva.porcentaje}%")),
+                    ft.DataCell(ft.IconButton(
+                        icon=ft.Icons.DELETE,
+                        tooltip="Eliminar producto",
+                        on_click=lambda e, id=p.id: eliminar_producto(e, id)
+                    ))
+                ],
+                on_select_changed=lambda e, p=p: seleccionar_producto(p)
             )
-            tabla.rows.append(fila)
-        page.update()
+            filas.append(fila)
+        
+        data_table = ft.DataTable(
+            data_row_color={ft.ControlState.HOVERED: ft.Colors.BLUE_50},
+            columns=[
+                ft.DataColumn(ft.Text("Referencia")),
+                ft.DataColumn(ft.Text("Nombre")),
+                ft.DataColumn(ft.Text("Precio")),
+                ft.DataColumn(ft.Text("Categoría")),
+                ft.DataColumn(ft.Text("IVA")),
+                ft.DataColumn(ft.Text("Acciones"))
+            ],
+            rows=filas
+        )
 
-    def buscar(e):
-        texto = filtro.value.lower()
-        productos = listar_productos()
-        if texto:
-            productos = [p for p in productos if texto in p[1].lower()]
-        mostrar_productos(productos)
-
-    def limpiar_formulario():
-        producto_seleccionado["id"] = None
-        n_ref.value, nombre.value, precio.value = "", "", ""
-        categoria_dropdown.value, iva_dropdown.value = None, None
-    
-    def seleccionar_producto(e, prod):
-        if e.control.selected:
-            producto_seleccionado["id"] = prod[0]
-            n_ref.value, nombre.value, precio.value = prod[1], prod[2], str(prod[3])
-            categoria_dropdown.value = next((c.categoria_id for c in categorias if c.nombre == prod[4]), None)
-            iva_dropdown.value = next((i.iva_id for i in ivas if f"{i.nombre} ({i.porcentaje}%)" == prod[5]), None)
-        else:
-            limpiar_formulario()
-        page.update()
-
-    def buscar(e):
-        texto = filtro.value.lower()
-        productos = listar_productos()
-        if texto:
-            productos = [p for p in productos if texto in p[1].lower()]
-        mostrar_productos(productos)
-
-    def recargar():
-        mostrar_productos(listar_productos())
-
-    def mostrar_mensaje(texto):
-        page.snack_bar = ft.SnackBar(ft.Text(texto), open=True)
-        page.update()
-
-    def agregar_producto(e):
-        if not nombre.value or not precio.value or not categoria_dropdown.value or not iva_dropdown.value:
-            return mostrar_mensaje("Todos los campos son obligatorios")
-        try:
-            crear_producto(
-                id=str(uuid.uuid4()),
-                n_referencia=n_ref.value,
-                nombre=nombre.value,
-                precio=float(precio.value),
-                categoria_id=categoria_dropdown.value,
-                iva_id=iva_dropdown.value
-            )
-            limpiar_formulario()
-            recargar()
-            mostrar_mensaje("Producto agregado correctamente")
-        except Exception as ex:
-            mostrar_mensaje(f"Error: {ex}")
-
-    def actualizar(e):
-        if not producto_seleccionado["id"]:
-            return mostrar_mensaje("Selecciona un producto")
-        try:
-            actualizar_producto(
-                id=producto_seleccionado["id"],
-                n_referencia=n_ref.value,
-                nombre=nombre.value,
-                precio=float(precio.value),
-                categoria_id=categoria_dropdown.value,
-                iva_id=iva_dropdown.value
-            )
-            limpiar_formulario()
-            recargar()
-            mostrar_mensaje("Producto actualizado")
-        except Exception as ex:
-            mostrar_mensaje(f"Error: {ex}")
-
-    filtro.on_change = buscar
-    recargar()
-
-    # Estructura visual
-    return ft.View(
-        route="/productos",
-        controls=[
-            ft.Text("Gestión de Productos", size=28),
-            filtro,
-            ft.Row([
-                ft.Column([
-                    n_ref,
-                    nombre,
-                    precio,
-                    categoria_dropdown,
-                    iva_dropdown,
-                    ft.Row([
-                        ft.ElevatedButton("Agregar", on_click=agregar_producto),
-                        ft.ElevatedButton("Actualizar", on_click=actualizar),
-                    ]),
-                ], expand=1),
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text("Lista de Productos", size=20),
-                        tabla
-                    ]),
-                    padding=10,
-                    expand=2
+        tabla_productos.controls.clear()
+        tabla_productos.controls.append(
+            ft.Container(
+                height=400,
+                content=ft.Column(
+                    controls=[data_table],
+                    scroll=ft.ScrollMode.AUTO
                 )
-            ])
-        ]
+            )
+        )
+        page.update()
+
+    def guardar_producto(e):
+        nombre_producto = nombre.value.strip()
+        if not nombre_producto:
+            return
+
+        categoria = next((c for c in categorias if c.nombre == categoria_dropdown.value), None)
+        iva = next((i for i in ivas if i.iva_id == iva_dropdown.value), None)
+
+        if not categoria or not iva:
+            return
+
+        if prod_id_actual.value:
+            # EDITAR producto existente
+            producto_existente = Producto.buscar_por_id(prod_id_actual.value)
+            if producto_existente:
+                producto_existente.n_referencia = n_ref.value.strip()
+                producto_existente.nombre = nombre_producto
+                producto_existente.precio = float(precio.value.strip())
+                producto_existente.categoria = categoria
+                producto_existente.iva = iva
+                producto_existente.guardar()
+        else:
+            # CREAR nuevo producto
+            nuevo_producto = Producto(
+                categoria=categoria,
+                iva=iva,
+                n_referencia=n_ref.value.strip(),
+                nombre=nombre_producto,
+                precio=float(precio.value.strip())
+            )
+            nuevo_producto.guardar()
+
+        limpiar_campos()
+        actualizar_tabla()
+
+    def volver_al_dashboard(e):
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        dashboard = dashboard_view(page)
+        page.add(dashboard)
+        page.update()
+
+    btn_volver_dashboard = ft.ElevatedButton(
+        text="Volver al Dashboard",
+        icon=ft.Icons.ARROW_BACK,
+        on_click=volver_al_dashboard,
+        bgcolor=ft.Colors.BLUE,
+        color=ft.Colors.WHITE
     )
+
+    # Cargar datos iniciales
+    actualizar_tabla()
+
+    # Estructura de la vista
+    formulario = ft.Column([
+        ft.Row([btn_volver_dashboard], alignment=ft.MainAxisAlignment.START),
+        ft.Text("Gestión de Producto", size=20, weight="bold", color=ft.Colors.WHITE),
+        ft.Row([
+            ft.Column([
+                nombre,
+                n_ref,
+                precio,
+                categoria_dropdown,
+                iva_dropdown,
+                ft.Row([
+                    ft.ElevatedButton("Guardar", on_click=guardar_producto),
+                    ft.ElevatedButton("Limpiar", on_click=lambda e: limpiar_campos())
+                ])
+            ], spacing=10, width=300),
+            ft.Column([
+                buscador_input,
+                ft.Row([btn_editar_prod], alignment=ft.MainAxisAlignment.END),
+                tabla_productos
+            ], width=600, scroll=ft.ScrollMode.AUTO)
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+    ])
+
+    # Configurar el evento de búsqueda
+    buscador_input.on_change = lambda e: actualizar_tabla(buscador_input.value)
+
+    return formulario'''
