@@ -5,23 +5,16 @@ from backend import Constantes
 class Categoria:
     def __init__(self, categoria_id=None, nombre=""):
         self.categoria_id = categoria_id or str(uuid.uuid4())
-        self.nombre = nombre
+        self.nombre = nombre.upper()
 
     def guardar(self):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
 
         if Categoria.existe(self.categoria_id):
-            cursor.execute('''
-                UPDATE CATEGORIA
-                SET NOMBRE = ?
-                WHERE CATEGORIA_ID = ?
-            ''', (self.nombre, self.categoria_id))
+            cursor.execute(Constantes.UPDATE_CATEGORIA, (self.nombre, self.categoria_id))
         else:
-            cursor.execute('''
-                INSERT INTO CATEGORIA (CATEGORIA_ID, NOMBRE)
-                VALUES (?, ?)
-            ''', (self.categoria_id, self.nombre))
+            cursor.execute(Constantes.INSERT_CATEGORIA, (self.categoria_id, self.nombre))
 
         conexion.commit()
         conexion.close()

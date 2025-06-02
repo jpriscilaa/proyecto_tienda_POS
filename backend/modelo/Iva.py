@@ -16,16 +16,9 @@ class Iva:
         cursor = conexion.cursor()
 
         if Iva.existe(self.iva_id):
-            cursor.execute('''
-                UPDATE IVA
-                SET NOMBRE = ?, PORCENTAJE = ?
-                WHERE IVA_ID = ?
-            ''', (self.nombre, self.porcentaje, self.iva_id))
+            cursor.execute(Constantes.UPDATE_IVA, (self.nombre, self.porcentaje, self.iva_id))
         else:
-            cursor.execute('''
-                INSERT INTO IVA (IVA_ID, NOMBRE, PORCENTAJE)
-                VALUES (?, ?, ?)
-            ''', (self.iva_id, self.nombre, self.porcentaje))
+            cursor.execute(Constantes.INSERT_IVA, (self.iva_id, self.nombre, self.porcentaje))
 
         conexion.commit()
         conexion.close()
