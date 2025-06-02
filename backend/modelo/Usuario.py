@@ -13,141 +13,76 @@ class Usuario:
     def __str__(self):
         return f"Usuario: {self.nombre_usuario} - Rol: {self.rol}"
 
-    # --- CREAR TABLA ---
-    @staticmethod
-    def crear_tabla():
-        """Crea la tabla de usuarios si no existe"""
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Usuario (
-                    id TEXT PRIMARY KEY,
-                    nombre_usuario TEXT UNIQUE NOT NULL,
-                    contrasena TEXT NOT NULL,
-                    rol TEXT NOT NULL
-                )
-            ''')
-            conn.commit()
-            print("Tabla Usuario creada correctamente")
-        except Exception as e:
-            print(f"Error al crear tabla: {e}")
-        finally:
-            if conn:
-                conn.close()
-
+    
     # --- GUARDAR USUARIO ---
     def guardar(self):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute(
-        "INSERT INTO USUARIO (USUARIO_ID, NOMBRE, CONTRASENA, ROL) VALUES (?, ?, ?, ?)",
-        (self.id, self.nombre_usuario, self.contrasena, self.rol)
-    )
+        if Usuario.existe(self.id):
+            cursor.execute(Constantes.UPDATE_USUARIO, (self.nombre_usuario, self.contrasena, self.rol,self.id))
+        else:
+            cursor.execute(Constantes.INSERT_USUARIO, (self.id, self.nombre_usuario, self.contrasena, self.rol,))
+
         conexion.commit()
         conexion.close()
 
-    # --- OBTENER USUARIO POR ID ---
-    @classmethod
-    def obtener_por_id(cls, id_usuario):
-        """Busca un usuario por su ID"""
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM Usuario WHERE id = ?", (id_usuario,))
-            usuario = cursor.fetchone()
-            if usuario:
-                return cls(*usuario)
-            return None
-        except Exception as e:
-            print(f"Error al buscar usuario: {e}")
-            return None
-        finally:
-            if conn:
-                conn.close()
+    def eliminar(self):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM USUARIO WHERE USUARIO_ID = ?", (self.id,))
+        conexion.commit()
+        conexion.close()
 
-    # --- OBTENER USUARIO POR NOMBRE DE USUARIO ---
-    @classmethod
-    def obtener_por_nombre_usuario(cls, nombre_usuario):
-        """Busca un usuario por su nombre de usuario (para login)"""
-        try:
-            conexion = sqlite3.connect(Constantes.RUTA_BD)
-            cursor = conexion.cursor()
-
-            cursor.execute("SELECT USUARIO_ID, NOMBRE, CONTRASENA, ROL FROM USUARIO WHERE NOMBRE = ?", (nombre_usuario,))
-            fila = cursor.fetchone()
-            if fila:
-                return cls(*fila)  # esto equivale a: Usuario(id, nombre_usuario, contrasena, rol)
-            return None
-        except Exception as e:
-            print(f"Error al buscar usuario por nombre: {e}")
-            return None
-        finally:
-            if conexion:
-                conexion.close()
-
-    # --- ACTUALIZAR USUARIO ---
-    def actualizar(self):
-        """Actualiza los datos del usuario existente"""
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE Usuario 
-                SET nombre_usuario = ?, contrasena = ?, rol = ?
-                WHERE id = ?
-            ''', (self.nombre_usuario, self.contrasena, self.rol, self.id))
-            conn.commit()
-            print(f"Usuario {self.id} actualizado correctamente")
-            return True
-        except Exception as e:
-            print(f"Error al actualizar usuario: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
-
-    # --- ELIMINAR USUARIO ---
+    # --- Buscar por ID ---
     @staticmethod
-    def eliminar(id_usuario):
-        """Elimina un usuario por su ID"""
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM Usuario WHERE id = ?", (id_usuario,))
-            conn.commit()
-            print(f"Usuario {id_usuario} eliminado correctamente")
-            return cursor.rowcount > 0
-        except Exception as e:
-            print(f"Error al eliminar usuario: {e}")
-            return False
-        finally:
-            if conn:
-                conn.close()
+    def buscar_por_id(id_usuario):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT USUARIO_ID, NOMBRE, CONTRASENA, ROL FROM USUARIO WHERE USUARIO_ID = ?", (id_usuario,))
+        fila = cursor.fetchone()
+        conexion.close()
+        if fila:
+            return Usuario(*fila)
+        return None
 
-    # --- LISTAR TODOS LOS USUARIOS ---
-    @classmethod
-    def listar_todos(cls):
-        """Obtiene todos los usuarios registrados"""
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM Usuario")
-            usuarios = [cls(*fila) for fila in cursor.fetchall()]
-            return usuarios
-        except Exception as e:
-            print(f"Error al listar usuarios: {e}")
-            return []
-        finally:
-            if conn:
-                conn.close()
+    # --- Obtener todos ---
+    @staticmethod
+    def obtener_todos():
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM USUARIO")
+        filas = cursor.fetchall()
+        conexion.close()
+        return [Usuario(*fila) for fila in filas]
 
-
+    # --- Verificar existencia por ID ---
     @staticmethod
     def existe(id_usuario):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute("SELECT 1 FROM USUARIO WHERE USUARIO_ID  = ?", (id_usuario,))
+        cursor.execute("SELECT 1 FROM USUARIO WHERE USUARIO_ID = ?", (id_usuario,))
         resultado = cursor.fetchone()
         conexion.close()
         return resultado is not None
+
+    # --- Borrar por ID (class method con constante SQL) ---
+    @classmethod
+    def borrar_por_id(cls, id_usuario):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute(Constantes.DELETE_USUARIO, (id_usuario,))
+        conexion.commit()
+        conexion.close()
+    
+    @classmethod
+    def obtener_por_nombre_usuario(cls, nombre_usuario):
+    
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT USUARIO_ID, NOMBRE, CONTRASENA, ROL FROM USUARIO WHERE NOMBRE = ?", (nombre_usuario,))
+        fila = cursor.fetchone()
+        if fila:
+            return cls(*fila)  
+        return None
+ 
+            

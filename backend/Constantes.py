@@ -161,6 +161,8 @@ UPDATE_USUARIO = '''UPDATE USUARIO
                     SET NOMBRE = ?, CONTRASENA = ?, ROL = ?
                     WHERE USUARIO_ID = ?'''
 
+DELETE_USUARIO = '''DELETE FROM USUARIO WHERE USUARIO_ID = ?'''
+
 
 
 
