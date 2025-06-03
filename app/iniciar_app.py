@@ -8,6 +8,7 @@ from app.login_view import login_view
 def iniciar_app(page: ft.Page):
     nombre_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9)
     nombre_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre usuario", border_radius=9)
+    
     contrasenna_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Contraseña usuario", border_radius=9, password=True, can_reveal_password=True)
     rol_usuario=ft.TextField(value="Administrador",border=ft.InputBorder.UNDERLINE, label="Rol del Usuario", border_radius=9,read_only=True)
     pais_combo=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="País", options=[

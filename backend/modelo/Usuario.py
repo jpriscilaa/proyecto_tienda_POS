@@ -4,9 +4,12 @@ from backend import Constantes
 from backend.bddTienda import get_connection
 
 class Usuario:
-    def __init__(self, id_usuario = None, nombre_usuario="", contrasena="", rol=""):
+    def __init__(self, id_usuario = None, nombre_usuario="",trabajador = "", apellido = "", ntelefono = "", contrasena="", rol=""):
         self.id = id_usuario or str(uuid.uuid4())  
         self.nombre_usuario = nombre_usuario
+        self.trabajador = trabajador
+        self.apellido = apellido
+        self.ntelefono = ntelefono
         self.contrasena = contrasena
         self.rol = rol
 
@@ -19,9 +22,9 @@ class Usuario:
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
         if Usuario.existe(self.id):
-            cursor.execute(Constantes.UPDATE_USUARIO, (self.nombre_usuario, self.contrasena, self.rol,self.id))
+            cursor.execute(Constantes.UPDATE_USUARIO, (self.nombre_usuario, self.trabajador,self.apellido,self.ntelefono,self.contrasena, self.rol,self.id))
         else:
-            cursor.execute(Constantes.INSERT_USUARIO, (self.id, self.nombre_usuario, self.contrasena, self.rol,))
+            cursor.execute(Constantes.INSERT_USUARIO, (self.id,self.nombre_usuario, self.trabajador,self.apellido,self.ntelefono,self.contrasena, self.rol))
 
         conexion.commit()
         conexion.close()
@@ -38,7 +41,7 @@ class Usuario:
     def buscar_por_id(id_usuario):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute("SELECT USUARIO_ID, NOMBRE, CONTRASENA, ROL FROM USUARIO WHERE USUARIO_ID = ?", (id_usuario,))
+        cursor.execute("SELECT USUARIO_ID, NOMBRE, TRABAJADOR_NOMBRE, APELLIDO,NTELEFONO, CONTRASENA, ROL WHERE USUARIO_ID = ?", (id_usuario,))
         fila = cursor.fetchone()
         conexion.close()
         if fila:
@@ -79,7 +82,7 @@ class Usuario:
     
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute("SELECT USUARIO_ID, NOMBRE, CONTRASENA, ROL FROM USUARIO WHERE NOMBRE = ?", (nombre_usuario,))
+        cursor.execute("SELECT * FROM USUARIO WHERE NOMBRE = ?", (nombre_usuario,))
         fila = cursor.fetchone()
         if fila:
             return cls(*fila)  

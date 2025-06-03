@@ -1,19 +1,33 @@
 import flet as ft
 from backend.modelo.Usuario import Usuario
+from app import ventana_alerta
+
 
 def usuario_view(page: ft.Page):
+    validacion_existe="Ya existe un usuario"
+    validacion_minCar="Minimo 5 digitos"
+    validacion_campos="todos los campos deben de estar rellenados"
+    def mostrar_dialogo():
+        page.open(ventana_alerta.alerta_validacion_usuario_existe())
+        pass
+			
+
     buscador_input = ft.TextField(label="Buscar usuario", prefix_icon=ft.Icons.SEARCH)
     nombre_usuario = ft.TextField(label="Nombre de usuario", autofocus=True, width=300)
+    nombre_trabajador = ft.TextField(label="Nombre del trabajador")
+    apellido = ft.TextField(label = "Apellido del vendedor")
+    ntelefono = ft.TextField(label="Numero de telefono")
     contrasena_usuario = ft.TextField(label="Contraseña", password=True, width=300)
     rol_usuario = ft.Dropdown(
         label="Rol de usuario",
         options=[
-            ft.dropdown.Option("Administrador"),
-            ft.dropdown.Option("Vendedor")
+            ft.dropdown.Option("ADMINISTRADOR"),
+            ft.dropdown.Option("VENDEDOR")
         ],
         width=300
     )
     tabla_usuarios = ft.Column()
+    
 
     def actualizar_tabla(filtro=None):
         lista = Usuario.obtener_todos()
@@ -66,17 +80,23 @@ def usuario_view(page: ft.Page):
             )
         )
         page.update()
+    
+
 
     def guardar_usuario(e):
         if Usuario.obtener_por_nombre_usuario(nombre_usuario.value):
+            mostrar_dialogo()
             print("Ya existe un usuario con ese nombre")
         elif len(contrasena_usuario.value)<5:
             print("minimo 5 digitos")
-        elif not nombre_usuario.value or not contrasena_usuario.value or not rol_usuario.value:
+        elif not nombre_usuario.value or not nombre_trabajador.value or not apellido.value or not ntelefono.value or not contrasena_usuario.value or not rol_usuario.value:
             print("todos los campos son obligatorios")
         else:
             nuevo_usuario = Usuario(
                 nombre_usuario=nombre_usuario.value,
+                trabajador=nombre_trabajador.value,
+                apellido=apellido.value,
+                ntelefono = ntelefono.value,
                 contrasena=contrasena_usuario.value,
                 rol=rol_usuario.value
             )
@@ -86,6 +106,9 @@ def usuario_view(page: ft.Page):
         # Limpiar campos
         nombre_usuario.value = ""
         contrasena_usuario.value = ""
+        nombre_trabajador.value =""
+        apellido.value=""
+        ntelefono.value=""
         rol_usuario.value = None
         page.update()
         actualizar_tabla()
@@ -100,8 +123,12 @@ def usuario_view(page: ft.Page):
                 ft.Row(
                     controls=[
                         nombre_usuario,
+                        nombre_trabajador,
+                        apellido,
+                        ntelefono,
                         contrasena_usuario,
                         rol_usuario,
+                        
                         ft.ElevatedButton("Guardar", on_click=guardar_usuario),
                     ],
                     spacing=10,
