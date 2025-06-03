@@ -263,7 +263,6 @@ def config_empresa_view(page: ft.Page):
 
     formulario = ft.Column([
         ft.Row([btn_volver_dashboard], alignment=ft.MainAxisAlignment.START),
-
         nombre_empresa,
         direccion_empresa,
         telefono_empresa,
