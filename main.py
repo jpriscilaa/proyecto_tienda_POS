@@ -4,7 +4,8 @@ from app.iniciar_app import iniciar_app
 from app.login_view import login_view
 
 
-def main(page: ft.Page):   
+def main(page: ft.Page):
+    page.window.center=True
     page.clean()
 
     # page.add(iniciar_app(page))

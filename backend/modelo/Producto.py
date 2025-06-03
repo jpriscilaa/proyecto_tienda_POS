@@ -6,25 +6,19 @@ from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
 
 class Producto:
-    def __init__(self, id=None, n_referencia="", nombre="", precio="", categoria=None, iva=None):
+    def __init__(self, precio, nombre, n_referencia, categoria: Categoria, iva: Iva, id=None):
         self.id = id or str(uuid.uuid4())
         self.n_referencia = n_referencia
         self.nombre = nombre.upper()
-        try:
-            self.precio = float(precio) if precio else 0.0
-        except ValueError:
-            self.precio = 0.0
+        self.precio = float(precio) if precio else 0.0
         self.categoria = categoria
         self.iva = iva
-
-    def __str__(self):
-        return f"{self.nombre} - {self.precio}€ ({self.categoria}) - IVA: {self.iva}"
 
     def guardar(self):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
 
-        if Producto .existe(self.id):
+        if Producto.existe(self.id):
             cursor.execute(Constantes.UPDATE_PRODUCTO, (self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id, self.id))
         else:
             cursor.execute(Constantes.INSERT_PRODUCTO, (self.id, self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id))
@@ -43,24 +37,32 @@ class Producto:
     def buscar_por_id(producto_id):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute("SELECT * FROM PRODUCTO WHERE PRODUCTO_ID = ?", (producto_id,))
+        cursor.execute("SELECT PRODUCTO_ID, N_REFERENCIA, NOMBRE, PRECIO, CATEGORIA_ID, IVA_ID FROM PRODUCTO WHERE PRODUCTO_ID = ?", (producto_id,))
         fila = cursor.fetchone()
         conexion.close()
 
         if fila:
-            return Producto(*fila)
+            prod_id = fila[0]
+            n_ref = fila[1]
+            nombre = fila[2]
+            precio = fila[3]
+            categoria_id = fila[4]
+            iva_id = fila[5]
+
+            #Buscar las instancias de Categoria e Iva
+            categoria = Categoria.buscar_por_id(categoria_id)
+            iva = Iva.buscar_por_id(iva_id)
+
+            return Producto(
+                precio=precio,
+                nombre=nombre,
+                n_referencia=n_ref,
+                categoria=categoria,
+                iva=iva,
+                id=prod_id
+            )
         else:
             return None
-
-    @staticmethod
-    def obtener_todos():
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("SELECT * FROM PRODUCTO")
-        filas = cursor.fetchall()
-        conexion.close()
-
-        return [Producto(*fila) for fila in filas]
 
     @staticmethod
     def existe(producto_id):
@@ -78,3 +80,37 @@ class Producto:
         cursor.execute('''DELETE FROM PRODUCTO WHERE PRODUCTO_ID = ?''', (id,))
         conexion.commit()
         conexion.close()
+
+    @staticmethod
+    def obtener_todos():
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM PRODUCTO")
+        filas = cursor.fetchall()
+        conexion.close()
+
+        productos = []
+        for fila in filas:
+            prod_id = fila[0]
+            n_ref = fila[1]
+            nombre = fila[2]
+            precio = fila[3]
+            categoria_id = fila[4]
+            iva_id = fila[5]
+
+            # Obtener instancias completas de Categoria e Iva (suponiendo que tenés estos métodos)
+            categoria = Categoria.buscar_por_id(categoria_id)
+            iva = Iva.buscar_por_id(iva_id)
+
+            producto = Producto(
+                precio=precio,
+                nombre=nombre,
+                n_referencia=n_ref,
+                categoria=categoria,
+                iva=iva,
+                id=prod_id
+            )
+
+            productos.append(producto)
+
+        return productos

@@ -4,8 +4,11 @@ from backend.modelo.Iva import Iva
 from backend.modelo.Categoria import Categoria
 from backend import Constantes
 
-def producto_view(page: ft.Page):  
- 
+def producto_view(page: ft.Page):
+    page.clean()
+    page.window.width=1000
+    page.window.center=True
+    #inicializamos un colum para que sea accesible al resto de componentes y metodos
     tabla_productos = ft.Column()
 
     def limpiar_campos():
@@ -17,12 +20,12 @@ def producto_view(page: ft.Page):
         iva_dropdown.value = None
         page.update()
 
-    def habilitar_campos(e):
-        n_ref.disabled = False
-        nombre.disabled = False
-        precio.disabled = False
-        categoria_dropdown.disabled = False
-        iva_dropdown.disabled = False
+    def deshabilitar_campos(e, habilitar: bool):
+        n_ref.disabled = habilitar
+        nombre.disabled = habilitar
+        precio.disabled = habilitar
+        categoria_dropdown.disabled = habilitar
+        iva_dropdown.disabled = habilitar
         page.update()
     
     def seleccionar_producto(producto: Producto):
@@ -34,10 +37,21 @@ def producto_view(page: ft.Page):
         iva_dropdown.value = producto.iva.iva_id
         page.update()
     
-    btn_editar_prod = ft.IconButton(
-        icon=ft.Icons.EDIT,
-        tooltip="Editar producto"
-    )
+    def volver_al_dashboard(e):
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        dashboard = dashboard_view(page)
+        page.add(dashboard)
+        page.update()
+    
+    def validar_nombre(e):
+        if not nombre.value.strip():
+            nombre.border_color = ft.Colors.RED
+            nombre.error_text = "Este campo es obligatorio"
+        else:
+            nombre.border_color = ft.Colors.GREY
+            nombre.error_text = None
+        nombre.update()
 
     def actualizar_tabla(filtro=None):
         lista = Producto.obtener_todos()
@@ -49,8 +63,17 @@ def producto_view(page: ft.Page):
             actualizar_tabla(buscador_input.value)
             page.update()
 
+        #Creamos la cabecera de la tabla
+        cabecera=[
+                ft.DataColumn(ft.Text("Referencia")),
+                ft.DataColumn(ft.Text("Nombre")),
+                ft.DataColumn(ft.Text("Precio")),
+                ft.DataColumn(ft.Text("Categoría")),
+                ft.DataColumn(ft.Text("IVA")),
+                ft.DataColumn(ft.Text("Acciones"))
+        ]
+        #creamos las filas de la tabla
         filas = []
-
         for p in lista:
             fila = ft.DataRow(
                 cells=[
@@ -68,21 +91,14 @@ def producto_view(page: ft.Page):
                 on_select_changed=lambda e, p=p: seleccionar_producto(p)
             )
             filas.append(fila)
-        
+
+        #Creamos DataTable
         data_table = ft.DataTable(
-            data_row_color={ft.ControlState.HOVERED: ft.Colors.BLUE_50},
-            columns=[
-                ft.DataColumn(ft.Text("Referencia")),
-                ft.DataColumn(ft.Text("Nombre")),
-                ft.DataColumn(ft.Text("Precio")),
-                ft.DataColumn(ft.Text("Categoría")),
-                ft.DataColumn(ft.Text("IVA")),
-                ft.DataColumn(ft.Text("Acciones"))
-            ],
+            data_row_color={ft.ControlState.HOVERED: Constantes.COLOR_BORDE_CLARO},
+            columns=cabecera,
             rows=filas
         )
 
-        tabla_productos.controls.clear()
         tabla_productos.controls.append(
             ft.Container(
                 height=400,
@@ -94,20 +110,12 @@ def producto_view(page: ft.Page):
         )
         page.update()
 
-    def volver_al_dashboard(e):
-        from app.dashboard_view import dashboard_view
-        page.clean()
-        dashboard = dashboard_view(page)
-        page.add(dashboard)
-        page.update()
-
-
     #Cargar datos iniciales
     actualizar_tabla()
 
     #Campos
     n_ref = ft.TextField(label="Referencia")
-    nombre = ft.TextField(label="Nombre")
+    nombre = ft.TextField(label="Nombre", on_blur=validar_nombre)
     precio = ft.TextField(label="Precio")
     prod_id_actual = ft.TextField(label="ID del producto", visible=False)
     buscador_input = ft.TextField(label="Buscar producto", prefix_icon=ft.Icons.SEARCH)
@@ -115,8 +123,20 @@ def producto_view(page: ft.Page):
         text="Volver al Dashboard",
         icon=ft.Icons.ARROW_BACK,
         on_click=volver_al_dashboard,
-        bgcolor=ft.Colors.BLUE,
-        color=ft.Colors.WHITE
+        bgcolor=Constantes.COLOR_FONDO_PRINCIPAL,
+        color=Constantes.COLOR_BOTON_PRIMARIO
+    )
+    btn_editar_prod = ft.IconButton(
+        icon=ft.Icons.EDIT,
+        tooltip="Editar producto",
+        width=80,
+        height=80
+    )
+    btn_guardar_prod = ft.IconButton(
+        icon=ft.Icons.ADD,
+        tooltip="Editar producto",
+        width=80,
+        height=80
     )
 
     #Relleno lista de categoria con cada categoria que hay en bd
@@ -128,7 +148,7 @@ def producto_view(page: ft.Page):
             key=c.categoria_id
         )
         categoria_option.append(option)
-    categoria_dropdown = ft.Dropdown(label="Categoría", options=categoria_option)
+    categoria_dropdown = ft.Dropdown(label="Categoría", options=categoria_option, width=300)
 
     #Relleno lista de iva con cada categoria que hay en bd
     ivas = Iva.obtener_todos()
@@ -139,43 +159,23 @@ def producto_view(page: ft.Page):
             key=i.iva_id
         )
         iva_option.append(option)
-    iva_dropdown = ft.Dropdown(label="IVA", options=iva_option)
+    iva_dropdown = ft.Dropdown(label="IVA", options=iva_option, width=300)
 
     #Estructura de la vista
-    formulario = ft.Column([
-        ft.Row([btn_volver_dashboard, ft.Text("Gestión de Producto", size=20, weight="bold", color=ft.Colors.WHITE)], alignment=ft.MainAxisAlignment.START),
-        ft.Row([ft.Column([
-                nombre,
-                n_ref,
-                precio,
-                categoria_dropdown,
-                iva_dropdown,
-                ft.Row([
-                    ft.ElevatedButton("Guardar"),
-                    ft.ElevatedButton("Limpiar", on_click=lambda e: limpiar_campos())
-                ])
-            ], spacing=10, width=300),
-            ft.Column([
-                buscador_input,
-                ft.Row([btn_editar_prod], alignment=ft.MainAxisAlignment.END),
-                tabla_productos
-            ], width=600, scroll=ft.ScrollMode.AUTO)
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-    ])
-
-    columna_izquierda=ft.Container(alignment=ft.alignment.top_center,
-        bgcolor=ft.Colors.YELLOW, 
+    columna_izquierda=ft.Container(alignment=ft.alignment.top_center, 
         content= ft.Column(
         controls=[
         n_ref,
         nombre,
         precio,
-        prod_id_actual
+        prod_id_actual,
+        categoria_dropdown,
+        iva_dropdown,
+        ft.Row(controls=[btn_editar_prod, btn_guardar_prod])
     ])
     )
 
     columna_derecha=ft.Container(alignment=ft.alignment.top_center,
-        bgcolor=ft.Colors.RED, 
         content=ft.Column(
         controls=[
         buscador_input,
