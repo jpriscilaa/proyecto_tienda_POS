@@ -5,7 +5,7 @@ RUTA_CARPETA_CONF = "conf"
 NOMBRE_APP = "P.O.S TIENDA BY PRIS"
 
 #----------------------------------------
-#Paleta de colores estilo macOS (modo claro)
+#Paleta de colores (modo claro)
 #----------------------------------------
 # COLOR_FONDO_PRINCIPAL = "#F2F2F7"       # Fondo general de la app
 # COLOR_TARJETA_FONDO = "#FFFFFF"         # Fondo para tarjetas, contenedores
@@ -17,7 +17,7 @@ NOMBRE_APP = "P.O.S TIENDA BY PRIS"
 # COLOR_BORDE_CLARO = "#D1D1D6"           # Borde o líneas divisorias sutiles
 
 #----------------------------------------
-#Paleta de colores estilo macOS (modo oscuro)
+#Paleta de colores (modo oscuro)
 #----------------------------------------
 COLOR_FONDO_PRINCIPAL = "#1C1C1E"       # Fondo principal (negro suave)
 COLOR_TARJETA_FONDO = "#2C2C2E"         # Tarjetas, modales
@@ -26,6 +26,7 @@ COLOR_TEXTO_SECUNDARIO = "#A1A1A6"      # Texto secundario, etiquetas
 COLOR_BOTON_PRIMARIO = "#0A84FF"        # Azul macOS (botones principales)
 COLOR_BOTON_EXITO = "#30D158"           # Verde confirmación
 COLOR_BOTON_ERROR = "#FF453A"           # Rojo error
+COLOR_BOTON_INFO = "#D26500"            # Naranja info
 COLOR_BORDE_CLARO = "#3A3A3C"           # Bordes, líneas sutiles
 
 #Tabla CATEGORIA

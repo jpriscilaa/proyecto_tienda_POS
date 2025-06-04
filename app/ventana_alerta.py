@@ -1,4 +1,5 @@
 import flet as ft
+from backend import Constantes
 
 def alerta_login():
     dialogo = ft.AlertDialog(
@@ -17,3 +18,15 @@ def alerta_error(titulo, texto):
         title_padding=ft.padding.all(25)
     )
     return dialogo
+
+def barra_error_mensaje(texto):
+    barra=ft.SnackBar(ft.Text(texto), bgcolor=Constantes.COLOR_BOTON_ERROR)
+    return barra
+
+def barra_ok_mensaje(texto):
+    barra=ft.SnackBar(ft.Text(texto), bgcolor=Constantes.COLOR_BOTON_EXITO)
+    return barra
+
+def barra_info_mensaje(texto):
+    barra=ft.SnackBar(ft.Text(texto), bgcolor=Constantes.COLOR_BOTON_INFO)
+    return barra

@@ -1,21 +1,21 @@
-import flet as ft  # Esto es lo correcto, no 'import flet as flet'
+import flet as ft
 from backend.modelo.Producto import Producto
 from backend.modelo.Iva import Iva
 from backend.modelo.Categoria import Categoria
 from backend import Constantes
 from backend.servicios import producto_service
+from app import ventana_alerta
 
 def producto_view(page: ft.Page):
     
-    producto_seleccionado: Producto = None
     page.clean()
-    page.window.width=1000
+    page.window.width=1080
     page.window.center=True
     #inicializamos un colum para que sea accesible al resto de componentes y metodos
     tabla_productos=ft.Column()
 
     #Metodos
-    def nuevo_producto(e):
+    def agregar_producto(e):
         if n_ref.disabled==True:
             deshabilitar_campos(habilitar=False)
         else:
@@ -25,43 +25,41 @@ def producto_view(page: ft.Page):
                     nombre.value,
                     n_ref.value,
                     Categoria.buscar_por_id(categoria_dropdown.value),
-                    Iva.buscar_por_id(iva_dropdown.value)
+                    Iva.buscar_por_id(iva_dropdown.value),
+                    prod_id_actual.value
                 )
-                salida=producto_nuevo.guardar()
-                if salida:
-                    print("Se ha insertado corrextamente")
+
+                #he modificado guardar para que me devuelva un boolean y asi saber si ha funcionado o ha fallado
+                if producto_nuevo.guardar():
+                    print("Se ha insertado correctamente")
+                    page.open(ventana_alerta.barra_ok_mensaje("PRODUCTO GUARDADO"))
+                    page.update()
                 else:
-                    print("Ha fallado a la hora se guardar el prodoucto")
+                    print("Ha fallado a la hora de guardar el producto")
+                    page.open(ventana_alerta.barra_error_mensaje("ERROR AL GUARDAR, REVISE QUE NO EXISTA YA EL CODIGO DE BARRAS"))
+                    page.update()
 
                 actualizar_tabla()
                 limpiar_campos()
                 e.control.disabled = True
                 
             else:
+                page.open(ventana_alerta.barra_error_mensaje("RELLENE LOS DATOS CORRECTAMENTE"))
                 print("Faltan datos necesarios para crear producto")
             pass
-        
-    def borrar_producto(e):
-        if  producto_seleccionado:
-            producto_seleccionado.eliminar()
-            limpiar_campos()
-            deshabilitar_campos(habilitar=True)
-        else:
-            print("No hay ningún producto seleccionado que borrar")
 
     def limpiar_campos(e=None, btn=None):
-        prod_id_actual.value=""
-        n_ref.value=""
-        nombre.value=""
-        precio.value=""
+        prod_id_actual.value=None
+        n_ref.value=None
+        nombre.value=None
+        precio.value=None
         categoria_dropdown.value=None
         iva_dropdown.value=None
-        producto_seleccionado=None
-        n_ref.focus()
-        page.update()
         if btn==True:
             deshabilitar_campos(habilitar=True)
-            pass
+        else:
+            n_ref.focus()
+        page.update()
 
     def deshabilitar_campos(habilitar: bool):
         n_ref.disabled=habilitar
@@ -69,7 +67,7 @@ def producto_view(page: ft.Page):
         precio.disabled=habilitar
         categoria_dropdown.disabled=habilitar
         iva_dropdown.disabled=habilitar
-        btn_editar_prod.disabled=habilitar
+        btn_limpiar_prod.disabled=habilitar
         btn_limpiar_prod.disabled=habilitar
         page.update()
     
@@ -79,7 +77,7 @@ def producto_view(page: ft.Page):
         n_ref.value=producto.n_referencia
         nombre.value=producto.nombre
         precio.value=str(producto.precio)
-        categoria_dropdown.value=producto.categoria.nombre
+        categoria_dropdown.value=producto.categoria.categoria_id
         iva_dropdown.value=producto.iva.iva_id
         page.update()
     
@@ -106,6 +104,7 @@ def producto_view(page: ft.Page):
 
         def eliminar_producto(e, producto_id):
             Producto.borrar_por_id(producto_id)
+            page.open(ventana_alerta.barra_info_mensaje("Se ha eliminado producto"))
             actualizar_tabla(buscador_input.value)
             page.update()
         filas = []
@@ -143,7 +142,7 @@ def producto_view(page: ft.Page):
             ],
             rows=filas
         )
-
+        #borro controls y agrego la tabla
         tabla_productos.controls.clear()
         tabla_productos.controls.append(
             ft.Container(height=400,
@@ -155,10 +154,10 @@ def producto_view(page: ft.Page):
         page.update()
 
     #Campos
-    n_ref=ft.TextField(label="Referencia", disabled=True)
-    nombre=ft.TextField(label="Nombre", disabled=True)
-    precio=ft.TextField(label="Precio", disabled=True)
-    prod_id_actual=ft.TextField(label="ID del producto", visible=False, disabled=True)
+    n_ref=ft.TextField(label="Referencia")
+    nombre=ft.TextField(label="Nombre")
+    precio=ft.TextField(label="Precio")
+    prod_id_actual=ft.TextField(label="ID del producto", visible=False, value=None)
     buscador_input=ft.TextField(label="Buscar producto", prefix_icon=ft.Icons.SEARCH)
     btn_volver_dashboard=ft.ElevatedButton(
         text="Volver al Dashboard",
@@ -175,14 +174,14 @@ def producto_view(page: ft.Page):
     )
     btn_guardar_prod=ft.IconButton(
         icon=ft.Icons.SAVE,
-        tooltip="Nuevo producto",
+        tooltip="Guardar producto",
         width=80,
         height=80,
-        on_click=nuevo_producto
+        on_click=agregar_producto
     )
     btn_limpiar_prod=ft.IconButton(
         icon=ft.Icons.AUTO_DELETE,
-        tooltip="Nuevo producto",
+        tooltip="Limpiar campos",
         width=80,
         height=80,
         on_click=lambda e: limpiar_campos(e, True)

@@ -34,8 +34,8 @@ class Producto:
             elif "FOREIGN KEY constraint failed" in str(error):
                 print("Error con la CATEGORIA o el IVA seleccionado no existen.")
                 return False
-        except:
-            print("Ha dado algún error en el insert del producto")
+        except Exception as e:
+            print("Ha dado algún error en el insert del producto" + str(e))
             return False
 
     def eliminar(self):
