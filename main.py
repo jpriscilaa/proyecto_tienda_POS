@@ -2,10 +2,13 @@ import flet as ft
 from backend.servicios import config_app
 from app.iniciar_app import iniciar_app
 from app.login_view import login_view
+from backend import Constantes
 
 
 def main(page: ft.Page):
     page.window.center=True
+    page.window_icon = "POS.ico"
+    page.title=Constantes.NOMBRE_APP
     page.clean()
 
     # page.add(iniciar_app(page))
@@ -31,4 +34,4 @@ def existeEmpresa():
     return True
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.app(target=main, assets_dir="assets")
