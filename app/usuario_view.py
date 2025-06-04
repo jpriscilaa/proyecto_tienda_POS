@@ -4,14 +4,10 @@ from app import ventana_alerta
 
 
 def usuario_view(page: ft.Page):
-    validacion_existe="Ya existe un usuario"
-    validacion_minCar="Minimo 5 digitos"
-    validacion_campos="todos los campos deben de estar rellenados"
     def mostrar_dialogo():
-        page.open(ventana_alerta.alerta_validacion_usuario_existe())
+        page.open(ventana_alerta.alerta_error("Error", "Ya existe este usuario"))
         pass
 			
-
     buscador_input = ft.TextField(label="Buscar usuario", prefix_icon=ft.Icons.SEARCH)
     nombre_usuario = ft.TextField(label="Nombre de usuario", autofocus=True, width=300)
     nombre_trabajador = ft.TextField(label="Nombre del trabajador")
@@ -87,10 +83,12 @@ def usuario_view(page: ft.Page):
         if Usuario.obtener_por_nombre_usuario(nombre_usuario.value):
             mostrar_dialogo()
             print("Ya existe un usuario con ese nombre")
-        elif len(contrasena_usuario.value)<5:
-            print("minimo 5 digitos")
         elif not nombre_usuario.value or not nombre_trabajador.value or not apellido.value or not ntelefono.value or not contrasena_usuario.value or not rol_usuario.value:
             print("todos los campos son obligatorios")
+            page.open(ventana_alerta.alerta_error("USUARIO", "Debe de rellenar todos los campos"))
+        elif len(contrasena_usuario.value)<=5:
+            print("Tiene que tener mas de 5 digitos")
+            page.open(ventana_alerta.alerta_error("USUARIO", "Tiene que tener mas de 5 digitos"))
         else:
             nuevo_usuario = Usuario(
                 nombre_usuario=nombre_usuario.value,
