@@ -83,19 +83,19 @@ def config_empresa_view(page: ft.Page):
         #creamos lista para meter datarow
         filas=[]
         for c in lista:
-            fila = ft.DataRow([
-                ft.DataCell(ft.Text(c.nombre)), 
-                ft.DataCell(
-                    ft.IconButton(
-                        icon=ft.Icons.DELETE,
-                        icon_color=ft.Colors.RED,
-                        tooltip="Eliminar categoría",
-                        on_click=lambda e, categoria_id=c.categoria_id: eliminar_categoria(e, categoria_id)
-
+            fila = ft.DataRow(
+                cell=[
+                    ft.DataCell(ft.Text(c.nombre)), 
+                    ft.DataCell(ft.IconButton(
+                            icon=ft.Icons.DELETE,
+                            icon_color=ft.Colors.RED,
+                            tooltip="Eliminar categoría",
+                            on_click=lambda e, categoria_id=c.categoria_id: eliminar_categoria(e, categoria_id)
+                        )
                     )
-                )],
+                ],
                 selected=False,
-                data=c,  # Guardamos la categoría en el DataRo  w
+                data=c,  # Guardamos la categoría en el DataRow
                 on_select_changed=lambda e: seleccionar_categoria(e.control.data)
                 )
             filas.append(fila)

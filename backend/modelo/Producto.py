@@ -10,21 +10,33 @@ class Producto:
         self.id = id or str(uuid.uuid4())
         self.n_referencia = n_referencia
         self.nombre = nombre.upper()
-        self.precio = float(precio) if precio else 0.0
+        self.precio = float(str(precio).replace(",", ".")) if precio else 0.0
         self.categoria = categoria
         self.iva = iva
 
     def guardar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        try:
+            conexion = sqlite3.connect(Constantes.RUTA_BD)
+            cursor = conexion.cursor()
 
-        if Producto.existe(self.id):
-            cursor.execute(Constantes.UPDATE_PRODUCTO, (self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id, self.id))
-        else:
-            cursor.execute(Constantes.INSERT_PRODUCTO, (self.id, self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id))
+            if Producto.existe(self.id):
+                cursor.execute(Constantes.UPDATE_PRODUCTO, (self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id, self.id))
+            else:
+                cursor.execute(Constantes.INSERT_PRODUCTO, (self.id, self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id))
 
-        conexion.commit()
-        conexion.close()
+            conexion.commit()
+            conexion.close()
+            return True
+        except sqlite3.IntegrityError as error:
+            if "UNIQUE constraint failed: PRODUCTO.N_REFERENCIA" in str(error):
+                print("Ya existe un producto con esa referencia o codigo de barras.")
+                return False 
+            elif "FOREIGN KEY constraint failed" in str(error):
+                print("Error con la CATEGORIA o el IVA seleccionado no existen.")
+                return False
+        except:
+            print("Ha dado algún error en el insert del producto")
+            return False
 
     def eliminar(self):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
