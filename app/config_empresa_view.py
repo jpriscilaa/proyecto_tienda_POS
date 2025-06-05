@@ -84,7 +84,7 @@ def config_empresa_view(page: ft.Page):
         filas=[]
         for c in lista:
             fila = ft.DataRow(
-                cell=[
+                cells=[
                     ft.DataCell(ft.Text(c.nombre)), 
                     ft.DataCell(ft.IconButton(
                             icon=ft.Icons.DELETE,
