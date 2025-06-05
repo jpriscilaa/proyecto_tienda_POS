@@ -1,119 +1,209 @@
 import flet as ft
+from backend import Constantes
 from backend.servicios.cliente_service import listar_clientes, guardar_cliente, obtener_cliente_por_documento
 from backend.modelo.Cliente import Cliente
 import uuid
 
 def clientes_view(page: ft.Page):
-    Cliente.crear_tabla() 
 
-    # --- CONTROLES DE FORMULARIO ---
-    id_cliente = str(uuid.uuid4())
-    nombre_input = ft.TextField(label="Nombre", expand=True)
-    documento_input = ft.TextField(label="Documento", expand=True)
-    telefono_input = ft.TextField(label="Teléfono", expand=True)
+    cliente_seleccionado: Cliente = None
+    page.clean()
+    page.window.width=1000
+    page.window.center=True
 
-    mensaje = ft.Text("", color=ft.Colors.RED)
+    tabla_clientes=ft.Column()
+    #Metodos
+    def deshabilitar_campos(habilitar: bool):
+        nombre.disabled=habilitar
+        apellido.disabled=habilitar
+        documento.disabled=habilitar
+        telefono.disabled=habilitar
+        direccion.disabled=habilitar
+       
+        btn_editar_prod.disabled=habilitar
+        btn_limpiar_prod.disabled=habilitar
+        page.update()
+    
+    def limpiar_campos(e=None, btn=None):
+        cliente_id_actual.value=""
+        nombre.value=""
+        apellido.value=""
+        documento.value=""
+        telefono.value=""
+        direccion.value=""
+        nombre.focus()
+        page.update()
+        if btn==True:
+            deshabilitar_campos(habilitar=True)
+            pass
+    def nuevo_cliente(e):
+        if nombre.disabled==True:
+            deshabilitar_campos(habilitar=False)
+        else:
+            if nombre.disabled==False and apellido.value and documento.value and telefono.value and direccion.value:
+                cliente_nuevo=Cliente(
+                    nombre.value,
+                    apellido.value,
+                    documento.value,
+                    telefono.value,
+                    direccion.value
+                )
+                salida=cliente_nuevo.guardar()
+                if salida:
+                    print("Se ha insertado corrextamente")
+                else:
+                    print("Ha fallado a la hora se guardar el prodoucto")
 
-    def limpiar_form():
-        nonlocal id_cliente
-        id_cliente = str(uuid.uuid4())
-        nombre_input.value = ""
-        documento_input.value = ""
-        telefono_input.value = ""
-        mensaje.value = ""
+                actualizar_tabla()
+                limpiar_campos()
+                e.control.disabled = True
+                
+            else:
+                print("Faltan datos necesarios para crear producto")
+            pass
+    def volver_al_dashboard(e):
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        dashboard=dashboard_view(page)
+        page.add(dashboard)
+        page.update()
+    
+    def seleccionar_producto(cliente: Cliente):
+        cliente_id_actual.value=str(cliente.id)
+        nombre.value=cliente.nombre
+        apellido.value=cliente.apellido
+        documento.value=cliente.documento
+        telefono.value=cliente.telefono
+        direccion.value=cliente.direccion
         page.update()
 
-    def guardar():
-        try:
-            cliente = Cliente(
-                id=id_cliente,
-                nombre=nombre_input.value,
-                documento=documento_input.value,
-                telefono=telefono_input.value
-            )
-            guardar_cliente(cliente)
-            cargar_clientes()
-            limpiar_form()
-            mensaje.value = "Cliente guardado con éxito"
-        except Exception as e:
-            mensaje.value = f"Error: {e}"
-        page.update()
+    def actualizar_tabla(filtro=None):
+        lista=Cliente.obtener_todos()
+        if filtro:
+            lista=[cl for cl in lista if filtro.lower() in cl.nombre.lower()]
 
-    # --- BÚSQUEDA ---
-    filtro_documento = ft.TextField(label="Buscar por documento", on_change=lambda e: cargar_clientes(e.control.value))
+        def eliminar_clientes(e, cliente_id):
+            Cliente.borrar_por_id(cliente_id)
+            actualizar_tabla(buscador_input.value)
+            page.update()
+        filas = []
+        for cl in lista:
+            fila = ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(cl.nombre)),
+                    ft.DataCell(ft.Text(cl.apellido)),
+                    ft.DataCell(ft.Text(cl.documento)),
+                    ft.DataCell(ft.Text(cl.telefono)),
+                    ft.DataCell(ft.Text(cl.direccion)),
 
-    tabla_clientes = ft.DataTable(
-        columns=[
-            ft.DataColumn(ft.Text("Nombre")),
-            ft.DataColumn(ft.Text("Documento")),
-            ft.DataColumn(ft.Text("Teléfono")),
-        ],
-        rows=[]
-    )
+                    ft.DataCell(ft.IconButton(
+                        icon=ft.Icons.DELETE,
+                        tooltip="Eliminar producto",
+                        on_click=lambda e, id=cl.id: eliminar_clientes(e, id)
+                        )
+                    )
+                ],
+                selected=False
+                ,data=cl
+                ,on_select_changed=lambda e: seleccionar_producto(e.control.data)
+            ) 
+            filas.append(fila)
 
-    def cargar_clientes(filtro=""):
-        clientes = (
-            [obtener_cliente_por_documento(filtro)]
-            if filtro
-            else listar_clientes()
+        data_table = ft.DataTable(
+            data_row_color={ft.ControlState.HOVERED: Constantes.COLOR_BORDE_CLARO},
+            columns=[
+                ft.DataColumn(ft.Text("Nombre")),
+                ft.DataColumn(ft.Text("Apellido")),
+                ft.DataColumn(ft.Text("Documento")),
+                ft.DataColumn(ft.Text("Telefono")),
+                ft.DataColumn(ft.Text("Direccion/Domicilio")),
+
+                ft.DataColumn(ft.Text("Acciones"))
+
+            ],
+            rows=filas
         )
 
-        tabla_clientes.rows.clear()
-        for c in clientes:
-            if c:  # Evitar None cuando no hay coincidencia
-                tabla_clientes.rows.append(
-                    ft.DataRow(cells=[
-                        ft.DataCell(ft.Text(c.nombre)),
-                        ft.DataCell(ft.Text(c.documento)),
-                        ft.DataCell(ft.Text(c.telefono)),
-                    ])
-                )
+        tabla_clientes.controls.clear()
+        tabla_clientes.controls.append(
+            ft.Container(height=400,
+                         content=ft.Column(
+                             controls=[data_table],
+                             scroll=ft.ScrollMode.AUTO
+                         ))
+        )
         page.update()
+    #Campos
+    nombre=ft.TextField(label="Nombre", disabled=True)
+    apellido=ft.TextField(label="Apellidos", disabled=True)
+    documento=ft.TextField(label="Documento (DNI/Pasaporte)", disabled=True)
+    telefono=ft.TextField(label="Numero de telefono", disabled=True)
+    direccion=ft.TextField(label="Direccion de residencia", disabled=True)
+    cliente_id_actual=ft.TextField(label="ID del producto", visible=False, disabled=True)
 
-    # --- LAYOUT ---
-
-    form_column = ft.Column(
-        [
-            nombre_input,
-            documento_input,
-            telefono_input,
-            ft.Row([ft.ElevatedButton("Guardar", on_click=lambda e: guardar()),
-                    ft.ElevatedButton("Limpiar", on_click=lambda e: limpiar_form())]),
-            mensaje
-        ],
-        expand=1,
+    buscador_input=ft.TextField(label="Buscar cliente por documento", prefix_icon=ft.Icons.SEARCH)
+    btn_volver_dashboard=ft.ElevatedButton(
+        text="Volver al Dashboard",
+        icon=ft.Icons.ARROW_BACK,
+        on_click=volver_al_dashboard,
+        bgcolor=Constantes.COLOR_FONDO_PRINCIPAL,
+        color=Constantes.COLOR_BOTON_PRIMARIO
     )
-
-    tabla_column = ft.Column(
-        [
-            filtro_documento,
-            tabla_clientes
-        ],
-        expand=2
+    btn_editar_prod=ft.IconButton(
+        icon=ft.Icons.EDIT,
+        tooltip="Editar producto",
+        width=80,
+        height=80
     )
-
-    contenido = ft.Row(
-        [form_column, tabla_column],
-        expand=True
+    btn_guardar_prod=ft.IconButton(
+        icon=ft.Icons.SAVE,
+        tooltip="Nuevo producto",
+        width=80,
+        height=80,
+        on_click=nuevo_cliente
     )
+    btn_limpiar_prod=ft.IconButton(
+        icon=ft.Icons.AUTO_DELETE,
+        tooltip="Nuevo producto",
+        width=80,
+        height=80,
+        on_click=lambda e: limpiar_campos(e, True)
+    )   
 
-    page.add(contenido)
-    page.add(contenido)
-    cargar_clientes()
-
-    return ft.View(
-        route="/clientes",
+   #Estructura de la vista
+    columna_izquierda=ft.Container(alignment=ft.alignment.top_center, 
+        content=ft.Column(
         controls=[
-            ft.Container(
-                expand=True,
-                padding=20,
-                content=ft.Column(
-                    scroll=True,
-                    controls=[
-                        ft.Text("Clientes", size=30, weight=ft.FontWeight.BOLD),
-                        contenido
-                    ]
-                )
-            )
-        ]
+        nombre,
+        apellido,
+        documento,
+        telefono,
+        direccion,
+        ft.Row(controls=[btn_guardar_prod, btn_editar_prod, btn_limpiar_prod])
+    ])
     )
+
+    columna_derecha=ft.Container(alignment=ft.alignment.top_center,
+        content=ft.Column(
+        controls=[
+        buscador_input,
+        tabla_clientes
+    ])
+    )
+    fila_superior=ft.Row(controls=[btn_volver_dashboard, ft.Text("Gestión de Producto")])
+    fila_medio=ft.Row(controls=[columna_izquierda, columna_derecha], vertical_alignment=ft.CrossAxisAlignment.START)
+    datos=ft.Column(controls=[fila_superior, fila_medio])
+    contenedor=ft.Container(
+        expand=True,
+        alignment=ft.alignment.top_center,
+        content=datos,
+        bgcolor=Constantes.COLOR_TARJETA_FONDO,
+        padding=20,
+        border_radius=15
+    )
+
+    buscador_input.on_change=lambda e: actualizar_tabla(buscador_input.value)
+    actualizar_tabla()
+    deshabilitar_campos(True)
+
+    return contenedor

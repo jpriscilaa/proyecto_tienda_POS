@@ -1,3 +1,5 @@
+
+
 #Ruta base de datos SQLite
 RUTA_BD = "conf/BD_MI_EMPRESA.DB"
 RUTA_CARPETA_CONF = "conf"
@@ -5,7 +7,7 @@ RUTA_CARPETA_CONF = "conf"
 NOMBRE_APP = "P.O.S TIENDA BY PRIS"
 
 #----------------------------------------
-#Paleta de colores (modo claro)
+#Paleta de colores estilo macOS (modo claro)
 #----------------------------------------
 # COLOR_FONDO_PRINCIPAL = "#F2F2F7"       # Fondo general de la app
 # COLOR_TARJETA_FONDO = "#FFFFFF"         # Fondo para tarjetas, contenedores
@@ -17,7 +19,7 @@ NOMBRE_APP = "P.O.S TIENDA BY PRIS"
 # COLOR_BORDE_CLARO = "#D1D1D6"           # Borde o líneas divisorias sutiles
 
 #----------------------------------------
-#Paleta de colores (modo oscuro)
+#Paleta de colores estilo macOS (modo oscuro)
 #----------------------------------------
 COLOR_FONDO_PRINCIPAL = "#1C1C1E"       # Fondo principal (negro suave)
 COLOR_TARJETA_FONDO = "#2C2C2E"         # Tarjetas, modales
@@ -26,7 +28,6 @@ COLOR_TEXTO_SECUNDARIO = "#A1A1A6"      # Texto secundario, etiquetas
 COLOR_BOTON_PRIMARIO = "#0A84FF"        # Azul macOS (botones principales)
 COLOR_BOTON_EXITO = "#30D158"           # Verde confirmación
 COLOR_BOTON_ERROR = "#FF453A"           # Rojo error
-COLOR_BOTON_INFO = "#D26500"            # Naranja info
 COLOR_BORDE_CLARO = "#3A3A3C"           # Bordes, líneas sutiles
 
 #Tabla CATEGORIA
@@ -54,12 +55,15 @@ CREATE_TABLA_CLIENTE = '''CREATE TABLE CLIENTE (
     DIRECCION  TEXT
 );'''
 
-INSERT_CLIENTE = '''INSERT INTO CLIENTE (CLIENTE_ID, NOMBRE, DOCUMENTO,APELLIDO, TELEFONO, DIRECCION)
+INSERT_CLIENTE = '''INSERT INTO CLIENTE (CLIENTE_ID, NOMBRE,APELLIDO, DOCUMENTO, TELEFONO, DIRECCION)
                     VALUES (?, ?, ?,?, ?, ?)'''
 
 UPDATE_CLIENTE = '''UPDATE CLIENTE
                     SET NOMBRE = ?, APELLIDO = ?, DOCUMENTO = ?, TELEFONO = ?, DIRECCION = ?
                     WHERE CLIENTE_ID = ?'''
+
+DELETE_CLIENTE = '''DELETE FROM CLIENTE WHERE CLIENTE_ID = ?'''
+
 
 #Tabla CONFIGURACIÓN APP
 CREATE_TABLA_CONFIGURACION_APP = '''CREATE TABLE CONFIG_EMPRESA (
@@ -167,7 +171,4 @@ UPDATE_USUARIO = '''UPDATE USUARIO
                     WHERE USUARIO_ID = ?'''
 
 DELETE_USUARIO = '''DELETE FROM USUARIO WHERE USUARIO_ID = ?'''
-
-
-
 
