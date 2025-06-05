@@ -3,8 +3,9 @@ from backend.modelo.Producto import Producto
 from backend.modelo.Iva import Iva
 from backend.modelo.Categoria import Categoria
 from backend import Constantes
-from backend.servicios import producto_service
 from app import ventana_alerta
+import logging
+logger = logging.getLogger(__name__)
 
 def producto_view(page: ft.Page):
     
@@ -31,7 +32,7 @@ def producto_view(page: ft.Page):
 
                 #he modificado guardar para que me devuelva un boolean y asi saber si ha funcionado o ha fallado
                 if producto_nuevo.guardar():
-                    print("Se ha insertado correctamente")
+                    logging.debug("Se ha guardado producto " + producto_nuevo.__str__())
                     page.open(ventana_alerta.barra_ok_mensaje("PRODUCTO GUARDADO"))
                     page.update()
                 else:

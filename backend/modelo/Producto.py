@@ -1,5 +1,6 @@
 import sqlite3
 import uuid
+import json
 from backend import Constantes
 from backend.bddTienda import get_connection
 from backend.modelo.Categoria import Categoria
@@ -126,3 +127,14 @@ class Producto:
             productos.append(producto)
 
         return productos
+    
+    #Metodo que devuelve el json para poder pintar en cualquier logger texto
+    def __str__(self):
+        return json.dumps({
+            "id": self.id,
+            "nombre": self.nombre,
+            "referencia": self.n_referencia,
+            "precio": self.precio,
+            "categoria": self.categoria.nombre if self.categoria else None,
+            "iva": self.iva.porcentaje if self.iva else None
+        })

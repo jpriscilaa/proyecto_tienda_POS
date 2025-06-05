@@ -2,14 +2,14 @@ import flet as ft
 from backend import Constantes
 from backend.modelo.Usuario import Usuario
 from app import ventana_alerta
+import logging
+logger = logging.getLogger(__name__)
 
 def login_view(page: ft.Page):
+
+    #metodos
     def mostrar_dialogo():
         page.open(ventana_alerta.alerta_login())
-        pass
-
-    usuario_login = ft.TextField(label="Usuario", autofocus=True)
-    contrasena_login = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, on_submit=lambda e: ir_a_menu(e))
 
     def ir_a_menu(e):
         usuario = Usuario.obtener_por_nombre_usuario(usuario_login.value)
@@ -20,6 +20,10 @@ def login_view(page: ft.Page):
             page.add(dashboard_view(page))
         else:
             mostrar_dialogo()
+
+    #elementos para la vista
+    usuario_login = ft.TextField(label="Usuario", autofocus=True)
+    contrasena_login = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, on_submit=lambda e: ir_a_menu(e))
 
     login_container = ft.Container(
         width=320,
