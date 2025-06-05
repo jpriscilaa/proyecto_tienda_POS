@@ -33,7 +33,15 @@ def login_view(page: ft.Page):
                 ft.Text("Iniciar Sesión", size=28, weight="bold"),
                 usuario_login,
                 contrasena_login,
+                ft.Row([
                 ft.ElevatedButton("Entrar", on_click=ir_a_menu),
+                ft.ElevatedButton(
+                    text="Salir",
+                    icon=ft.Icons.EXIT_TO_APP,
+                    on_click=lambda e: page.window.close()
+                ),]
+                ,alignment=ft.MainAxisAlignment.CENTER)
+
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.CENTER,
