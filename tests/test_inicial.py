@@ -21,7 +21,7 @@ def test2():
     pass
 
 def test3():
-    #Crear categorias
+    #crear categorias
     categoria1=Categoria(
         nombre="Bebidas",
     )

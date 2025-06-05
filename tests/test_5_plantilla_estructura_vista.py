@@ -7,17 +7,17 @@ def main(page: ft.Page):
     page.padding = 20
     page.scroll = "auto"
 
-    # Botón ATRÁS
+    # el boton atras
     boton_atras = ft.ElevatedButton(
         text="BOTON ATRÁS",
         bgcolor=ft.Colors.PINK_200,
         width=150
     )
 
-    # Título de la ventana
+    # ttulo de la ventana
     titulo_ventana = ft.Text("NOMBRE DE LA VENTANA", size=24, weight="bold")
 
-    # --- FILA SUPERIOR: botón + título ---
+    # -------------------------------- FILA SUPERIOR: botón + titulo ------------------------------------------
     fila_superior = ft.Row(
         controls=[
             boton_atras,
@@ -28,7 +28,7 @@ def main(page: ft.Page):
         vertical_alignment=ft.CrossAxisAlignment.CENTER,
     )
 
-    # Campos verticales a la izquierda
+    #campos verticales a la izquierda
     campos_textfield = [
         ft.TextField(label=f"TEXTFIELD {i+1}", width=150)
         for i in range(6)
