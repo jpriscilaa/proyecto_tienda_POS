@@ -11,6 +11,7 @@ def clientes_view(page: ft.Page):
     page.window.center=True
 
     tabla_clientes=ft.Column()
+
     #Metodos
     def deshabilitar_campos(habilitar: bool):
         nombre.disabled=habilitar
@@ -41,11 +42,11 @@ def clientes_view(page: ft.Page):
         else:
             if nombre.disabled==False and apellido.value and documento.value and telefono.value and direccion.value:
                 cliente_nuevo = Cliente(
-                    nombre.value,
-                    apellido.value,
-                    documento.value,
-                    telefono.value,
-                    direccion.value,
+                    cliente_nombre = nombre.value,
+                    cliente_apellido=apellido.value,
+                    cliente_documento=documento.value,
+                    cliente_telefono=telefono.value,
+                    cliente_direccion=direccion.value
                 )
                 print("Dirección recibida:", direccion.value)
 

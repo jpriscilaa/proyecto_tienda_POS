@@ -9,7 +9,7 @@ def login_view(page: ft.Page):
 
     #metodos
     def mostrar_dialogo():
-        page.open(ventana_alerta.alerta_login())
+        page.open(ventana_alerta.barra_error_mensaje("USUARIO O CONTRASEÑA INCORRECTOS"))
 
     def ir_a_menu(e):
         usuario = Usuario.obtener_por_nombre_usuario(usuario_login.value)

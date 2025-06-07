@@ -16,13 +16,20 @@ def producto_view(page: ft.Page):
     tabla_productos=ft.Column()
 
     #Metodos
+    def editar_producto(e):
+        if nombre.value:
+            deshabilitar_campos(False)
+
     def agregar_producto(e):
         #con control.disable hacemos que no se pueda volver a clicar el componente q recibo por el evento e
-        e.control.disabled = True
+        
         if n_ref.disabled==True:
             deshabilitar_campos(habilitar=False)
             logger.info("Habilitamos los campos par que se pueda rellenar")
+            n_ref.focus()
+            page.update()
         else:
+            e.control.disabled = True
             if n_ref.disabled==False and precio.value and nombre.value and n_ref.value and categoria_dropdown.value and iva_dropdown.value:
                 producto_nuevo=Producto(
                     precio.value,
@@ -48,6 +55,7 @@ def producto_view(page: ft.Page):
 
                 #Ya que se guarda el trabajo ahora se activa para que se pueda volver a clicar
                 e.control.disabled = False
+                page.update()
                 
             else:
                 page.open(ventana_alerta.barra_error_mensaje("RELLENE LOS DATOS CORRECTAMENTE"))
@@ -81,7 +89,7 @@ def producto_view(page: ft.Page):
         categoria_dropdown.disabled=habilitar
         iva_dropdown.disabled=habilitar
         btn_limpiar_prod.disabled=habilitar
-        btn_limpiar_prod.disabled=habilitar
+        btn_editar_prod.disabled=habilitar
         page.update()
     
     def seleccionar_producto(producto: Producto):
@@ -92,6 +100,7 @@ def producto_view(page: ft.Page):
         precio.value=str(producto.precio)
         categoria_dropdown.value=producto.categoria.categoria_id
         iva_dropdown.value=producto.iva.iva_id
+        btn_editar_prod.disabled=False
         page.update()
     
     def volver_al_dashboard(e):
@@ -174,7 +183,8 @@ def producto_view(page: ft.Page):
         icon=ft.Icons.EDIT,
         tooltip="Editar producto",
         width=80,
-        height=80
+        height=80,
+        on_click=editar_producto
     )
     btn_guardar_prod=ft.IconButton(
         icon=ft.Icons.SAVE,
