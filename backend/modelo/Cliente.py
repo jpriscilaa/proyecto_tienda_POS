@@ -23,28 +23,34 @@ class Cliente:
             cursor = conexion.cursor()
 
             if Cliente.existe(self.id):
-                cursor.execute(Constantes.UPDATE_CLIENTE, (self.nombre, self.apellido, self.documento,self.telefono,self.direccion,self.id))
+                cursor.execute(Constantes.UPDATE_CLIENTE, (
+                    self.nombre, self.apellido, self.documento,
+                    self.telefono, self.direccion, self.id
+                ))
             else:
-                cursor.execute(Constantes.INSERT_CLIENTE, (self.id, self.nombre,self.apellido,self.documento,self.telefono,self.direccion))
+                cursor.execute(Constantes.INSERT_CLIENTE, (
+                    self.id, self.nombre, self.apellido,
+                    self.documento, self.telefono, self.direccion
+                ))
 
             conexion.commit()
             conexion.close()
+            return True  
         except sqlite3.IntegrityError as error:
-            if "UNIQUE constraint failed: PRODUCTO.N_REFERENCIA" in str(error):
-                print("Ya existe un producto con esa referencia o codigo de barras.")
-                return False 
-            elif "FOREIGN KEY constraint failed" in str(error):
-                print("Error con la CATEGORIA o el IVA seleccionado no existen.")
-                return False
-        except Exception:
-            print("Ha dado algún error en el insert del producto")
+            if "UNIQUE constraint failed: CLIENTE.DOCUMENTO" in str(error):
+                print("Ya existe un cliente con ese documento.")
+            else:
+                print("Error de integridad:", error)
+            return False
+        except Exception as e:
+            print("Ha ocurrido un error al guardar el cliente:", e)
             return False
 
 
     def eliminar(self):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute("DELETE FROM CLIENTE WHERE CLIENTE_ID = ?", (self.id))
+        cursor.execute("DELETE FROM CLIENTE WHERE CLIENTE_ID = ?", (self.id,))
         conexion.commit()
         conexion.close()
 
@@ -81,9 +87,9 @@ class Cliente:
         return resultado is not None
     
     @classmethod
-    def borrar_por_id(cls, id):
+    def borrar_por_id(cls, id,):
         conexion = sqlite3.connect(Constantes.RUTA_BD)
         cursor = conexion.cursor()
-        cursor.execute(Constantes.DELETE_CLIENTE, (id))
+        cursor.execute(Constantes.DELETE_CLIENTE(id,))
         conexion.commit()
         conexion.close()

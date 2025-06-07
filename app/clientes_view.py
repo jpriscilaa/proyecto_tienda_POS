@@ -1,6 +1,5 @@
 import flet as ft
 from backend import Constantes
-from backend.servicios.cliente_service import listar_clientes, guardar_cliente, obtener_cliente_por_documento
 from backend.modelo.Cliente import Cliente
 import uuid
 
@@ -41,13 +40,15 @@ def clientes_view(page: ft.Page):
             deshabilitar_campos(habilitar=False)
         else:
             if nombre.disabled==False and apellido.value and documento.value and telefono.value and direccion.value:
-                cliente_nuevo=Cliente(
+                cliente_nuevo = Cliente(
                     nombre.value,
                     apellido.value,
                     documento.value,
                     telefono.value,
-                    direccion.value
+                    direccion.value,
                 )
+                print("Dirección recibida:", direccion.value)
+
                 salida=cliente_nuevo.guardar()
                 if salida:
                     print("Se ha insertado corrextamente")
@@ -56,7 +57,6 @@ def clientes_view(page: ft.Page):
 
                 actualizar_tabla()
                 limpiar_campos()
-                e.control.disabled = True
                 
             else:
                 print("Faltan datos necesarios para crear producto")
