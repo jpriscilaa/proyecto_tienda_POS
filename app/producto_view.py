@@ -17,8 +17,11 @@ def producto_view(page: ft.Page):
 
     #Metodos
     def agregar_producto(e):
+        #con control.disable hacemos que no se pueda volver a clicar el componente q recibo por el evento e
+        e.control.disabled = True
         if n_ref.disabled==True:
             deshabilitar_campos(habilitar=False)
+            logger.info("Habilitamos los campos par que se pueda rellenar")
         else:
             if n_ref.disabled==False and precio.value and nombre.value and n_ref.value and categoria_dropdown.value and iva_dropdown.value:
                 producto_nuevo=Producto(
@@ -32,22 +35,31 @@ def producto_view(page: ft.Page):
 
                 #he modificado guardar para que me devuelva un boolean y asi saber si ha funcionado o ha fallado
                 if producto_nuevo.guardar():
-                    logging.debug("Se ha guardado producto " + producto_nuevo.__str__())
+                    logging.info("Se ha guardado producto " + producto_nuevo.__str__())
                     page.open(ventana_alerta.barra_ok_mensaje("PRODUCTO GUARDADO"))
                     page.update()
                 else:
-                    print("Ha fallado a la hora de guardar el producto")
+                    logging.info("Ha fallado a la hora de guardar el producto")
                     page.open(ventana_alerta.barra_error_mensaje("ERROR AL GUARDAR, REVISE QUE NO EXISTA YA EL CODIGO DE BARRAS"))
                     page.update()
 
                 actualizar_tabla()
                 limpiar_campos()
-                e.control.disabled = True
+
+                #Ya que se guarda el trabajo ahora se activa para que se pueda volver a clicar
+                e.control.disabled = False
                 
             else:
                 page.open(ventana_alerta.barra_error_mensaje("RELLENE LOS DATOS CORRECTAMENTE"))
-                print("Faltan datos necesarios para crear producto")
+                logging.info("Faltan datos necesarios para crear producto")
             pass
+
+    def validar_nombre(e):
+        if not nombre.value.strip() and nombre.disabled==False:
+            nombre.error_text = "Este campo es obligatorio"
+        else:
+            nombre.error_text = None
+        page.update()
 
     def limpiar_campos(e=None, btn=None):
         prod_id_actual.value=None
@@ -89,15 +101,6 @@ def producto_view(page: ft.Page):
         page.add(dashboard)
         page.update()
     
-    def validar_nombre(e):
-        if not nombre.value.strip():
-            nombre.border_color=ft.Colors.RED
-            nombre.error_text="Este campo es obligatorio"
-        else:
-            nombre.border_color=ft.Colors.GREY
-            nombre.error_text=None
-        nombre.update()
-
     def actualizar_tabla(filtro=None):
         lista=Producto.obtener_todos()
         if filtro:
@@ -154,9 +157,9 @@ def producto_view(page: ft.Page):
         )
         page.update()
 
-    #Campos
+    #componentes vista
     n_ref=ft.TextField(label="Referencia")
-    nombre=ft.TextField(label="Nombre")
+    nombre=ft.TextField(label="Nombre", on_blur=validar_nombre)
     precio=ft.TextField(label="Precio")
     prod_id_actual=ft.TextField(label="ID del producto", visible=False, value=None)
     buscador_input=ft.TextField(label="Buscar producto", prefix_icon=ft.Icons.SEARCH)
@@ -199,7 +202,7 @@ def producto_view(page: ft.Page):
         categoria_option.append(option)
     categoria_dropdown=ft.Dropdown(label="Categoría", options=categoria_option, width=300, disabled=True)
 
-    #Relleno lista de iva con cada categoria que hay en bd
+    #Relleno lista de iva con cada iva que hay en bd
     ivas=Iva.obtener_todos()
     iva_option=[]
     for i in ivas:

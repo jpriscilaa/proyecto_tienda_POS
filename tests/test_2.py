@@ -1,32 +1,20 @@
-import os
+import flet as ft
 
-def buscar_importaciones(ruta_base):
-    archivos_py = []
-    archivos_importados = set()
+def main(page: ft.Page):
 
-    for root, _, files in os.walk(ruta_base):
-        for file in files:
-            if file.endswith('.py'):
-                ruta_completa = os.path.join(root, file)
-                archivos_py.append(ruta_completa)
-                with open(ruta_completa, 'r', encoding='utf-8') as f:
-                    contenido = f.read()
-                    for otro_file in files:
-                        if otro_file.endswith('.py') and otro_file != file:
-                            nombre = otro_file.replace('.py', '')
-                            if f'import {nombre}' in contenido or f'from {nombre}' in contenido:
-                                archivos_importados.add(nombre)
+    def validar_campo(e):
+        if not campo.value.strip():
+            campo.error_text = "Este campo es obligatorio"
+        else:
+            campo.error_text = None
+        page.update()
 
-    no_importados = []
-    for archivo in archivos_py:
-        nombre = os.path.basename(archivo).replace('.py', '')
-        if nombre not in archivos_importados and nombre != '__init__':
-            no_importados.append(archivo)
+    campo = ft.TextField(
+        label="Nombre",
+        hint_text="Ingresa tu nombre",
+        on_blur=validar_campo
+    )
 
-    return no_importados
+    page.add(campo)
 
-# Uso
-sin_usar = buscar_importaciones("backend/")
-print("Posibles archivos no usados:")
-for archivo in sin_usar:
-    print(archivo)
+ft.app(target=main)
