@@ -6,23 +6,13 @@ from backend.modelo.Usuario import Usuario
 from app.login_view import login_view
 
 def iniciar_app(page: ft.Page):
-    nombre_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9)
-    nombre_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre usuario", border_radius=9)
-    
-    contrasenna_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Contraseña usuario", border_radius=9, password=True, can_reveal_password=True)
-    rol_usuario=ft.TextField(value="Administrador",border=ft.InputBorder.UNDERLINE, label="Rol del Usuario", border_radius=9,read_only=True)
-    pais_combo=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="País", options=[
-            ft.dropdown.Option("México"),
-            ft.dropdown.Option("Argentina"),
-            ft.dropdown.Option("España")
-        ])
-    direccion_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Dirección empresa", border_radius=9)
-    telefono_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE,label="Teléfono empresa", border_radius=9)
-    moneda=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="Moneda", options=[
-            ft.dropdown.Option("EUR€"),
-            ft.dropdown.Option("DOLR$")
-        ])
-    
+
+    page.title="Primera configuración"
+    page.horizontal_alignment=ft.MainAxisAlignment.CENTER
+    page.vertical_alignment=ft.MainAxisAlignment.CENTER
+    page.bgcolor=Constantes.COLOR_FONDO_PRINCIPAL
+
+    #Metodos    
     def guardarEmpresa():
         empresa1=Config_Empresa(
             empresa_id=1,
@@ -45,13 +35,24 @@ def iniciar_app(page: ft.Page):
         
         page.clean()
         page.add(login_view(page))
+    
+    #componentes
+    nombre_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre empresa", border_radius=9)
+    nombre_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Nombre usuario", border_radius=9)
+    contrasenna_usuario=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Contraseña usuario", border_radius=9, password=True, can_reveal_password=True)
+    rol_usuario=ft.TextField(value="Administrador",border=ft.InputBorder.UNDERLINE, label="Rol del Usuario", border_radius=9, read_only=True)
+    pais_combo=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="País", options=[
+            ft.dropdown.Option("México"),
+            ft.dropdown.Option("Argentina"),
+            ft.dropdown.Option("España")
+        ])
+    direccion_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE, label="Dirección empresa", border_radius=9)
+    telefono_empresa=ft.TextField(border=ft.InputBorder.UNDERLINE,label="Teléfono empresa", border_radius=9)
+    moneda=ft.Dropdown(border=ft.InputBorder.UNDERLINE, border_radius=9, label="Moneda", options=[
+            ft.dropdown.Option("EURO"),
+            ft.dropdown.Option("DOLAR")
+        ])
 
-    
-    page.title="Primera configuración"
-    page.horizontal_alignment=ft.MainAxisAlignment.CENTER
-    page.vertical_alignment=ft.MainAxisAlignment.CENTER
-    page.bgcolor=Constantes.COLOR_FONDO_PRINCIPAL
-    
     #Creo una lista donde iran todos los elementos, luego si lo guardo en un column se pone en modo vertial, si lo guardo en row se guarda en horizontal
     form_controls=[
         nombre_empresa,
@@ -76,7 +77,6 @@ def iniciar_app(page: ft.Page):
         border_radius=15
     )
 
-    
     return contenedor
 
 

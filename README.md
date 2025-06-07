@@ -1,13 +1,15 @@
-# POS_byPriscila
+# POS_by_Priscila
  Proyecto de fin de curso
 
-# 🧾 POS Multiplataforma - Sistema de Punto de Venta moderno y funcional
+# 🧾 POS Multiplataforma - Sistema de Punto de Venta
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-0.0.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 POS Multiplataforma es una solución de punto de venta (TPV) totalmente funcional, moderna y multiplataforma, ideal para tiendas, supermercados y pequeños negocios que buscan una herramienta intuitiva y eficiente para gestionar sus ventas, productos y clientes desde cualquier sistema operativo.
+
+Version en fase alfa...cargando mejoras...proximamente lo lanzamos para el público general.
 
 ---
 
@@ -26,15 +28,15 @@ POS Multiplataforma es una solución de punto de venta (TPV) totalmente funciona
 
 ### 🖼️ Capturas de pantalla
 
-> *Simulaciones representativas, no reales. Pendiente actualizar capturas*
+> *Simulaciones iniciales, no finales. Pendiente actualizar capturas con nuevas funcionalidades*
 
 **Pantalla principal del TPV:**
 
-![TPV Screenshot](https://user-images.githubusercontent.com/placeholder/pos-tpv-screenshot.png)
+![TPV Screenshot](http://imgfz.com/i/d9so1ql.png)
 
 **Gestión de productos:**
 
-![Productos Screenshot](https://user-images.githubusercontent.com/placeholder/pos-productos-screenshot.png)
+![Productos Screenshot](http://imgfz.com/i/ryzWHib.png)
 
 ---
 
@@ -49,8 +51,8 @@ python main.py
 ✍️ Autor
 
 Priscila Terrazas
-Desarrolladora apasionada por crear soluciones sencillas para problemas complejos.
-📧 priscila.t@ejemplo.com
+Desarrolladora junior en java y python, enfocada en crear soluciones sencillas para problemas complejos.
+📧 jazminpriscilajazmin2003@gmail.com
 🔗 LinkedIn (Priscila Terrazas)
 
 📄 Licencia
