@@ -26,11 +26,17 @@ def dashboard_view(page: ft.Page):
         from app.usuario_view import usuario_view
         page.clean()
         page.add(usuario_view(page))
+    
+    def abrir_ventas(e):
+        from app.ventas_view import ventas_view
+        page.clean()
+        page.add(ventas_view(page))
 
     def salir(e):
         from app.login_view import login_view
         page.clean()
         page.add(login_view(page))
+
 
     # Botón estilizado reutilizable
     def crear_boton(texto, icono, on_click, color_bg=None, color_text=None):

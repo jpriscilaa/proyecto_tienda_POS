@@ -5,11 +5,10 @@ from backend import Constantes
 from backend.modelo.Cliente import Cliente
 
 class Venta:
-    def __init__(self, cliente: Cliente, total, cantidad_productos, id=None):
+    def __init__(self, id= None, fecha= "", pago="", cliente = "", total = ""):
         self.id = id or str(uuid.uuid4())
         self.cliente = cliente
         self.total = float(total)
-        self.cantidad_productos = int(cantidad_productos)
 
     def guardar(self):
         try:
