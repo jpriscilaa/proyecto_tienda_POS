@@ -16,6 +16,7 @@ def main(page: ft.Page):
 
     #valido si todo está bien antes de inciar app
     if config_app.crearSQLITE() == False:
+        configurarLogging()
         if config_empr_service.existeEmpresa():
             logging.info("Si la salida del metodo es true significa que los datos de la empresa existen por ende podemos iniciar la app")
             logging.info("LANZAR LOGIN_VIEW")
@@ -33,8 +34,7 @@ def main(page: ft.Page):
         page.clean()
         page.add(iniciar_app(page))
 
-if __name__ == "__main__":
-
+def configurarLogging():
     #Configurar logging global
     logging.basicConfig(
         level=logging.INFO,
@@ -50,6 +50,8 @@ if __name__ == "__main__":
     formatter=logging.Formatter('[%(levelname)s] %(message)s')
     console.setFormatter(formatter)
     logging.getLogger().addHandler(console)
+
+if __name__ == "__main__":
 
     #inicio de app
     ft.app(target=main, assets_dir="assets")

@@ -90,7 +90,7 @@ def tpv_view(page: ft.Page):
 
         venta=Venta(
             cliente=cliente_anonimo,
-            cantidad_productos=cantidad_products,
+            cantidad_productos=1,
             total=total_venta
         ) 
         venta.guardar() #Crea la venta vacía
