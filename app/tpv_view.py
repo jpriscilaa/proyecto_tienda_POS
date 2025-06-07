@@ -1,153 +1,150 @@
 import flet as ft
 from backend.modelo.Producto import Producto
-from backend.modelo.Venta_line import VentaLine
-import uuid
+from backend.modelo.Venta import Venta
+from backend.modelo.Venta_Linea import Venta_Linea
+from backend.modelo.Cliente import Cliente  # Opcional: si luego quieres seleccionar cliente
+from backend import Constantes
+from app import ventana_alerta
+import logging
+from datetime import datetime
 
-def venta_line_view(Page: ft.Page):
-    # Lista para guardar líneas de venta
-    lineas_venta = []
+logger = logging.getLogger(__name__)
 
-    # Controles
-    lista_lineas_column = ft.Column(scroll=ft.ScrollMode.AUTO)
-    subtotal_text = ft.Text("Subtotal: 0.00 €", size=16, weight=ft.FontWeight.BOLD)
-    total_text = ft.Text("Total de la Compra: 0.00 €", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE)
+def tpv_view(page: ft.Page):
 
-    # Inputs
-    nref_input = ft.TextField(label="Nº Referencia", width=300)
-    nombre_input = ft.TextField(label="Nombre", width=300, read_only=True)
-    precio_input = ft.TextField(label="Precio", width=300, keyboard_type=ft.KeyboardType.NUMBER)
-    cantidad_input = ft.TextField(label="Cantidad", width=300, value="1", keyboard_type=ft.KeyboardType.NUMBER)
-    linea_subtotal_text = ft.Text("Subtotal: 0.00 €", size=16, weight=ft.FontWeight.BOLD)
+    page.clean()
+    page.window.width = 1080
+    page.window.center = True
 
-    # Actualizar subtotal de la línea
-    def actualizar_linea_subtotal(e=None):
-        try:
-            precio = float(precio_input.value)
-        except:
-            precio = 0.0
-        try:
-            cantidad = int(cantidad_input.value)
-        except:
-            cantidad = 0
-        subtotal = precio * cantidad
-        linea_subtotal_text.value = f"Subtotal: {subtotal:.2f} €"
-        Page.update()
+    carrito = []
+    cantidad_products=1
+    total_venta=0.0
+    tabla_lineas = ft.Column()
+    total_texto = ft.Text(value="Total: 0.00 €", size=20, weight=ft.FontWeight.BOLD)
+    
+    #Metodos
+    def volver_al_dashboard(e):
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        page.add(dashboard_view(page))
+        page.update()
 
-    # Buscar producto
     def buscar_producto(e):
-        ref = nref_input.value.strip()
-        producto = Producto.buscar_por_referencia(ref)
-        if producto:
-            nombre_input.value = producto.nombre
-            precio_input.value = str(producto.precio)
-        else:
-            nombre_input.value = ""
-            precio_input.value = ""
-        actualizar_linea_subtotal()
-
-    # Calcular totales generales
-    def calcular_totales():
-        total = sum(linea['subtotal'] for linea in lineas_venta)
-        subtotal_text.value = f"Subtotal líneas: {total:.2f} €"
-        total_text.value = f"Total de la Compra: {total:.2f} €"
-        Page.update()
-
-    # Guardar línea
-    def guardar_linea(e):
-        try:
-            producto = Producto.buscar_por_referencia(nref_input.value.strip())
-            if not producto:
-                raise Exception("Producto no encontrado")
-
-            cantidad = int(cantidad_input.value)
-            precio_stamp = float(precio_input.value)
-            subtotal = precio_stamp * cantidad
-
-            linea_id = str(uuid.uuid4())
-            linea = VentaLine(linea_id, producto, cantidad, precio_stamp)
-            if linea.guardar():
-                # Guardar en la lista visual
-                lineas_venta.append({
-                    "producto": producto.nombre,
-                    "cantidad": cantidad,
-                    "precio": precio_stamp,
-                    "subtotal": subtotal
-                })
-                lista_lineas_column.controls.append(
-                    ft.Text(f"{producto.nombre} - {cantidad} x {precio_stamp:.2f} € = {subtotal:.2f} €")
-                )
-                calcular_totales()
-
-                Page.dialog = ft.AlertDialog(title=ft.Text("Línea guardada correctamente"))
+        ref = buscador_input.value.strip()
+        if ref:
+            producto = Producto.buscar_por_referencia(ref)
+            if producto:
+                agregar_a_carrito(producto)
             else:
-                Page.dialog = ft.AlertDialog(title=ft.Text("Error al guardar"))
-            Page.dialog.open = True
-            Page.update()
+                page.open(ventana_alerta.barra_error_mensaje("Producto no encontrado"))
+        buscador_input.value = ""
+        page.update()
 
-        except Exception as ex:
-            Page.dialog = ft.AlertDialog(title=ft.Text(f"Error: {ex}"))
-            Page.dialog.open = True
-            Page.update()
+    def agregar_a_carrito(producto: Producto):
+        for item in carrito:
+            if item["producto"].id == producto.id:
+                item["cantidad"] += 1
+                break
+        else:
+            carrito.append({"producto": producto, "cantidad": 1})
+        actualizar_tabla()
 
-    # Listeners
-    nref_input.on_change = buscar_producto
-    precio_input.on_change = actualizar_linea_subtotal
-    cantidad_input.on_change = actualizar_linea_subtotal
+    def eliminar_linea(e, prod_id):
+        global carrito
+        carrito = [item for item in carrito if item["producto"].id != prod_id]
+        actualizar_tabla()
 
-    return ft.View(
-        route="/venta_line",
-        controls=[
-            ft.Text("Gestión de Venta", size=30, weight=ft.FontWeight.BOLD),
+    def actualizar_tabla():
+        filas = []
+        total = 0.0
+        for item in carrito:
+            prod = item["producto"]
+            cant = item["cantidad"]
+            subtotal = cant * prod.precio
+            total += subtotal * (1 + prod.iva.porcentaje / 100)
 
-            ft.Row(
-                controls=[
-                    ft.Container(
-                        content=ft.Column([
-                            ft.Text("Líneas de Venta:", size=18, weight=ft.FontWeight.BOLD),
-                            lista_lineas_column,
-                        ]),
-                        expand=3,
-                        padding=10,
-                        border=ft.border.all(1),
-                        border_radius=10
-                    ),
-                    ft.Container(
-                        content=ft.Column([
-                            subtotal_text,
-                        ]),
-                        expand=1,
-                        padding=10,
-                        border=ft.border.all(1),
-                        border_radius=10
-                    ),
-                ],
-                expand=True
-            ),
+            fila = ft.Row([
+                ft.Text(f"{prod.nombre} x{cant}"),
+                ft.Text(f"{subtotal:.2f} €"),
+                ft.IconButton(
+                    icon=ft.Icons.DELETE,
+                    on_click=lambda e, id=prod.id: eliminar_linea(e, id)
+                )
+            ])
+            filas.append(fila)
 
-            ft.Divider(),
+        tabla_lineas.controls.clear()
+        tabla_lineas.controls.extend(filas)
+        total_texto.value = f"Total: {total:.2f} €"
+        total_venta=total
+        cantidad_products=1
+        page.update()
 
-            ft.Column(
-                controls=[
-                    ft.Text("Añadir Nueva Línea", size=20, weight=ft.FontWeight.BOLD),
-                    nref_input,
-                    ft.ElevatedButton("Buscar Ref", on_click=buscar_producto, width=300),
-                    nombre_input,
-                    precio_input,
-                    cantidad_input,
-                    linea_subtotal_text,
-                    ft.ElevatedButton("Guardar Línea", on_click=guardar_linea, width=300),
-                    total_text,
-                    ft.ElevatedButton(
-                        "Volver al Dashboard",
-                        on_click=lambda e: Page.go("/dashboard"),
-                        width=300,
-                        bgcolor=ft.Colors.GREY,
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    def finalizar_venta(e):
+        if not carrito:
+            page.open(ventana_alerta.barra_error_mensaje("No hay productos en la venta"))
+            return
+        cliente_anonimo=Cliente.buscar_por_id("1")
+
+        venta = Venta(
+            cliente=cliente_anonimo,
+            cantidad_productos=cantidad_products,
+            total=total_venta
+        ) 
+        venta.guardar() #Crea la venta vacía
+        for item in carrito:
+            producto = item["producto"]
+            cantidad = item["cantidad"]
+            linea=Venta_Linea(
+                venta_id=venta.id,
+                producto=producto,
+                cantidad=cantidad
             )
-        ],
-        padding=20, 
-        scroll=ft.ScrollMode.AUTO,
+            linea.guardar()
+        page.open(ventana_alerta.barra_ok_mensaje("Venta registrada correctamente"))
+        carrito.clear()
+        actualizar_tabla()
+
+    #Componentes
+    buscador_input = ft.TextField(
+        label="Escanea o escribe referencia",
+        prefix_icon=ft.Icons.SEARCH,
+        on_submit=buscar_producto
     )
+    btn_volver = ft.ElevatedButton(
+        text="Volver al Dashboard",
+        icon=ft.Icons.ARROW_BACK,
+        on_click=volver_al_dashboard,
+        bgcolor=Constantes.COLOR_FONDO_PRINCIPAL,
+        color=Constantes.COLOR_BOTON_PRIMARIO
+    )
+    btn_finalizar = ft.ElevatedButton(
+        text="Finalizar Venta",
+        icon=ft.Icons.CHECK_CIRCLE,
+        on_click=finalizar_venta,
+        bgcolor="green",
+        color="white"
+    )
+
+    #Estructura
+    fila_superior = ft.Row(controls=[btn_volver, ft.Text("TPV - Punto de Venta", size=24)])
+    contenedor_tabla = ft.Container(height=400, content=ft.Column([tabla_lineas], scroll=ft.ScrollMode.AUTO))
+
+    layout = ft.Column([
+        fila_superior,
+        buscador_input,
+        contenedor_tabla,
+        total_texto,
+        btn_finalizar
+    ])
+
+    contenedor = ft.Container(
+        expand=True,
+        alignment=ft.alignment.top_center,
+        content=layout,
+        bgcolor=Constantes.COLOR_TARJETA_FONDO,
+        padding=20,
+        border_radius=15
+    )
+
+    return contenedor

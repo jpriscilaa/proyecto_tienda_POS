@@ -76,6 +76,39 @@ class Producto:
             )
         else:
             return None
+        
+    @staticmethod
+    def buscar_por_referencia(n_referencia):
+        conexion = sqlite3.connect(Constantes.RUTA_BD)
+        cursor = conexion.cursor()
+        cursor.execute(
+            "SELECT PRODUCTO_ID, N_REFERENCIA, NOMBRE, PRECIO, CATEGORIA_ID, IVA_ID FROM PRODUCTO WHERE N_REFERENCIA = ?",
+            (n_referencia,))
+        fila = cursor.fetchone()
+        conexion.close()
+
+        if fila:
+            prod_id = fila[0]
+            n_ref = fila[1]
+            nombre = fila[2]
+            precio = fila[3]
+            categoria_id = fila[4]
+            iva_id = fila[5]
+
+            # Buscar las instancias de Categoria e Iva
+            categoria = Categoria.buscar_por_id(categoria_id)
+            iva = Iva.buscar_por_id(iva_id)
+
+            return Producto(
+                precio=precio,
+                nombre=nombre,
+                n_referencia=n_ref,
+                categoria=categoria,
+                iva=iva,
+                id=prod_id
+            )
+        else:
+            return None
 
     @staticmethod
     def existe(producto_id):

@@ -42,7 +42,7 @@ def clientes_view(page: ft.Page):
         else:
             if nombre.disabled==False and apellido.value and documento.value and telefono.value and direccion.value:
                 cliente_nuevo = Cliente(
-                    cliente_nombre = nombre.value,
+                    cliente_nombre=nombre.value,
                     cliente_apellido=apellido.value,
                     cliente_documento=documento.value,
                     cliente_telefono=telefono.value,

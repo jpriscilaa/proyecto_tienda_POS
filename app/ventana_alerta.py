@@ -28,5 +28,5 @@ def barra_ok_mensaje(texto):
     return barra
 
 def barra_info_mensaje(texto):
-    barra=ft.SnackBar(ft.Text(texto), bgcolor=Constantes.COLOR_BOTON_INFO)
+    barra=ft.SnackBar(ft.Text(texto), bgcolor=Constantes.COLOR_BORDE_CLARO)
     return barra
