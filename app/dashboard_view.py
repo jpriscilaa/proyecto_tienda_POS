@@ -28,9 +28,9 @@ def dashboard_view(page: ft.Page):
         page.add(usuario_view(page))
     
     def abrir_ventas(e):
-        from app.ventas_view import ventas_view
+        from app.ventas_view import venta_view
         page.clean()
-        page.add(ventas_view(page))
+        page.add(venta_view(page))
 
     def salir(e):
         from app.login_view import login_view
@@ -67,6 +67,8 @@ def dashboard_view(page: ft.Page):
             ft.Container(col=6, content=crear_boton("CLIENTES", ft.Icons.PEOPLE, abrir_clientes)),
             ft.Container(col=6, content=crear_boton("TPV", ft.Icons.POINT_OF_SALE, abrir_tpv)),
             ft.Container(col=6, content=crear_boton("USUARIOS", ft.Icons.PERSON, abrir_usuario)),
+            ft.Container(col=6, content=crear_boton("VENTAS", ft.Icons.LIST, abrir_ventas)),
+
             ft.Container(col=6, content=crear_boton("SALIR", ft.Icons.EXIT_TO_APP, salir, color_bg=ft.Colors.RED, color_text=ft.Colors.WHITE)),
         ]
     )
