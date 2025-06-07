@@ -123,14 +123,15 @@ CREATE_TABLA_VENTA='''CREATE TABLE VENTA (
     FECHA              TEXT NOT FULL,
     PAGO               TEXT NOT NULL,
     CLIENTE_ID         TEXT REFERENCES CLIENTE (CLIENTE_ID),
+    CANTIDA_ PROD      TEXT NOT NULL,
     TOTAL              REAL NOT NULL
 );'''
 
-INSERT_VENTA='''INSERT INTO VENTA (VENTA_ID, FECHA,PAGO,CLIENTE_ID, TOTAL)
-                  VALUES (?, ?, ?, ?, ?)'''
+INSERT_VENTA='''INSERT INTO VENTA (VENTA_ID, FECHA,PAGO,CLIENTE_ID, CANTIDA_ PROD,TOTAL)
+                  VALUES (?, ?, ?, ?, ?,?)'''
 
 UPDATE_VENTA='''UPDATE VENTA
-                  SET FECHA=? ,PAGO=?, CLIENTE_ID=? ,TOTAL=?,
+                  SET FECHA=? ,PAGO=?, CLIENTE_ID=?, CANTIDA_ PROD=? ,TOTAL=?
                   WHERE VENTA_ID=?'''
 
 
