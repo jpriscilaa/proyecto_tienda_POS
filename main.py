@@ -10,7 +10,7 @@ from app import ventana_alerta
 
 def main(page: ft.Page):
     page.window.center=True
-    page.window_icon = "POS.ico"
+    page.window_icon="POS.ico"
     page.title=Constantes.NOMBRE_APP
     page.clean()
 
@@ -44,10 +44,10 @@ if __name__ == "__main__":
         filemode='a'    #a significa que agrega linea al log, w seria para crear de 0
     )
 
-    #mostrar en consola además del archivo
-    console = logging.StreamHandler()
+    #Mostrar en consola además del archivo
+    console=logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('[%(levelname)s] %(message)s')
+    formatter=logging.Formatter('[%(levelname)s] %(message)s')
     console.setFormatter(formatter)
     logging.getLogger().addHandler(console)
 
