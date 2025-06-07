@@ -22,7 +22,7 @@ def dashboard_view(page: ft.Page):
         page.clean()
         page.add(venta_line_view(page))
 
-    def abri_usuario(e):
+    def abrir_usuario(e):
         from app.usuario_view import usuario_view
         page.clean()
         page.add(usuario_view(page))
@@ -32,32 +32,58 @@ def dashboard_view(page: ft.Page):
         page.clean()
         page.add(login_view(page))
 
-    botones = [
-        ft.ElevatedButton("CONFIGURACIÓN DE EMPRESA", on_click=abrir_config_empresa, icon=ft.Icons.BUSINESS, width=250),
-        ft.ElevatedButton("PRODUCTOS", on_click=abrir_productos, icon=ft.Icons.SHOPPING_CART, width=250),
-        ft.ElevatedButton("CLIENTES", on_click=abrir_clientes, icon=ft.Icons.PEOPLE, width=250),
-        ft.ElevatedButton("TPV", on_click=abrir_tpv, icon=ft.Icons.POINT_OF_SALE, width=250),
-        ft.ElevatedButton("USUARIOS", on_click=abri_usuario, icon=ft.Icons.PERSON, width=250),
-        ft.ElevatedButton("SALIR", on_click=salir, icon=ft.Icons.EXIT_TO_APP, bgcolor=ft.Colors.RED, color=ft.Colors.WHITE, width=250),
-    ]
+    # Botón estilizado reutilizable
+    def crear_boton(texto, icono, on_click, color_bg=None, color_text=None):
+        return ft.Container(
+            content=ft.ElevatedButton(
+                text=texto,
+                icon=icono,
+                on_click=on_click,
+                style=ft.ButtonStyle(
+                    padding=20,
+                    shape=ft.RoundedRectangleBorder(radius=12),
+                    bgcolor=color_bg,
+                    color=color_text,
+                    elevation=4
+                ),
+                expand=True
+            ),
+            height=80,
+            padding=5
+        )
+
+    # Lista de botones en diseño grid (2 columnas)
+    grid_botones = ft.ResponsiveRow(
+        columns=12,
+        controls=[
+            ft.Container(col=6, content=crear_boton("CONFIGURACIÓN", ft.Icons.BUSINESS, abrir_config_empresa)),
+            ft.Container(col=6, content=crear_boton("PRODUCTOS", ft.Icons.SHOPPING_CART, abrir_productos)),
+            ft.Container(col=6, content=crear_boton("CLIENTES", ft.Icons.PEOPLE, abrir_clientes)),
+            ft.Container(col=6, content=crear_boton("TPV", ft.Icons.POINT_OF_SALE, abrir_tpv)),
+            ft.Container(col=6, content=crear_boton("USUARIOS", ft.Icons.PERSON, abrir_usuario)),
+            ft.Container(col=6, content=crear_boton("SALIR", ft.Icons.EXIT_TO_APP, salir, color_bg=ft.Colors.RED, color_text=ft.Colors.WHITE)),
+        ]
+    )
 
     tarjeta_menu = ft.Container(
         padding=30,
         border_radius=20,
-        bgcolor=Constantes.COLOR_BORDE_CLARO if hasattr(Constantes, "COLOR_BORDE_CLARO") else ft.Colors.WHITE,
+        width=700,
+        bgcolor=getattr(Constantes, "COLOR_BORDE_CLARO", ft.Colors.WHITE),
         content=ft.Column(
             controls=[
-                ft.Text("Dashboard", size=26, weight="bold", text_align=ft.TextAlign.CENTER),
-                *botones
+                ft.Text("Panel Principal", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
+                ft.Divider(),
+                grid_botones
             ],
-            spacing=15,
+            spacing=25,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         shadow=ft.BoxShadow(
             spread_radius=1,
-            blur_radius=10,
-            color=ft.Colors.with_opacity(0.2, ft.Colors.BLACK),
-            offset=ft.Offset(2, 4)
+            blur_radius=12,
+            color=ft.Colors.with_opacity(0.25, ft.Colors.BLACK),
+            offset=ft.Offset(2, 6)
         )
     )
 
@@ -66,7 +92,7 @@ def dashboard_view(page: ft.Page):
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_center,
             end=ft.alignment.bottom_center,
-            colors=[ft.Colors.BLUE_900, ft.Colors.BLUE_ACCENT_100, ft.Colors.BLUE_GREY_400]
+            colors=[ft.Colors.BLUE_900, ft.Colors.BLUE_700]
         ),
         content=ft.Row(
             controls=[
