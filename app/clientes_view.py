@@ -5,7 +5,7 @@ import uuid
 
 def clientes_view(page: ft.Page):
 
-    cliente_seleccionado: Cliente = None
+    cliente_seleccionado: Cliente=None
     page.clean()
     page.window.width=1000
     page.window.center=True
@@ -41,7 +41,7 @@ def clientes_view(page: ft.Page):
             deshabilitar_campos(habilitar=False)
         else:
             if nombre.disabled==False and apellido.value and documento.value and telefono.value and direccion.value:
-                cliente_nuevo = Cliente(
+                cliente_nuevo=Cliente(
                     cliente_nombre=nombre.value,
                     cliente_apellido=apellido.value,
                     cliente_documento=documento.value,
@@ -87,9 +87,9 @@ def clientes_view(page: ft.Page):
             Cliente.borrar_por_id(cliente_id)
             actualizar_tabla(buscador_input.value)
             page.update()
-        filas = []
+        filas=[]
         for cl in lista:
-            fila = ft.DataRow(
+            fila=ft.DataRow(
                 cells=[
                     ft.DataCell(ft.Text(cl.nombre)),
                     ft.DataCell(ft.Text(cl.apellido)),
@@ -110,7 +110,7 @@ def clientes_view(page: ft.Page):
             ) 
             filas.append(fila)
 
-        data_table = ft.DataTable(
+        data_table=ft.DataTable(
             data_row_color={ft.ControlState.HOVERED: Constantes.COLOR_BORDE_CLARO},
             columns=[
                 ft.DataColumn(ft.Text("Nombre")),

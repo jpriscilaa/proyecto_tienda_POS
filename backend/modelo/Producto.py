@@ -8,17 +8,17 @@ from backend.modelo.Iva import Iva
 
 class Producto:
     def __init__(self, precio, nombre, n_referencia, categoria: Categoria, iva: Iva, id=None):
-        self.id = id or str(uuid.uuid4())
-        self.n_referencia = n_referencia
-        self.nombre = nombre.upper()
-        self.precio = float(str(precio).replace(",", ".")) if precio else 0.0
-        self.categoria = categoria
-        self.iva = iva
+        self.id=id or str(uuid.uuid4())
+        self.n_referencia=n_referencia
+        self.nombre=nombre.upper()
+        self.precio=float(str(precio).replace(",", ".")) if precio else 0.0
+        self.categoria=categoria
+        self.iva=iva
 
     def guardar(self):
         try:
-            conexion = sqlite3.connect(Constantes.RUTA_BD)
-            cursor = conexion.cursor()
+            conexion=sqlite3.connect(Constantes.RUTA_BD)
+            cursor=conexion.cursor()
 
             if Producto.existe(self.id):
                 cursor.execute(Constantes.UPDATE_PRODUCTO, (self.n_referencia, self.nombre, self.precio, self.categoria.categoria_id, self.iva.iva_id, self.id))
@@ -40,31 +40,31 @@ class Producto:
             return False
 
     def eliminar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("DELETE FROM PRODUCTO WHERE PRODUCTO_ID = ?", (self.id,))
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("DELETE FROM PRODUCTO WHERE PRODUCTO_ID=?", (self.id,))
         conexion.commit()
         conexion.close()
 
     @staticmethod
     def buscar_por_id(producto_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("SELECT PRODUCTO_ID, N_REFERENCIA, NOMBRE, PRECIO, CATEGORIA_ID, IVA_ID FROM PRODUCTO WHERE PRODUCTO_ID = ?", (producto_id,))
-        fila = cursor.fetchone()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("SELECT PRODUCTO_ID, N_REFERENCIA, NOMBRE, PRECIO, CATEGORIA_ID, IVA_ID FROM PRODUCTO WHERE PRODUCTO_ID=?", (producto_id,))
+        fila=cursor.fetchone()
         conexion.close()
 
         if fila:
-            prod_id = fila[0]
-            n_ref = fila[1]
-            nombre = fila[2]
-            precio = fila[3]
-            categoria_id = fila[4]
-            iva_id = fila[5]
+            prod_id=fila[0]
+            n_ref=fila[1]
+            nombre=fila[2]
+            precio=fila[3]
+            categoria_id=fila[4]
+            iva_id=fila[5]
 
             #Buscar las instancias de Categoria e Iva
-            categoria = Categoria.buscar_por_id(categoria_id)
-            iva = Iva.buscar_por_id(iva_id)
+            categoria=Categoria.buscar_por_id(categoria_id)
+            iva=Iva.buscar_por_id(iva_id)
 
             return Producto(
                 precio=precio,
@@ -79,25 +79,25 @@ class Producto:
         
     @staticmethod
     def buscar_por_referencia(n_referencia):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
         cursor.execute(
-            "SELECT PRODUCTO_ID, N_REFERENCIA, NOMBRE, PRECIO, CATEGORIA_ID, IVA_ID FROM PRODUCTO WHERE N_REFERENCIA = ?",
+            "SELECT PRODUCTO_ID, N_REFERENCIA, NOMBRE, PRECIO, CATEGORIA_ID, IVA_ID FROM PRODUCTO WHERE N_REFERENCIA=?",
             (n_referencia,))
-        fila = cursor.fetchone()
+        fila=cursor.fetchone()
         conexion.close()
 
         if fila:
-            prod_id = fila[0]
-            n_ref = fila[1]
-            nombre = fila[2]
-            precio = fila[3]
-            categoria_id = fila[4]
-            iva_id = fila[5]
+            prod_id=fila[0]
+            n_ref=fila[1]
+            nombre=fila[2]
+            precio=fila[3]
+            categoria_id=fila[4]
+            iva_id=fila[5]
 
             # Buscar las instancias de Categoria e Iva
-            categoria = Categoria.buscar_por_id(categoria_id)
-            iva = Iva.buscar_por_id(iva_id)
+            categoria=Categoria.buscar_por_id(categoria_id)
+            iva=Iva.buscar_por_id(iva_id)
 
             return Producto(
                 precio=precio,
@@ -112,43 +112,43 @@ class Producto:
 
     @staticmethod
     def existe(producto_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("SELECT 1 FROM PRODUCTO WHERE PRODUCTO_ID = ?", (producto_id,))
-        resultado = cursor.fetchone()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("SELECT 1 FROM PRODUCTO WHERE PRODUCTO_ID=?", (producto_id,))
+        resultado=cursor.fetchone()
         conexion.close()
         return resultado is not None
     
     @classmethod
     def borrar_por_id(cls, id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute('''DELETE FROM PRODUCTO WHERE PRODUCTO_ID = ?''', (id,))
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute('''DELETE FROM PRODUCTO WHERE PRODUCTO_ID=?''', (id,))
         conexion.commit()
         conexion.close()
 
     @staticmethod
     def obtener_todos():
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
         cursor.execute("SELECT * FROM PRODUCTO")
-        filas = cursor.fetchall()
+        filas=cursor.fetchall()
         conexion.close()
 
-        productos = []
+        productos=[]
         for fila in filas:
-            prod_id = fila[0]
-            n_ref = fila[1]
-            nombre = fila[2]
-            precio = fila[3]
-            categoria_id = fila[4]
-            iva_id = fila[5]
+            prod_id=fila[0]
+            n_ref=fila[1]
+            nombre=fila[2]
+            precio=fila[3]
+            categoria_id=fila[4]
+            iva_id=fila[5]
 
             # Obtener instancias completas de Categoria e Iva (suponiendo que tenés estos métodos)
-            categoria = Categoria.buscar_por_id(categoria_id)
-            iva = Iva.buscar_por_id(iva_id)
+            categoria=Categoria.buscar_por_id(categoria_id)
+            iva=Iva.buscar_por_id(iva_id)
 
-            producto = Producto(
+            producto=Producto(
                 precio=precio,
                 nombre=nombre,
                 n_referencia=n_ref,

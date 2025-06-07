@@ -14,7 +14,7 @@ def test1 ():
     from backend.servicios.categoria_service import listar_categorias
     from backend.servicios.producto_service import  crear_producto, listar_productos
     crear_producto(Producto("0","12345","coca",1.50,Categoria("1","bebidas"),Iva("1","general",21)))
-    productos = listar_productos()
+    productos=listar_productos()
     print(productos[0])
 
 def test2():

@@ -8,13 +8,13 @@ def usuario_view(page: ft.Page):
         page.open(ventana_alerta.alerta_error("Error", "Ya existe este usuario"))
         pass
 			
-    buscador_input = ft.TextField(label="Buscar usuario", prefix_icon=ft.Icons.SEARCH)
-    nombre_usuario = ft.TextField(label="Nombre de usuario", autofocus=True, width=300)
-    nombre_trabajador = ft.TextField(label="Nombre del trabajador")
-    apellido = ft.TextField(label = "Apellido del vendedor")
-    ntelefono = ft.TextField(label="Numero de telefono")
-    contrasena_usuario = ft.TextField(label="Contraseña", password=True, width=300)
-    rol_usuario = ft.Dropdown(
+    buscador_input=ft.TextField(label="Buscar usuario", prefix_icon=ft.Icons.SEARCH)
+    nombre_usuario=ft.TextField(label="Nombre de usuario", autofocus=True, width=300)
+    nombre_trabajador=ft.TextField(label="Nombre del trabajador")
+    apellido=ft.TextField(label="Apellido del vendedor")
+    ntelefono=ft.TextField(label="Numero de telefono")
+    contrasena_usuario=ft.TextField(label="Contraseña", password=True, width=300)
+    rol_usuario=ft.Dropdown(
         label="Rol de usuario",
         options=[
             ft.dropdown.Option("ADMINISTRADOR"),
@@ -22,13 +22,13 @@ def usuario_view(page: ft.Page):
         ],
         width=300
     )
-    tabla_usuarios = ft.Column()
+    tabla_usuarios=ft.Column()
     
 
     def actualizar_tabla(filtro=None):
-        lista = Usuario.obtener_todos()
+        lista=Usuario.obtener_todos()
         if filtro:
-            lista = [u for u in lista if filtro.upper() in u.nombre_usuario.upper()]
+            lista=[u for u in lista if filtro.upper() in u.nombre_usuario.upper()]
 
         def eliminar_usuario(e, usuario_id):
             try:
@@ -37,9 +37,9 @@ def usuario_view(page: ft.Page):
             except Exception:
                 print("Error al borrar")
                 page.update()
-        filas = []
+        filas=[]
         for u in lista:
-            fila = ft.DataRow(
+            fila=ft.DataRow(
                 cells=[
                     ft.DataCell(ft.Text(u.nombre_usuario)),
                     ft.DataCell(ft.Text(u.rol)),
@@ -55,7 +55,7 @@ def usuario_view(page: ft.Page):
             )
             filas.append(fila)
 
-        data_table = ft.DataTable(
+        data_table=ft.DataTable(
             data_row_color={ft.ControlState.HOVERED: "#e3f2fd"},
             columns=[
                 ft.DataColumn(label=ft.Text("Usuario")),
@@ -90,11 +90,11 @@ def usuario_view(page: ft.Page):
             print("Tiene que tener mas de 5 digitos")
             page.open(ventana_alerta.alerta_error("USUARIO", "Tiene que tener mas de 5 digitos"))
         else:
-            nuevo_usuario = Usuario(
+            nuevo_usuario=Usuario(
                 nombre_usuario=nombre_usuario.value,
                 trabajador=nombre_trabajador.value,
                 apellido=apellido.value,
-                ntelefono = ntelefono.value,
+                ntelefono=ntelefono.value,
                 contrasena=contrasena_usuario.value,
                 rol=rol_usuario.value
             )
@@ -102,18 +102,18 @@ def usuario_view(page: ft.Page):
             print("Usuario creado correctamente")
 
         # Limpiar campos
-        nombre_usuario.value = ""
-        contrasena_usuario.value = ""
+        nombre_usuario.value=""
+        contrasena_usuario.value=""
         nombre_trabajador.value =""
         apellido.value=""
         ntelefono.value=""
-        rol_usuario.value = None
+        rol_usuario.value=None
         page.update()
         actualizar_tabla()
 
-    buscador_input.on_change = lambda e: actualizar_tabla(buscador_input.value)
+    buscador_input.on_change=lambda e: actualizar_tabla(buscador_input.value)
 
-    layout = ft.Container(
+    layout=ft.Container(
         padding=20,
         content=ft.Column(
             controls=[

@@ -7,23 +7,23 @@ from backend.modelo.Venta import Venta
 
 class Venta_Linea:
     def __init__(self, venta: Venta, producto: Producto, cantidad, precio_unitario, iva, total_linea, id=None):
-        self.id = id or str(uuid.uuid4())
-        self.venta = venta
-        self.producto = producto
-        self.cantidad = int(cantidad)
-        self.precio_unitario = float(precio_unitario)
-        self.iva = float(iva)
-        self.total_linea = float(total_linea)
+        self.id=id or str(uuid.uuid4())
+        self.venta=venta
+        self.producto=producto
+        self.cantidad=int(cantidad)
+        self.precio_unitario=float(precio_unitario)
+        self.iva=float(iva)
+        self.total_linea=float(total_linea)
 
     def guardar(self):
         try:
-            conexion = sqlite3.connect(Constantes.RUTA_BD)
-            cursor = conexion.cursor()
+            conexion=sqlite3.connect(Constantes.RUTA_BD)
+            cursor=conexion.cursor()
 
             if Venta_Linea.existe(self.id):
                 cursor.execute("""
-                    UPDATE LINEA_VENTA SET VENTA_ID = ?, PRODUCTO_ID = ?, CANTIDAD = ?, 
-                    PRECIO_UNITARIO = ?, IVA = ?, TOTAL_LINEA = ? WHERE LINEA_ID = ?
+                    UPDATE LINEA_VENTA SET VENTA_ID=?, PRODUCTO_ID=?, CANTIDAD=?, 
+                    PRECIO_UNITARIO=?, IVA=?, TOTAL_LINEA=? WHERE LINEA_ID=?
                 """, (self.venta.id, self.producto.id, self.cantidad, self.precio_unitario, self.iva, self.total_linea, self.id))
             else:
                 cursor.execute("""
@@ -39,55 +39,55 @@ class Venta_Linea:
             return False
 
     def eliminar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("DELETE FROM LINEA_VENTA WHERE LINEA_ID = ?", (self.id,))
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("DELETE FROM LINEA_VENTA WHERE LINEA_ID=?", (self.id,))
         conexion.commit()
         conexion.close()
 
     @staticmethod
     def buscar_por_id(linea_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
         cursor.execute("""
             SELECT LINEA_ID, VENTA_ID, PRODUCTO_ID, CANTIDAD, PRECIO_UNITARIO, IVA, TOTAL_LINEA
-            FROM LINEA_VENTA WHERE LINEA_ID = ?
+            FROM LINEA_VENTA WHERE LINEA_ID=?
         """, (linea_id,))
-        fila = cursor.fetchone()
+        fila=cursor.fetchone()
         conexion.close()
 
         if fila:
-            venta = Venta.buscar_por_id(fila[1])
-            producto = Producto.buscar_por_id(fila[2])
+            venta=Venta.buscar_por_id(fila[1])
+            producto=Producto.buscar_por_id(fila[2])
             return Venta_Linea(venta, producto, fila[3], fila[4], fila[5], fila[6], id=fila[0])
         return None
 
     @staticmethod
     def existe(linea_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("SELECT 1 FROM LINEA_VENTA WHERE LINEA_ID = ?", (linea_id,))
-        existe = cursor.fetchone()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("SELECT 1 FROM LINEA_VENTA WHERE LINEA_ID=?", (linea_id,))
+        existe=cursor.fetchone()
         conexion.close()
         return existe is not None
     
     @staticmethod
     def obtener_por_venta(venta_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
         cursor.execute("""
             SELECT LINEA_ID, VENTA_ID, PRODUCTO_ID, CANTIDAD, PRECIO_UNITARIO, IVA, TOTAL_LINEA
             FROM LINEA_VENTA
-            WHERE VENTA_ID = ?
+            WHERE VENTA_ID=?
         """, (venta_id,))
-        filas = cursor.fetchall()
+        filas=cursor.fetchall()
         conexion.close()
 
-        lineas = []
+        lineas=[]
         for fila in filas:
-            venta = Venta.buscar_por_id(fila[1])
-            producto = Producto.buscar_por_id(fila[2])
-            linea = LineaVenta(
+            venta=Venta.buscar_por_id(fila[1])
+            producto=Producto.buscar_por_id(fila[2])
+            linea=Venta_Linea(
                 venta=venta,
                 producto=producto,
                 cantidad=fila[3],

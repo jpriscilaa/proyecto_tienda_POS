@@ -2,7 +2,7 @@ import flet as ft
 from backend import Constantes
 
 def alerta_login():
-    dialogo = ft.AlertDialog(
+    dialogo=ft.AlertDialog(
         title=ft.Text("Error"),
         content=ft.Text("Usuario o contraseña incorrectas"),
         alignment=ft.alignment.center,
@@ -11,7 +11,7 @@ def alerta_login():
     return dialogo
 
 def alerta_error(titulo, texto):
-    dialogo = ft.AlertDialog(
+    dialogo=ft.AlertDialog(
         title=ft.Text("Error "+titulo),
         content=ft.Text(texto),
         alignment=ft.alignment.center,

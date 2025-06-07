@@ -7,8 +7,8 @@ from .tpv_view import venta_line_view  # Asegúrate de importar la vista de TPV
 from app.iniciar_app import iniciar_app
 
 def route_app(page):
-    page.bgcolor = "#FFFFFF"  # Cambia el color de fondo de toda la ventana
-    page.title = "Tienda"
+    page.bgcolor="#FFFFFF"  # Cambia el color de fondo de toda la ventana
+    page.title="Tienda"
 
     def route_change(e):
         page.views.clear()
@@ -32,5 +32,5 @@ def route_app(page):
 
         page.update()
 
-    page.on_route_change = route_change
+    page.on_route_change=route_change
     page.go(page.route)

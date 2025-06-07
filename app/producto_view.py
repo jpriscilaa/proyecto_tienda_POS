@@ -5,7 +5,7 @@ from backend.modelo.Categoria import Categoria
 from backend import Constantes
 from app import ventana_alerta
 import logging
-logger = logging.getLogger(__name__)
+logger=logging.getLogger(__name__)
 
 def producto_view(page: ft.Page):
     
@@ -29,7 +29,7 @@ def producto_view(page: ft.Page):
             n_ref.focus()
             page.update()
         else:
-            e.control.disabled = True
+            e.control.disabled=True
             if n_ref.disabled==False and precio.value and nombre.value and n_ref.value and categoria_dropdown.value and iva_dropdown.value:
                 producto_nuevo=Producto(
                     precio.value,
@@ -54,7 +54,7 @@ def producto_view(page: ft.Page):
                 limpiar_campos()
 
                 #Ya que se guarda el trabajo ahora se activa para que se pueda volver a clicar
-                e.control.disabled = False
+                e.control.disabled=False
                 page.update()
                 
             else:
@@ -64,9 +64,9 @@ def producto_view(page: ft.Page):
 
     def validar_nombre(e):
         if not nombre.value.strip() and nombre.disabled==False:
-            nombre.error_text = "Este campo es obligatorio"
+            nombre.error_text="Este campo es obligatorio"
         else:
-            nombre.error_text = None
+            nombre.error_text=None
         page.update()
 
     def limpiar_campos(e=None, btn=None):
@@ -120,9 +120,9 @@ def producto_view(page: ft.Page):
             page.open(ventana_alerta.barra_info_mensaje("Se ha eliminado producto"))
             actualizar_tabla(buscador_input.value)
             page.update()
-        filas = []
+        filas=[]
         for p in lista:
-            fila = ft.DataRow(
+            fila=ft.DataRow(
                 cells=[
                     ft.DataCell(ft.Text(p.n_referencia)),
                     ft.DataCell(ft.Text(p.nombre)),
@@ -142,7 +142,7 @@ def producto_view(page: ft.Page):
             ) 
             filas.append(fila)
 
-        data_table = ft.DataTable(
+        data_table=ft.DataTable(
             data_row_color={ft.ControlState.HOVERED: Constantes.COLOR_BORDE_CLARO},
             columns=[
                 ft.DataColumn(ft.Text("Referencia")),

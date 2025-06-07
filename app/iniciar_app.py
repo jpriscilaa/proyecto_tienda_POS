@@ -24,7 +24,7 @@ def iniciar_app(page: ft.Page):
         ])
     
     def guardarEmpresa():
-        empresa1 = Config_Empresa(
+        empresa1=Config_Empresa(
             empresa_id=1,
             nombre=nombre_empresa.value,
             direccion=direccion_empresa.value,
@@ -34,7 +34,7 @@ def iniciar_app(page: ft.Page):
         config_empr_service.crearEmpresa(empresa1)
 
         #creamos usuario admin
-        usuarioAdmin1 = Usuario(
+        usuarioAdmin1=Usuario(
         nombre_usuario=nombre_usuario.value,
         contrasena=contrasenna_usuario.value,
         rol=rol_usuario.value
@@ -47,13 +47,13 @@ def iniciar_app(page: ft.Page):
         page.add(login_view(page))
 
     
-    page.title = "Primera configuración"
-    page.horizontal_alignment = ft.MainAxisAlignment.CENTER
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.bgcolor = Constantes.COLOR_FONDO_PRINCIPAL
+    page.title="Primera configuración"
+    page.horizontal_alignment=ft.MainAxisAlignment.CENTER
+    page.vertical_alignment=ft.MainAxisAlignment.CENTER
+    page.bgcolor=Constantes.COLOR_FONDO_PRINCIPAL
     
     #Creo una lista donde iran todos los elementos, luego si lo guardo en un column se pone en modo vertial, si lo guardo en row se guarda en horizontal
-    form_controls = [
+    form_controls=[
         nombre_empresa,
         nombre_usuario,
         contrasenna_usuario,
@@ -65,9 +65,9 @@ def iniciar_app(page: ft.Page):
         ft.ElevatedButton(text="Guardar", width=180, height=50, on_click=lambda e: guardarEmpresa())
     ]
 
-    columna_campos = ft.Column(form_controls)
+    columna_campos=ft.Column(form_controls)
 
-    contenedor = ft.Container(
+    contenedor=ft.Container(
         expand=False,
         alignment=ft.alignment.center,
         content=columna_campos,

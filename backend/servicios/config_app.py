@@ -10,13 +10,13 @@ def crearSQLITE():
     os.makedirs(Constantes.RUTA_CARPETA_CONF, exist_ok=True)
 
     #Crear la ruta de la bd agregando la carpeta conf y bd, uso os.path para que funciona bien en todos los sistemas operativos
-    rutaSQLITE = os.path.join(ruta_ejecucion(), Constantes.RUTA_BD)
+    rutaSQLITE=os.path.join(ruta_ejecucion(), Constantes.RUTA_BD)
     print("---------------------")
     print("La ruta de la BD es: " + rutaSQLITE)
     print("---------------------")
     if not os.path.exists(rutaSQLITE):
-        conexion = sqlite3.connect(rutaSQLITE)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(rutaSQLITE)
+        cursor=conexion.cursor()
 
         crearTabla(cursor)
 

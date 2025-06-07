@@ -5,18 +5,18 @@ import uuid
 
 class Cliente:
     def __init__(self, cliente_id=None, cliente_nombre="", cliente_apellido="",  cliente_documento="", cliente_telefono="", cliente_direccion=""):
-        self.id = cliente_id or str(uuid.uuid4())
-        self.nombre = cliente_nombre
-        self.apellido = cliente_apellido
-        self.documento = cliente_documento
-        self.telefono = cliente_telefono
-        self.direccion = cliente_direccion
+        self.id=cliente_id or str(uuid.uuid4())
+        self.nombre=cliente_nombre
+        self.apellido=cliente_apellido
+        self.documento=cliente_documento
+        self.telefono=cliente_telefono
+        self.direccion=cliente_direccion
 
     # --- Métodos CRUD ---
     def guardar(self):
         try:
-            conexion = sqlite3.connect(Constantes.RUTA_BD)
-            cursor = conexion.cursor()
+            conexion=sqlite3.connect(Constantes.RUTA_BD)
+            cursor=conexion.cursor()
 
             if Cliente.existe(self.id):
                 print("Aplicamos update")
@@ -47,18 +47,18 @@ class Cliente:
 
 
     def eliminar(self):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("DELETE FROM CLIENTE WHERE CLIENTE_ID = ?", (self.id,))
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("DELETE FROM CLIENTE WHERE CLIENTE_ID=?", (self.id,))
         conexion.commit()
         conexion.close()
 
     @staticmethod
     def buscar_por_id(cliente_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("SELECT * FROM CLIENTE WHERE CLIENTE_ID = ?", (cliente_id,))
-        fila = cursor.fetchone()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("SELECT * FROM CLIENTE WHERE CLIENTE_ID=?", (cliente_id,))
+        fila=cursor.fetchone()
         conexion.close()
 
         if fila:
@@ -68,27 +68,27 @@ class Cliente:
 
     @staticmethod
     def obtener_todos():
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
         cursor.execute("SELECT * FROM CLIENTE")
-        filas = cursor.fetchall()
+        filas=cursor.fetchall()
         conexion.close()
 
         return [Cliente(*fila) for fila in filas]
 
     @staticmethod
     def existe(cliente_id):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
-        cursor.execute("SELECT 1 FROM CLIENTE WHERE CLIENTE_ID = ?", (cliente_id,))
-        resultado = cursor.fetchone()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("SELECT 1 FROM CLIENTE WHERE CLIENTE_ID=?", (cliente_id,))
+        resultado=cursor.fetchone()
         conexion.close()
         return resultado is not None
     
     @classmethod
     def borrar_por_id(cls, id,):
-        conexion = sqlite3.connect(Constantes.RUTA_BD)
-        cursor = conexion.cursor()
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
         cursor.execute(Constantes.DELETE_CLIENTE(id,))
         conexion.commit()
         conexion.close()

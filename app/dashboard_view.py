@@ -59,7 +59,7 @@ def dashboard_view(page: ft.Page):
         )
 
     # Lista de botones en diseño grid (2 columnas)
-    grid_botones = ft.ResponsiveRow(
+    grid_botones=ft.ResponsiveRow(
         columns=12,
         controls=[
             ft.Container(col=6, content=crear_boton("CONFIGURACIÓN", ft.Icons.BUSINESS, abrir_config_empresa)),
@@ -71,7 +71,7 @@ def dashboard_view(page: ft.Page):
         ]
     )
 
-    tarjeta_menu = ft.Container(
+    tarjeta_menu=ft.Container(
         padding=30,
         border_radius=20,
         width=700,
@@ -93,7 +93,7 @@ def dashboard_view(page: ft.Page):
         )
     )
 
-    fondo = ft.Container(
+    fondo=ft.Container(
         expand=True,
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_center,

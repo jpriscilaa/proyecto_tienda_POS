@@ -3,7 +3,7 @@ from app.router import route_app
 
 def main(page: ft.Page):
     # Cambiar color de fondo de toda la ventana
-    page.bgcolor = ft.Colors.WHITE
+    page.bgcolor=ft.Colors.WHITE
 
     # Cambiar fuente, tema, tamaño, etc.
 

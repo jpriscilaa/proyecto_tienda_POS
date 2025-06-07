@@ -4,24 +4,24 @@ from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
 def config_empresa_view(page: ft.Page):
-    empresa = Config_Empresa.obtener_config_empresa()
+    empresa=Config_Empresa.obtener_config_empresa()
     
-    nombre_empresa = ft.TextField(label="Nombre empresa", value=empresa.nombre, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
-    direccion_empresa = ft.TextField(label="Dirección empresa", value=empresa.direccion, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
-    telefono_empresa = ft.TextField(label="Teléfono empresa", value=empresa.telefono, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
-    moneda = ft.Dropdown(label="Moneda",border=ft.InputBorder.UNDERLINE,border_radius=9,disabled=True,value=empresa.moneda,options=[ft.dropdown.Option("EUR€"), ft.dropdown.Option("DOLR$")])
+    nombre_empresa=ft.TextField(label="Nombre empresa", value=empresa.nombre, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
+    direccion_empresa=ft.TextField(label="Dirección empresa", value=empresa.direccion, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
+    telefono_empresa=ft.TextField(label="Teléfono empresa", value=empresa.telefono, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)
+    moneda=ft.Dropdown(label="Moneda",border=ft.InputBorder.UNDERLINE,border_radius=9,disabled=True,value=empresa.moneda,options=[ft.dropdown.Option("EUR€"), ft.dropdown.Option("DOLR$")])
 
 
     def campos_empresa_abrir_cerrar(e, abierto: bool):
-        nombre_empresa.disabled = abierto
-        direccion_empresa.disabled = abierto
-        telefono_empresa.disabled = abierto
-        moneda.disabled = abierto
+        nombre_empresa.disabled=abierto
+        direccion_empresa.disabled=abierto
+        telefono_empresa.disabled=abierto
+        moneda.disabled=abierto
         page.update()
         pass
 
     def guardar_empresa(e):
-        empresa_actualizada = Config_Empresa(
+        empresa_actualizada=Config_Empresa(
             empresa_id=1,
             nombre=nombre_empresa.value,
             direccion=direccion_empresa.value,
@@ -31,24 +31,24 @@ def config_empresa_view(page: ft.Page):
         empresa_actualizada.guardar()
         campos_empresa_abrir_cerrar(e, True)
 
-    btn_editar = ft.IconButton(icon=ft.Icons.EDIT,icon_color=ft.Colors.BLUE,
+    btn_editar=ft.IconButton(icon=ft.Icons.EDIT,icon_color=ft.Colors.BLUE,
         tooltip="Editar", on_click=lambda e: campos_empresa_abrir_cerrar(e, False))
-    btn_guardar = ft.ElevatedButton(text="Guardar", on_click=guardar_empresa)
+    btn_guardar=ft.ElevatedButton(text="Guardar", on_click=guardar_empresa)
 
     # ------------------------------------------ Categorías ------------------------------------------
-    categoria_nombre_input = ft.TextField(label="Nombre Categoría")
-    buscador_input = ft.TextField(label="Buscar categoría", prefix_icon=ft.Icons.SEARCH)
-    categoria_id_actual = ft.TextField(visible=False)  # Para almacenar el ID de la categoría seleccionada
+    categoria_nombre_input=ft.TextField(label="Nombre Categoría")
+    buscador_input=ft.TextField(label="Buscar categoría", prefix_icon=ft.Icons.SEARCH)
+    categoria_id_actual=ft.TextField(visible=False)  # Para almacenar el ID de la categoría seleccionada
 
-    tabla_categorias = ft.Column()
+    tabla_categorias=ft.Column()
 
     
 
     def habilitar_edicion_categoria(e):
-        categoria_nombre_input.disabled = False
+        categoria_nombre_input.disabled=False
         page.update()
 
-    btn_editar_categoria = ft.IconButton(
+    btn_editar_categoria=ft.IconButton(
         icon=ft.Icons.EDIT,
         icon_color=ft.Colors.BLUE,
         tooltip="Editar",
@@ -58,20 +58,20 @@ def config_empresa_view(page: ft.Page):
     )
 
     def seleccionar_categoria(categoria: Categoria):
-        categoria_id_actual.value = str(categoria.categoria_id)
-        categoria_nombre_input.value = categoria.nombre
+        categoria_id_actual.value=str(categoria.categoria_id)
+        categoria_nombre_input.value=categoria.nombre
         print("Categoría seleccionada:", categoria.nombre)
         page.update()
         
     def campos_categoria_abrir_cerrar(e, abierto: bool):
-        categoria_nombre_input.disabled = abierto
+        categoria_nombre_input.disabled=abierto
         page.update()
         pass
 
     def actualizar_tabla(filtro=None):
-        lista = Categoria.obtener_todos()
+        lista=Categoria.obtener_todos()
         if filtro:
-            lista = [c for c in lista if filtro.upper() in c.nombre]
+            lista=[c for c in lista if filtro.upper() in c.nombre]
 
         def eliminar_categoria(e, categoria_id):
             print(f"Eliminando categoría con ID: {categoria_id}")
@@ -83,7 +83,7 @@ def config_empresa_view(page: ft.Page):
         #creamos lista para meter datarow
         filas=[]
         for c in lista:
-            fila = ft.DataRow(
+            fila=ft.DataRow(
                 cells=[
                     ft.DataCell(ft.Text(c.nombre)), 
                     ft.DataCell(ft.IconButton(
@@ -100,7 +100,7 @@ def config_empresa_view(page: ft.Page):
                 )
             filas.append(fila)
 
-        data_table = ft.DataTable(
+        data_table=ft.DataTable(
             data_row_color={ft.ControlState.HOVERED: "#0000FF"},
             columns=[
                 ft.DataColumn(label=ft.Text("Nombre")),
@@ -122,41 +122,41 @@ def config_empresa_view(page: ft.Page):
         page.update()
 
     def guardar_nueva_categoria(e):
-        nombre = categoria_nombre_input.value.strip()
+        nombre=categoria_nombre_input.value.strip()
         if not nombre:
             return  # no va hacer nada si esta vacio
 
         if categoria_id_actual.value:  
-            categoria_existente = Categoria.buscar_por_id(categoria_id_actual.value)
+            categoria_existente=Categoria.buscar_por_id(categoria_id_actual.value)
             if categoria_existente:
-                categoria_existente.nombre = nombre
+                categoria_existente.nombre=nombre
                 categoria_existente.guardar()
         else:  
             Categoria(nombre=nombre).guardar()
 
         
-        categoria_id_actual.value = ""
-        categoria_nombre_input.value = ""
+        categoria_id_actual.value=""
+        categoria_nombre_input.value=""
         campos_categoria_abrir_cerrar(e, True)
         actualizar_tabla(buscador_input.value)
 
 
-    buscador_input.on_change = lambda e: actualizar_tabla(buscador_input.value)
+    buscador_input.on_change=lambda e: actualizar_tabla(buscador_input.value)
 
     actualizar_tabla()
     # ------------------------------------------ Iva -----------------------------------------------
-    iva_nombre = ft.TextField(label="Nombre IVA")
-    iva_valor = ft.TextField(label="Valor %")
-    buscador_iva = ft.TextField(label="Buscar IVA", prefix_icon=ft.Icons.SEARCH)
-    tabla_ivas = ft.Column()
-    iva_id_actual = ft.TextField(visible=False)
+    iva_nombre=ft.TextField(label="Nombre IVA")
+    iva_valor=ft.TextField(label="Valor %")
+    buscador_iva=ft.TextField(label="Buscar IVA", prefix_icon=ft.Icons.SEARCH)
+    tabla_ivas=ft.Column()
+    iva_id_actual=ft.TextField(visible=False)
 
     def habilitar_edicion_iva(e):
-        iva_nombre.disabled = False
-        iva_valor.disabled = False
+        iva_nombre.disabled=False
+        iva_valor.disabled=False
         page.update()
 
-    btn_editar_iva = ft.IconButton(
+    btn_editar_iva=ft.IconButton(
         icon=ft.Icons.EDIT,
         icon_color=ft.Colors.BLUE,
         tooltip="Editar",
@@ -164,25 +164,25 @@ def config_empresa_view(page: ft.Page):
     )
 
     def seleccionar_iva(iva: Iva):
-        iva_id_actual.value = str(iva.iva_id)
-        iva_nombre.value = iva.nombre
-        iva_valor.value = str(iva.porcentaje)
-        iva_nombre.disabled = True
-        iva_valor.disabled = True
+        iva_id_actual.value=str(iva.iva_id)
+        iva_nombre.value=iva.nombre
+        iva_valor.value=str(iva.porcentaje)
+        iva_nombre.disabled=True
+        iva_valor.disabled=True
         page.update()
 
     def actualizar_tabla_iva(filtro=""):
-        lista = Iva.obtener_todos()
+        lista=Iva.obtener_todos()
         if filtro:
-            lista = [i for i in lista if filtro.lower() in i.nombre.lower()]
+            lista=[i for i in lista if filtro.lower() in i.nombre.lower()]
 
         def eliminar_iva(e, iva_id):
             Iva.borrar_por_id(iva_id)
             actualizar_tabla_iva(buscador_iva.value)
 
-        filas = []
+        filas=[]
         for i in lista:
-            fila = ft.DataRow(
+            fila=ft.DataRow(
                 [
                     ft.DataCell(ft.Text(i.nombre)),
                     ft.DataCell(ft.Text(str(i.porcentaje))),
@@ -200,7 +200,7 @@ def config_empresa_view(page: ft.Page):
             )
             filas.append(fila)
 
-        data_table = ft.DataTable(
+        data_table=ft.DataTable(
             data_row_color={ft.ControlState.HOVERED: "#0000FF"},
             columns=[
                 ft.DataColumn(label=ft.Text("Nombre")),
@@ -220,32 +220,32 @@ def config_empresa_view(page: ft.Page):
         page.update()
 
     def guardar_iva(e):
-        nombre = iva_nombre.value.strip()
-        valor = iva_valor.value.strip()
+        nombre=iva_nombre.value.strip()
+        valor=iva_valor.value.strip()
 
         if not nombre or not valor:
             return
 
         try:
-            porcentaje = float(valor)
+            porcentaje=float(valor)
         except ValueError:
             return
 
         if iva_id_actual.value:  
-            iva_existente = Iva.buscar_por_id(iva_id_actual.value)  
+            iva_existente=Iva.buscar_por_id(iva_id_actual.value)  
             if iva_existente:
-                iva_existente.nombre = nombre
-                iva_existente.porcentaje = porcentaje
+                iva_existente.nombre=nombre
+                iva_existente.porcentaje=porcentaje
                 iva_existente.guardar()
         else:  
-            nuevo_iva = Iva(nombre=nombre, porcentaje=porcentaje)
+            nuevo_iva=Iva(nombre=nombre, porcentaje=porcentaje)
             nuevo_iva.guardar()
 
-        iva_id_actual.value = ""
-        iva_nombre.value = ""
-        iva_valor.value = ""
-        iva_nombre.disabled = True
-        iva_valor.disabled = True
+        iva_id_actual.value=""
+        iva_nombre.value=""
+        iva_valor.value=""
+        iva_nombre.disabled=True
+        iva_valor.disabled=True
 
         actualizar_tabla_iva(buscador_iva.value)
         page.update()
@@ -257,11 +257,11 @@ def config_empresa_view(page: ft.Page):
         page.clean()
         page.add(dashboard_view(page))
         page.update()
-    btn_volver_dashboard = ft.ElevatedButton(text="Volver al Dashboard",icon=ft.Icons.ARROW_BACK,on_click=volver_al_dashboard,bgcolor=ft.Colors.BLUE,color=ft.Colors.WHITE)
+    btn_volver_dashboard=ft.ElevatedButton(text="Volver al Dashboard",icon=ft.Icons.ARROW_BACK,on_click=volver_al_dashboard,bgcolor=ft.Colors.BLUE,color=ft.Colors.WHITE)
 
     # ------------------------------------------ Interfaz ------------------------------------------
 
-    formulario = ft.Column([
+    formulario=ft.Column([
         ft.Row([btn_volver_dashboard], alignment=ft.MainAxisAlignment.START),
         nombre_empresa,
         direccion_empresa,
@@ -298,7 +298,7 @@ def config_empresa_view(page: ft.Page):
         
     ], spacing=15, scroll=ft.ScrollMode.AUTO)
 
-    contenedor = ft.Container(
+    contenedor=ft.Container(
         expand=True,
         alignment=ft.alignment.top_center,
         content=formulario,
@@ -307,9 +307,9 @@ def config_empresa_view(page: ft.Page):
         border_radius=15
     )
 
-    page.title = "Configuración Empresa"
-    page.horizontal_alignment = ft.MainAxisAlignment.CENTER
-    page.vertical_alignment = ft.MainAxisAlignment.START
-    page.bgcolor = Constantes.COLOR_FONDO_PRINCIPAL
+    page.title="Configuración Empresa"
+    page.horizontal_alignment=ft.MainAxisAlignment.CENTER
+    page.vertical_alignment=ft.MainAxisAlignment.START
+    page.bgcolor=Constantes.COLOR_FONDO_PRINCIPAL
 
     return contenedor

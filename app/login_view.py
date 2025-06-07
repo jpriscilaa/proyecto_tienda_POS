@@ -3,7 +3,7 @@ from backend import Constantes
 from backend.modelo.Usuario import Usuario
 from app import ventana_alerta
 import logging
-logger = logging.getLogger(__name__)
+logger=logging.getLogger(__name__)
 
 def login_view(page: ft.Page):
 
@@ -12,7 +12,7 @@ def login_view(page: ft.Page):
         page.open(ventana_alerta.barra_error_mensaje("USUARIO O CONTRASEÑA INCORRECTOS"))
 
     def ir_a_menu(e):
-        usuario = Usuario.obtener_por_nombre_usuario(usuario_login.value)
+        usuario=Usuario.obtener_por_nombre_usuario(usuario_login.value)
         #usuario va a recibir el usuario si existe, si no, devuelve none con eso valido con un if si existe y luego la contraseña
         if usuario and usuario.contrasena == contrasena_login.value:
             from app.dashboard_view import dashboard_view
@@ -22,10 +22,10 @@ def login_view(page: ft.Page):
             mostrar_dialogo()
 
     #elementos para la vista
-    usuario_login = ft.TextField(label="Usuario", autofocus=True)
-    contrasena_login = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, on_submit=lambda e: ir_a_menu(e))
+    usuario_login=ft.TextField(label="Usuario", autofocus=True)
+    contrasena_login=ft.TextField(label="Contraseña", password=True, can_reveal_password=True, on_submit=lambda e: ir_a_menu(e))
 
-    login_container = ft.Container(
+    login_container=ft.Container(
         width=320,
         height=420,
         padding=20,
@@ -53,7 +53,7 @@ def login_view(page: ft.Page):
         )
     )
 
-    fondo = ft.Container(
+    fondo=ft.Container(
         expand=True,
         alignment=ft.alignment.center,
         gradient=ft.LinearGradient(
