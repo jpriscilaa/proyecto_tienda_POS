@@ -6,8 +6,7 @@ from backend.modelo.Usuario import Usuario
 from backend import Constantes
 from app import ventana_alerta
 import logging
-logger = logging.getLogger(__name__)
-
+log = logging.getLogger(__name__)
 
 def producto_view(page: ft.Page, usuario: Usuario):
     page.clean()
@@ -23,7 +22,7 @@ def producto_view(page: ft.Page, usuario: Usuario):
     def agregar_producto(e):
         if n_ref.disabled:
             deshabilitar_campos(False)
-            logger.info("Habilitamos los campos para que se pueda rellenar")
+            log.info("Habilitamos los campos para que se pueda rellenar")
             n_ref.focus()
             page.update()
         else:

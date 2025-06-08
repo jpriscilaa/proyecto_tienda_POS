@@ -5,7 +5,7 @@ from datetime import datetime
 from backend import Constantes
 from backend.modelo.Cliente import Cliente
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 class Venta:
     def __init__(self, fecha, pago, cantidad_prod, total, id=None, cliente: Cliente=None):
@@ -34,10 +34,10 @@ class Venta:
             conexion.close()
             return True
         except sqlite3.IntegrityError as error:
-            print("Error de integridad en venta:", error)
+            log.info("Error de integridad en venta:", error)
             return False
         except Exception as e:
-            print("Ha ocurrido un error al guardar la venta:", e)
+            log.info("Ha ocurrido un error al guardar la venta:", e)
             return False
 
     def eliminar(self):

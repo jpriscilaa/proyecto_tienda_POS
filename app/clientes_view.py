@@ -4,7 +4,7 @@ from backend.modelo.Cliente import Cliente
 from backend.modelo.Usuario import Usuario
 import uuid
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def clientes_view(page: ft.Page, usuario: Usuario):
 
@@ -51,19 +51,19 @@ def clientes_view(page: ft.Page, usuario: Usuario):
                     cliente_telefono=telefono.value,
                     cliente_direccion=direccion.value
                 )
-                print("Dirección recibida:", direccion.value)
+                log.info("Dirección recibida:", direccion.value)
 
                 salida=cliente_nuevo.guardar()
                 if salida:
-                    print("Se ha insertado corrextamente")
+                    log.info("Se ha insertado corrextamente")
                 else:
-                    print("Ha fallado a la hora se guardar el prodoucto")
+                    log.info("Ha fallado a la hora se guardar el prodoucto")
 
                 actualizar_tabla()
                 limpiar_campos()
                 
             else:
-                print("Faltan datos necesarios para crear producto")
+                log.info("Faltan datos necesarios para crear producto")
             pass
     def volver_al_dashboard(e):
         from app.dashboard_view import dashboard_view

@@ -3,7 +3,7 @@ from backend import Constantes
 from backend.bddTienda import get_connection
 import uuid
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 class Cliente:
     def __init__(self, cliente_id=None, cliente_nombre="", cliente_apellido="",  cliente_documento="", cliente_telefono="", cliente_direccion=""):
@@ -21,13 +21,13 @@ class Cliente:
             cursor=conexion.cursor()
 
             if Cliente.existe(self.id):
-                print("Aplicamos update")
+                log.info("Aplicamos update")
                 cursor.execute(Constantes.UPDATE_CLIENTE, (
                     self.nombre, self.apellido, self.documento,
                     self.telefono, self.direccion, self.id
                 ))
             else:
-                print("Aplicamos insert")
+                log.info("Aplicamos insert")
                 cursor.execute(Constantes.INSERT_CLIENTE, (
                     self.id, self.nombre, self.apellido,
                     self.documento, self.telefono, self.direccion
@@ -39,12 +39,12 @@ class Cliente:
         
         except sqlite3.IntegrityError as error:
             if "UNIQUE constraint failed: CLIENTE.DOCUMENTO" in str(error):
-                print("Ya existe un cliente con ese documento.")
+                log.info("Ya existe un cliente con ese documento.")
             else:
-                print("Error de integridad:", error)
+                log.info("Error de integridad:", error)
             return False
         except Exception as e:
-            print("Ha ocurrido un error al guardar el cliente:", e)
+            log.info("Ha ocurrido un error al guardar el cliente:", e)
             return False
 
 

@@ -3,7 +3,7 @@ from backend import Constantes
 from backend.modelo.Usuario import Usuario
 from app import ventana_alerta
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def login_view(page: ft.Page):
 

@@ -1,7 +1,7 @@
 import flet as ft
 from backend import Constantes
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def alerta_error(titulo, texto):
     dialogo=ft.AlertDialog(
@@ -24,15 +24,18 @@ def barra_info_mensaje(texto):
     barra=ft.SnackBar(ft.Text(texto), bgcolor=Constantes.COLOR_BORDE_CLARO)
     return barra
 
-def finalizar_venta(page):
-    def guardar_venta(e):
-        logger.info("FINALIZAMOS VENTA")
-        pass
+def finalizar_venta(page: ft.Page, metodo: ft.Text):
+    def metodo_efectivo(e):
+        metodo.value="EFECTIVO"
+        log.info("METODO SELECCIONADO ES EFECTIVO")
+        
+    def metodo_tarjeta(e):
+        metodo.value="TARJETA"
+        log.info("METODO SELECCIONADO ES TARJETA")
+
     def borrar_venta(e):
         page.close(fin_venta)
-        logger.info("CANCELAMOS VENTA")
-        
-        pass
+        log.info("CANCELAMOS VENTA")
 
     action_sheet = ft.CupertinoActionSheet(
         title=ft.Row(
@@ -51,11 +54,11 @@ def finalizar_venta(page):
             ft.CupertinoActionSheetAction(
                 content=ft.Text("TARJETA"),
                 is_default_action=True,
-                on_click=guardar_venta,
+                on_click=metodo_tarjeta,
             ),
             ft.CupertinoActionSheetAction(
                 content=ft.Text("EFECTIVO"),
-                on_click=guardar_venta,
+                on_click=metodo_efectivo,
             )
         ],
     )

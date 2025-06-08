@@ -3,8 +3,7 @@ from backend.modelo.Usuario import Usuario
 from backend import Constantes
 from app import ventana_alerta
 import logging
-
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 def usuario_view(page: ft.Page, usuario: Usuario):
     page.clean()
@@ -36,7 +35,7 @@ def usuario_view(page: ft.Page, usuario: Usuario):
                 page.open(ventana_alerta.barra_info_mensaje("Usuario eliminado"))
                 actualizar_tabla(buscador_input.value)
             except Exception:
-                logger.error("Error al borrar el usuario")
+                log.info("Error al borrar el usuario")
                 page.update()
 
         filas = []

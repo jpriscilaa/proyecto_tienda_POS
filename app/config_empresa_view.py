@@ -5,7 +5,7 @@ from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
 from backend.modelo.Usuario import Usuario
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def config_empresa_view(page: ft.Page, usuario: Usuario):
     empresa=Config_Empresa.obtener_config_empresa()
@@ -64,7 +64,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
     def seleccionar_categoria(categoria: Categoria):
         categoria_id_actual.value=str(categoria.categoria_id)
         categoria_nombre_input.value=categoria.nombre
-        print("Categoría seleccionada:", categoria.nombre)
+        log.info("Categoría seleccionada:", categoria.nombre)
         page.update()
         
     def campos_categoria_abrir_cerrar(e, abierto: bool):
@@ -78,7 +78,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
             lista=[c for c in lista if filtro.upper() in c.nombre]
 
         def eliminar_categoria(e, categoria_id):
-            print(f"Eliminando categoría con ID: {categoria_id}")
+            log.info(f"Eliminando categoría con ID: {categoria_id}")
             Categoria.borrar_por_id(categoria_id)
             actualizar_tabla(buscador_input.value)
  

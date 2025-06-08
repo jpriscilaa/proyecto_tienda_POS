@@ -2,7 +2,7 @@ import sqlite3
 import uuid
 from backend import Constantes
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 class Categoria:
     def __init__(self, categoria_id=None, nombre=""):

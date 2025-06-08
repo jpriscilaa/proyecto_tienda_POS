@@ -9,7 +9,7 @@ from app.dashboard_view import dashboard_view
 from backend.modelo.Usuario import Usuario
 from datetime import datetime
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def tpv_view(page: ft.Page, usuario: Usuario):
 
@@ -21,6 +21,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
 
     carrito=[]
     total_venta=0.0
+    cantidad_products=1
     tabla_lineas=ft.Column()
     
     #Metodos
@@ -58,6 +59,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
     def actualizar_tabla():
         total=0.00
         filas=[]
+        cantidad_products=1
         for p in carrito:
             prod=p["producto"]
             cant=p["cantidad"]
@@ -82,6 +84,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
                 # ,on_select_changed=lambda e: seleccionar_producto(e.control.data)
             ) 
             filas.append(fila)
+            cantidad_products+=1*cant
 
         data_table=ft.DataTable(
             data_row_color={ft.ControlState.HOVERED: Constantes.COLOR_BORDE_CLARO},
@@ -99,36 +102,37 @@ def tpv_view(page: ft.Page, usuario: Usuario):
         tabla_lineas.controls.clear()
         tabla_lineas.controls.append(data_table)
         total_texto.value=f"Total: {total:.2f} €"
-        total_venta=total
-        cantidad_products=1
+        total_venta[:]=total #el [:] significa que hace uso del primer total_venta que declaro al incio
+        
         page.update()
 
     def finalizar_venta(e):
         if not carrito:
             page.open(ventana_alerta.barra_error_mensaje("No hay productos en la venta"))
             return
-
-        venta=Venta(
-            cantidad_prod=len(carrito),
-            total=total_venta,
-            fecha=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            pago="TEMPORAL"
-        ) 
-        venta.guardar() #Crea la venta vacía
-        for item in carrito:
-            prod=item["producto"]
-            und=item["cantidad"]
-            linea=Venta_Linea(
-                venta=venta,
-                producto=prod,
-                cantidad=und,
-                iva=prod.iva.porcentaje,
-                precio_unitario=prod.precio,
-                total_linea=und*prod.precio
+        else:
+            page.open(ventana_alerta.finalizar_venta(page, metodo_pago))
+            venta=Venta(
+                cantidad_prod=cantidad_products,
+                total=total_venta,
+                fecha=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                pago=metodo_pago.value
             )
-            linea.guardar()
-        page.open(ventana_alerta.barra_ok_mensaje("Venta registrada correctamente"))
-        page.open(ventana_alerta.finalizar_venta(page)),
+            venta.guardar() #Crea la venta vacía
+            for item in carrito:
+                prod=item["producto"]
+                und=item["cantidad"]
+                linea=Venta_Linea(
+                    venta=venta,
+                    producto=prod,
+                    cantidad=und,
+                    iva=prod.iva.porcentaje,
+                    precio_unitario=prod.precio,
+                    total_linea=und*prod.precio
+                )
+                linea.guardar()
+            page.open(ventana_alerta.barra_ok_mensaje("Venta registrada correctamente"))
+        
         page.update()
         carrito.clear()
         actualizar_tabla()
@@ -140,6 +144,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
         prefix_icon=ft.Icons.SEARCH,
         on_submit=buscar_producto
     )
+    metodo_pago=ft.Text(value="EFECTIVO", visible=False)
     btn_volver=ft.ElevatedButton(
         text="Volver al Dashboard",
         icon=ft.Icons.ARROW_BACK,

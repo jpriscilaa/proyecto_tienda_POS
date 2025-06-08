@@ -7,7 +7,7 @@ from backend.modelo.Cliente import Cliente
 from backend.modelo.Venta import Venta
 from backend.modelo.Usuario import Usuario
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def venta_view(page: ft.Page, usuario: Usuario):
     def guardar_pdf(e):
@@ -53,7 +53,7 @@ def venta_view(page: ft.Page, usuario: Usuario):
         cliente_apellido.value = venta.cliente.apellido if venta.cliente else ""
         cantidad_prod.value = str(venta.cantidad_prod)
         total.value = str(venta.total)
-        print("Venta seleccionada:", venta.id)
+        log.info("Venta seleccionada:", venta.id)
         page.update()
 
     def actualizar_tabla(filtro=None):

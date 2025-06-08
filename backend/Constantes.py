@@ -1,26 +1,13 @@
 
-
 #Ruta base de datos SQLite
 RUTA_BD="conf/BD_MI_EMPRESA.DB"
 RUTA_CARPETA_CONF="conf"
 RUTA_LOG="conf/app.log"
 #Nombre de la app (por ejemplo, para ventanas o logs)
-NOMBRE_APP="P.O.S TIENDA BY PRIS"
+NOMBRE_APP="PRISMA P.O.S"
 
 #----------------------------------------
-#Paleta de colores estilo macOS (modo claro)
-#----------------------------------------
-# COLOR_FONDO_PRINCIPAL="#F2F2F7"       # Fondo general de la app
-# COLOR_TARJETA_FONDO="#FFFFFF"         # Fondo para tarjetas, contenedores
-# COLOR_TEXTO_PRIMARIO="#1C1C1E"        # Texto principal
-# COLOR_TEXTO_SECUNDARIO="#3A3A3C"      # Texto secundario, descripciones
-# COLOR_BOTON_PRIMARIO="#007AFF"        # Azul macOS para botones principales
-# COLOR_BOTON_EXITO="#34C759"           # Verde Apple para éxito o confirmación
-# COLOR_BOTON_ERROR="#FF3B30"           # Rojo Apple para errores
-# COLOR_BORDE_CLARO="#D1D1D6"           # Borde o líneas divisorias sutiles
-
-#----------------------------------------
-#Paleta de colores estilo macOS (modo oscuro)
+#Paleta de colores (modo oscuro)
 #----------------------------------------
 COLOR_FONDO_PRINCIPAL="#1C1C1E"       # Fondo principal (negro suave)
 COLOR_TARJETA_FONDO="#2C2C2E"         # Tarjetas, modales

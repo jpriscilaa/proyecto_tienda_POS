@@ -10,6 +10,3 @@ class PDF(FPDF):
         self.set_font("Arial", "I", 8)
                 
         self.cell(0,10,f"Pagina{self.page_no()}", 0,0,"C")
-
-
-    pass

@@ -5,7 +5,7 @@ from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Usuario import Usuario
 from app.login_view import login_view
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def iniciar_app(page: ft.Page):
 
@@ -33,7 +33,7 @@ def iniciar_app(page: ft.Page):
         )
         usuarioAdmin1.guardar()
         
-        print("Se ha guardado empresa y usuario: ")
+        log.info("Se ha guardado empresa y usuario: ")
         
         page.clean()
         page.add(login_view(page))

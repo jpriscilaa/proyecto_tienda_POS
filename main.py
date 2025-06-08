@@ -1,5 +1,5 @@
 import flet as ft
-import logging
+import logging as log
 from backend.servicios import config_app
 from app.iniciar_app import iniciar_app
 from app.login_view import login_view
@@ -18,26 +18,26 @@ def main(page: ft.Page):
     if config_app.crearSQLITE() == False:
         configurarLogging()
         if config_empr_service.existeEmpresa():
-            logging.info("Si la salida del metodo es true significa que los datos de la empresa existen por ende podemos iniciar la app")
-            logging.info("LANZAR LOGIN_VIEW")
+            log.info("Si la salida del metodo es true significa que los datos de la empresa existen por ende podemos iniciar la app")
+            log.info("LANZAR LOGIN_VIEW")
             page.clean()
             page.add((login_view(page)))
         else:
             page.clean()
             page.add(iniciar_app(page))
-            page.open(ventana_alerta.barra_error_mensaje("NO EXISTE DATOS DE EMPRES Y POR TANTO NO SE PUEDE ABRIR EL CRMV \nDEBE DE VOLVER A CREAR EMPRESA"))
+            page.open(ventana_alerta.barra_error_mensaje("NO EXISTE DATOS DE EMPRES Y POR TANTO NO SE PUEDE ABRIR LA APP \nDEBE DE VOLVER A CREAR EMPRESA"))
             pass
     else: 
-        logging.info("Si crearSQLITE devuelve true es porque justo ahora se acaba de crear la BD y por tanto no hay ningun dato en la tabla EMPRESA habrá que rellenarlo" \
+        log.info("Si crearSQLITE devuelve true es porque justo ahora se acaba de crear la BD y por tanto no hay ningun dato en la tabla EMPRESA habrá que rellenarlo" \
         "eso significa que toca abrir la ventana de inicio donde poner la info de la empresa y ajustes de la app")
-        logging.info("LANZAR INICIAR_APP")
+        log.info("LANZAR INICIAR_APP")
         page.clean()
         page.add(iniciar_app(page))
 
 def configurarLogging():
-    #Configurar logging global
-    logging.basicConfig(
-        level=logging.INFO,
+    #Configurar log global
+    log.basicConfig(
+        level=log.INFO,
         format='[%(asctime)s] %(levelname)s: %(message)s (Archivo: %(filename)s | Línea: %(lineno)d)',
         datefmt='%d/%m/%Y %H:%M:%S',
         filename=Constantes.RUTA_LOG,   #Donde guardar los logs
@@ -45,11 +45,11 @@ def configurarLogging():
     )
 
     #Mostrar en consola además del archivo
-    console=logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    formatter=logging.Formatter('[%(levelname)s] %(message)s')
+    console=log.StreamHandler()
+    console.setLevel(log.INFO)
+    formatter=log.Formatter('[%(levelname)s] %(message)s')
     console.setFormatter(formatter)
-    logging.getLogger().addHandler(console)
+    log.getLogger().addHandler(console)
 
 if __name__ == "__main__":
 

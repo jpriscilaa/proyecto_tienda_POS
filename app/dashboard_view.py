@@ -2,7 +2,7 @@ import flet as ft
 from backend.modelo.Usuario import Usuario
 from backend import Constantes
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 def dashboard_view(page: ft.Page, usuario: Usuario):
     def abrir_config_empresa(e):

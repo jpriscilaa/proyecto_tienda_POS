@@ -5,7 +5,7 @@ from backend import Constantes
 from backend.modelo.Producto import Producto
 from backend.modelo.Venta import Venta
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 class Venta_Linea:
     def __init__(self, venta: Venta, producto: Producto, cantidad, precio_unitario, iva, total_linea, id=None):
@@ -37,7 +37,7 @@ class Venta_Linea:
             conexion.close()
             return True
         except Exception as e:
-            print("Error al guardar la línea de venta:", str(e))
+            log.info("Error al guardar la línea de venta:", str(e))
             return False
 
     def eliminar(self):

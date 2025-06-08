@@ -6,7 +6,7 @@ from backend.bddTienda import get_connection
 from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
 import logging
-logger=logging.getLogger(__name__)
+log=logging.getLogger(__name__)
 
 class Producto:
     def __init__(self, precio, nombre, n_referencia, categoria: Categoria, iva: Iva, id=None):
@@ -32,13 +32,13 @@ class Producto:
             return True
         except sqlite3.IntegrityError as error:
             if "UNIQUE constraint failed: PRODUCTO.N_REFERENCIA" in str(error):
-                print("Ya existe un producto con esa referencia o codigo de barras.")
+                log.info("Ya existe un producto con esa referencia o codigo de barras.")
                 return False 
             elif "FOREIGN KEY constraint failed" in str(error):
-                print("Error con la CATEGORIA o el IVA seleccionado no existen.")
+                log.info("Error con la CATEGORIA o el IVA seleccionado no existen.")
                 return False
         except Exception as e:
-            print("Ha dado algún error en el insert del producto" + str(e))
+            log.info("Ha dado algún error en el insert del producto" + str(e))
             return False
 
     def eliminar(self):
