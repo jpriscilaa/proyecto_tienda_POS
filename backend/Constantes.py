@@ -118,7 +118,7 @@ INSERT_VENTA='''INSERT INTO VENTA (VENTA_ID, FECHA, PAGO, CLIENTE_ID, CANTIDAD_P
                   VALUES (?, ?, ?, ?, ?, ?)'''
 
 UPDATE_VENTA='''UPDATE VENTA
-                  SET FECHA=? ,PAGO=?, CLIENTE_ID=?, CANTIDA_ PROD=? ,TOTAL=?
+                  SET FECHA=? ,PAGO=?, CLIENTE_ID=?, CANTIDA_PROD=? ,TOTAL=?
                   WHERE VENTA_ID=?'''
 
 
