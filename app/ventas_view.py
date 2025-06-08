@@ -4,74 +4,146 @@ from backend.modelo.Cliente import Cliente
 from backend.modelo.Venta import Venta
 
 def venta_view(page: ft.Page):
+    def seleccionar_venta(venta):
+        print("Venta seleccionada:", venta.id)
+        # Puedes añadir más lógica aquí si deseas mostrar sus datos
 
-    venta_id_actual = ft.TextField(visible=False)
+    tabla_ventas = ft.Column()
 
-    fecha = ft.TextField(label="Fecha", disabled=True, value="", expand=True)
-    pago = ft.Dropdown(
-        label="Método de Pago",
-        options=[ft.dropdown.Option("EFECTIVO"), ft.dropdown.Option("TARJETA"), ft.dropdown.Option("TRANSFERENCIA")],
-        expand=True
+    def actualizar_tabla(filtro=None):
+        lista = Venta.obtener_todos()
+        if filtro:
+            lista = [v for v in lista if filtro.lower() in v.cliente.nombre.lower()]
+
+        filas = []
+        for v in lista:
+            fila = ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(str(v.id))),
+                    ft.DataCell(ft.Text(v.fecha)),
+                    ft.DataCell(ft.Text(v.pago)),
+                    ft.DataCell(ft.Text(f"{v.cliente.nombre} {v.cliente.apellido}")),
+                    ft.DataCell(ft.Text(str(v.cantidad_prod))),
+                    ft.DataCell(ft.Text(str(v.total))),
+                ],
+                selected=False,
+                data=v,
+                on_select_changed=lambda e: seleccionar_venta(e.control.data)
+            )
+            filas.append(fila)
+
+        data_table = ft.DataTable(
+            data_row_color={ft.ControlState.HOVERED: Constantes.COLOR_BORDE_CLARO},
+            columns=[
+                ft.DataColumn(ft.Text("ID")),
+                ft.DataColumn(ft.Text("Fecha")),
+                ft.DataColumn(ft.Text("Pago")),
+                ft.DataColumn(ft.Text("Cliente")),
+                ft.DataColumn(ft.Text("Cantidad")),
+                ft.DataColumn(ft.Text("Total"))
+            ],
+            rows=filas
+        )
+
+        # Aquí ahora sí, tabla_ventas es un Column y puede usar .controls
+        tabla_ventas.controls.clear()
+        tabla_ventas.controls.append(
+            ft.Container(
+                height=400,
+                content=ft.Column(
+                    controls=[data_table],
+                    scroll=ft.ScrollMode.AUTO
+                )
+            )
+        )
+        page.update()
+
+
+ # --- Componentes ---
+    venta_id = ft.TextField(label="ID Venta", visible=False)
+    fecha = ft.TextField(label="Fecha (YYYY-MM-DD)")
+    pago = ft.Dropdown(label="Método de pago", options=[
+        ft.dropdown.Option("EFECTIVO"),
+        ft.dropdown.Option("TARJETA"),
+        ft.dropdown.Option("TRANSFERENCIA")
+    ])
+    cliente_nombre = ft.TextField(label="Nombre Cliente")
+    cliente_apellido = ft.TextField(label="Apellido Cliente")
+    cantidad_prod = ft.TextField(label="Cantidad de productos")
+    total = ft.TextField(label="Total (€)")
+
+    buscador_ventas = ft.TextField(label="Buscar venta", prefix_icon=ft.Icons.SEARCH)
+
+    btn_volver_dashboard = ft.ElevatedButton(
+        text="Volver al Dashboard",
+        icon=ft.Icons.ARROW_BACK,
+        bgcolor=Constantes.COLOR_FONDO_PRINCIPAL,
+        color=Constantes.COLOR_BOTON_PRIMARIO
     )
 
-    cliente_dropdown = ft.Dropdown(
-        label="Cliente",
-        options=[
-            ft.dropdown.Option(f"{c.nombre} {c.apellido}", data=c)
-            for c in Cliente.obtener_todos()
-        ],
-        expand=True
+    btn_guardar_venta = ft.IconButton(
+        icon=ft.Icons.SAVE,
+        tooltip="Guardar venta",
+        width=80,
+        height=80
     )
 
-    cantidad_prod = ft.TextField(label="Cantidad productos", expand=True)
-    total = ft.TextField(label="Total", expand=True)
+    btn_editar_venta = ft.IconButton(
+        icon=ft.Icons.EDIT,
+        tooltip="Editar venta",
+        width=80,
+        height=80
+    )
 
-    btn_guardar = ft.ElevatedButton("Guardar", on_click=lambda e: guardar_venta())
-    btn_editar = ft.ElevatedButton("Editar", disabled=True, on_click=lambda e: editar_venta())
-    btn_limpiar = ft.OutlinedButton("Limpiar", on_click=lambda e: limpiar_campos())
+    btn_limpiar_venta = ft.IconButton(
+        icon=ft.Icons.AUTO_DELETE,
+        tooltip="Limpiar campos",
+        width=80,
+        height=80
+    )
 
+   
+
+    #meto los textfield en dos columnas
     columna_izquierda = ft.Container(
         alignment=ft.alignment.top_center,
         content=ft.Column(
             controls=[
-                venta_id_actual,
+                venta_id,
                 fecha,
                 pago,
-                cliente_dropdown,
+                cliente_nombre,
+                cliente_apellido,
                 cantidad_prod,
                 total,
-                ft.Row(controls=[btn_guardar, btn_editar, btn_limpiar])
+                ft.Row(controls=[btn_guardar_venta, btn_editar_venta, btn_limpiar_venta])
             ]
         )
-    )
-
-    # ---------- COLUMNA DERECHA ----------
-    buscador_input = ft.TextField(label="Buscar por cliente", on_change=lambda e: actualizar_tabla(buscador_input.value), expand=True)
-    tabla_ventas = ft.DataTable(
-        columns=[
-            ft.DataColumn(label=ft.Text("Fecha")),
-            ft.DataColumn(label=ft.Text("Pago")),
-            ft.DataColumn(label=ft.Text("Cliente")),
-            ft.DataColumn(label=ft.Text("Cantidad")),
-            ft.DataColumn(label=ft.Text("Total")),
-        ],
-        rows=[]
     )
 
     columna_derecha = ft.Container(
         alignment=ft.alignment.top_center,
         content=ft.Column(
             controls=[
-                buscador_input,
+                buscador_ventas,
                 tabla_ventas
             ]
         )
     )
 
-    fila_superior = ft.Row(controls=[ft.ElevatedButton("← Volver", on_click=lambda e: page.go("/dashboard")), ft.Text("Gestión de Ventas", size=20)])
-    fila_medio = ft.Row(controls=[columna_izquierda, columna_derecha], vertical_alignment=ft.CrossAxisAlignment.START)
+    fila_superior = ft.Row(
+        controls=[btn_volver_dashboard, ft.Text("Gestión de Ventas")]
+    )
 
-    datos = ft.Column(controls=[fila_superior, fila_medio])
+    fila_medio = ft.Row(
+        controls=[columna_izquierda, columna_derecha],
+        vertical_alignment=ft.CrossAxisAlignment.START
+    )
+
+    datos = ft.Column(
+        controls=[fila_superior, fila_medio]
+    )
+
     contenedor = ft.Container(
         expand=True,
         alignment=ft.alignment.top_center,
@@ -80,65 +152,5 @@ def venta_view(page: ft.Page):
         padding=20,
         border_radius=15
     )
-
-    # ---------- FUNCIONES ----------
-    def actualizar_tabla(filtro=""):
-        ventas = Venta.obtener_todos()
-        if filtro:
-            ventas = [v for v in ventas if filtro.lower() in v.cliente.nombre.lower()]
-        
-        tabla_ventas.rows.clear()
-        for v in ventas:
-            fila = ft.DataRow(
-                cells=[
-                    ft.DataCell(ft.Text(v.fecha)),
-                    ft.DataCell(ft.Text(v.pago)),
-                    ft.DataCell(ft.Text(f"{v.cliente.nombre} {v.cliente.apellido}")),
-                    ft.DataCell(ft.Text(str(v.cantidad_prod))),
-                    ft.DataCell(ft.Text(str(v.total))),
-                ]
-            )
-            tabla_ventas.rows.append(fila)
-        page.update()
-
-    def guardar_venta():
-        cliente_obj = cliente_dropdown.value.data if cliente_dropdown.value else None
-        if not cliente_obj:
-            page.snack_bar = ft.SnackBar(ft.Text("Selecciona un cliente válido"), bgcolor="red")
-            page.snack_bar.open = True
-            page.update()
-            return
-
-        nueva_venta = Venta(
-            fecha=fecha.value,
-            pago=pago.value,
-            cliente=cliente_obj,
-            cantidad_prod=cantidad_prod.value,
-            total=total.value
-        )
-        if nueva_venta.guardar():
-            limpiar_campos()
-            actualizar_tabla()
-        else:
-            page.snack_bar = ft.SnackBar(ft.Text("Error al guardar la venta"), bgcolor="red")
-            page.snack_bar.open = True
-            page.update()
-
-    def editar_venta():
-        # Esta función se completa si luego implementas doble click o selección de fila
-        pass
-
-    def limpiar_campos():
-        fecha.value = ""
-        pago.value = None
-        cliente_dropdown.value = None
-        cantidad_prod.value = ""
-        total.value = ""
-        btn_editar.disabled = True
-        page.update()
-
-    # Inicial
     actualizar_tabla()
-    limpiar_campos()
-
     return contenedor

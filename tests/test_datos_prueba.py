@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta
 from backend.modelo.Categoria import Categoria
+from backend.modelo.Cliente import Cliente
 from backend.modelo.Iva import Iva
 from backend.modelo.Producto import Producto
 import random
+
+from backend.modelo.Venta import Venta
 
 #PARA LANZAR ESTE TEST LANZAMOS POR TERMINAL ESTE COMANDO:
 #python -m tests.test_datos_prueba
@@ -78,7 +82,57 @@ def generar_productos_masivos():
     print(f"Se han generado {len(productos)} productos.")
 
 
+
+def generar_clientes():
+        print("Creando clientes de prueba...")
+        nombres = ["Ana", "Luis", "Carlos", "Laura", "Elena", "Pedro", "Lucía", "Javier", "María", "Andrés"]
+        apellidos = ["Pérez", "Gómez", "López", "Martínez", "Sánchez", "Díaz", "Fernández", "Ruiz", "Torres", "Castillo"]
+        clientes = []
+
+        for i in range(10):
+            cliente = Cliente(
+                cliente_nombre=random.choice(nombres),
+                cliente_apellido=random.choice(apellidos),
+                cliente_documento=f"{random.randint(10000000,99999999)}X",
+                cliente_telefono=f"6{random.randint(10000000, 99999999)}",
+                cliente_direccion=f"Calle Falsa {i+1}"
+            )
+            if cliente.guardar():
+                clientes.append(cliente)
+                print(f"✅ Cliente {cliente.nombre} {cliente.apellido} creado.")
+            else:
+                print(f"❌ Error al guardar cliente {cliente.nombre}")
+        return clientes
+
+def generar_ventas(clientes):
+    print("Generando ventas de prueba...")
+    tipos_pago = ["EFECTIVO", "TARJETA", "BIZUM", "TRANSFERENCIA"]
+
+    for cliente in clientes:
+        num_ventas = random.randint(1, 3)  # 1 a 3 ventas por cliente
+        for _ in range(num_ventas):
+            fecha = (datetime.now() - timedelta(days=random.randint(0, 30))).strftime("%Y-%m-%d")
+            pago = random.choice(tipos_pago)
+            cantidad = random.randint(1, 10)
+            total = round(random.uniform(5.0, 200.0), 2)
+            venta = Venta(
+                fecha=fecha,
+                pago=pago,
+                cliente=cliente,
+                cantidad_prod=str(cantidad),
+                total=total
+            )
+            if venta.guardar():
+                print(f"Venta de {total}€ guardada para {cliente.nombre} ({pago})")
+            else:
+                print(f"Error al guardar venta para {cliente.nombre}")
+
 if __name__ == "__main__":
     poblar_ivas_espana()
     poblar_categorias()
     generar_productos_masivos()
+    clientes = generar_clientes()
+    if clientes:
+        generar_ventas(clientes)
+    else:
+        print("No se generaron clientes, no se puede continuar con las ventas.")
