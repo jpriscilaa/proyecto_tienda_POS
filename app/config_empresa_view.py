@@ -105,7 +105,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
             filas.append(fila)
 
         data_table=ft.DataTable(
-            data_row_color={ft.ControlState.HOVERED: "#0000FF"},
+            data_row_color={ft.ControlState.HOVERED:Constantes.COLOR_BORDE_CLARO},
             columns=[
                 ft.DataColumn(label=ft.Text("Nombre")),
                 ft.DataColumn(label=ft.Text("Acciones")),
@@ -218,7 +218,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
             filas.append(fila)
 
         data_table=ft.DataTable(
-            data_row_color={ft.ControlState.HOVERED: "#0000FF"},
+            data_row_color={ft.ControlState.HOVERED:Constantes.COLOR_BORDE_CLARO},
             columns=[
                 ft.DataColumn(label=ft.Text("Nombre")),
                 ft.DataColumn(label=ft.Text("Valor %")),
