@@ -111,29 +111,33 @@ def tpv_view(page: ft.Page, usuario: Usuario):
             page.open(ventana_alerta.barra_error_mensaje("No hay productos en la venta"))
             return
         else:
-            page.open(ventana_alerta.finalizar_venta(page, metodo_pago))
-            venta=Venta(
-                cantidad_prod=cantidad_products,
-                total=total_venta,
-                fecha=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                pago=metodo_pago.value
-            )
-            venta.guardar() #Crea la venta vacía
-            for item in carrito:
-                prod=item["producto"]
-                und=item["cantidad"]
-                linea=Venta_Linea(
-                    venta=venta,
-                    producto=prod,
-                    cantidad=und,
-                    iva=prod.iva.porcentaje,
-                    precio_unitario=prod.precio,
-                    total_linea=und*prod.precio
+            def procesar_venta():
+                venta=Venta(
+                    cantidad_prod=cantidad_products,
+                    total=total_venta,
+                    fecha=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                    pago=metodo_pago.value
                 )
-                linea.guardar()
-            page.open(ventana_alerta.barra_ok_mensaje("Venta registrada correctamente"))
+                venta.guardar()
+                for item in carrito:
+                    prod=item["producto"]
+                    und=item["cantidad"]
+                    linea=Venta_Linea(
+                        venta=venta,
+                        producto=prod,
+                        cantidad=und,
+                        iva=prod.iva.porcentaje,
+                        precio_unitario=prod.precio,
+                        total_linea=und * prod.precio
+                    )
+                    linea.guardar()
+                page.open(ventana_alerta.barra_ok_mensaje("Venta registrada correctamente"))
+                carrito.clear()
+                actualizar_tabla()
+                page.update()
+
+            page.open(ventana_alerta.finalizar_venta(page, metodo_pago, procesar_venta))
         
-        page.update()
         carrito.clear()
         actualizar_tabla()
 

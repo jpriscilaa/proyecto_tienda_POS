@@ -84,3 +84,11 @@ class Iva:
         cursor.execute("DELETE FROM IVA WHERE IVA_ID=?", (id,))
         conexion.commit()
         conexion.close()
+
+    @classmethod
+    def borrar_todos(cls, id):
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("DELETE FROM IVA")
+        conexion.commit()
+        conexion.close()

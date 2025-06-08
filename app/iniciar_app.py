@@ -4,6 +4,8 @@ from backend.servicios import config_empr_service
 from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Usuario import Usuario
 from app.login_view import login_view
+from app import ventana_alerta
+from backend.modelo.Venta import Venta
 import logging
 log=logging.getLogger(__name__)
 
@@ -15,7 +17,7 @@ def iniciar_app(page: ft.Page):
     page.bgcolor=Constantes.COLOR_FONDO_PRINCIPAL
 
     #Metodos    
-    def guardarEmpresa():
+    def guardarEmpresa(e):
         empresa1=Config_Empresa(
             empresa_id=1,
             nombre=nombre_empresa.value,
@@ -23,18 +25,22 @@ def iniciar_app(page: ft.Page):
             telefono=telefono_empresa.value,
             moneda=moneda.value
         )
-        config_empr_service.crearEmpresa(empresa1)
+        if nombre_empresa.value and direccion_empresa.value and telefono_empresa.value and moneda.value:
+            config_empr_service.crearEmpresa(empresa1)
+            #creamos usuario admin
+            usuarioAdmin1=Usuario(
+            nombre_usuario=nombre_usuario.value,
+            contrasena=contrasenna_usuario.value,
+            rol=rol_usuario.value
+            )
+            usuarioAdmin1.guardar()
+            log.info("Se ha guardado empresa y usuario")
+        else:
+            ventana_alerta.barra_error_mensaje("Faltan datos")
 
-        #creamos usuario admin
-        usuarioAdmin1=Usuario(
-        nombre_usuario=nombre_usuario.value,
-        contrasena=contrasenna_usuario.value,
-        rol=rol_usuario.value
-        )
-        usuarioAdmin1.guardar()
-        
-        log.info("Se ha guardado empresa y usuario: ")
-        
+        # log.info("Vamos a abrir ventana de datos de prueba")
+        # ventana_alerta.confirmar_accion(page, "Datos prueba", "¿Quieres crear datos de prueba?")
+        # log.info("Hemos cerrado ventana datos prueba")
         page.clean()
         page.add(login_view(page))
     
@@ -65,7 +71,7 @@ def iniciar_app(page: ft.Page):
         direccion_empresa,
         telefono_empresa,
         moneda,
-        ft.ElevatedButton(text="Guardar", width=180, height=50, on_click=lambda e: guardarEmpresa())
+        ft.ElevatedButton(text="Guardar", width=180, height=50, on_click=guardarEmpresa)
     ]
 
     columna_campos=ft.Column(form_controls)

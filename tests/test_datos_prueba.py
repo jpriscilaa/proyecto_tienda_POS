@@ -3,15 +3,18 @@ from backend.modelo.Categoria import Categoria
 from backend.modelo.Cliente import Cliente
 from backend.modelo.Iva import Iva
 from backend.modelo.Producto import Producto
-import random
-
 from backend.modelo.Venta import Venta
+import random
+import logging
+log=logging.getLogger(__name__)
+
+
 
 #PARA LANZAR ESTE TEST LANZAMOS POR TERMINAL ESTE COMANDO:
 #python -m tests.test_datos_prueba
 
-def poblar_ivas_espana():
-    print("Insertando IVAs de España...")
+def crear_ivas_espana():
+    log.info("Insertando IVAs de España...")
     ivas = [
         {"nombre": "General", "porcentaje": 21},
         {"nombre": "Reducido", "porcentaje": 10},
@@ -21,10 +24,10 @@ def poblar_ivas_espana():
     for iva in ivas:
         i = Iva(nombre=iva["nombre"], porcentaje=iva["porcentaje"])
         i.guardar()
-    print("IVAs insertados correctamente.")
+    log.info("IVAs insertados correctamente.")
 
-def poblar_categorias():
-    print("Insertando categorías de ejemplo...")
+def crear_categorias():
+    log.info("Insertando categorías de ejemplo...")
     categorias = [
         "BEBIDAS", "LÁCTEOS", "CARNES", "FRUTAS", "VERDURAS", "PANADERÍA", "SNACKS", "CEREALES", "LEGUMBRES",
         "CONSERVAS", "CONGELADOS", "LIMPIEZA", "HIGIENE", "PAPELERÍA", "JUGUETERÍA", "TEXTIL", "FERRETERÍA",
@@ -33,7 +36,7 @@ def poblar_categorias():
     for nombre in categorias:
         c = Categoria(nombre=nombre)
         c.guardar()
-    print("Categorías insertadas correctamente.")
+    log.info("Categorías insertadas correctamente.")
 
 def generar_productos_masivos():
     productos = [
@@ -62,7 +65,7 @@ def generar_productos_masivos():
     ivas = Iva.obtener_todos()
 
     if not categorias or not ivas:
-        print("Primero debes generar categorías e IVAs.")
+        log.info("Primero debes generar categorías e IVAs.")
         return
 
     for i, nombre in enumerate(productos):
@@ -79,12 +82,10 @@ def generar_productos_masivos():
         )
         producto.guardar()
 
-    print(f"Se han generado {len(productos)} productos.")
-
-
+    log.info(f"Se han generado {len(productos)} productos.")
 
 def generar_clientes():
-        print("Creando clientes de prueba...")
+        log.info("Creando clientes de prueba...")
         nombres = ["Ana", "Luis", "Carlos", "Laura", "Elena", "Pedro", "Lucía", "Javier", "María", "Andrés"]
         apellidos = ["Pérez", "Gómez", "López", "Martínez", "Sánchez", "Díaz", "Fernández", "Ruiz", "Torres", "Castillo"]
         clientes = []
@@ -99,13 +100,13 @@ def generar_clientes():
             )
             if cliente.guardar():
                 clientes.append(cliente)
-                print(f"✅ Cliente {cliente.nombre} {cliente.apellido} creado.")
+                log.info(f"✅ Cliente {cliente.nombre} {cliente.apellido} creado.")
             else:
-                print(f"❌ Error al guardar cliente {cliente.nombre}")
+                log.info(f"❌ Error al guardar cliente {cliente.nombre}")
         return clientes
 
 def generar_ventas(clientes):
-    print("Generando ventas de prueba...")
+    log.info("Generando ventas de prueba...")
     tipos_pago = ["EFECTIVO", "TARJETA", "BIZUM", "TRANSFERENCIA"]
 
     for cliente in clientes:
@@ -123,16 +124,16 @@ def generar_ventas(clientes):
                 total=total
             )
             if venta.guardar():
-                print(f"Venta de {total}€ guardada para {cliente.nombre} ({pago})")
+                log.info(f"Venta de {total}€ guardada para {cliente.nombre} ({pago})")
             else:
-                print(f"Error al guardar venta para {cliente.nombre}")
+                log.info(f"Error al guardar venta para {cliente.nombre}")
 
 if __name__ == "__main__":
-    poblar_ivas_espana()
-    poblar_categorias()
+    crear_ivas_espana()
+    crear_categorias()
     generar_productos_masivos()
     clientes = generar_clientes()
     if clientes:
         generar_ventas(clientes)
     else:
-        print("No se generaron clientes, no se puede continuar con las ventas.")
+        log.info("No se generaron clientes, no se puede continuar con las ventas.")
