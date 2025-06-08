@@ -193,7 +193,7 @@ def clientes_view(page: ft.Page, usuario: Usuario):
         tabla_clientes
     ])
     )
-    fila_superior=ft.Row(controls=[btn_volver_dashboard, ft.Text("Gestión de Producto")])
+    fila_superior=ft.Row(controls=[btn_volver_dashboard, ft.Text("Gestión de Clientes",size=24, weight=ft.FontWeight.BOLD)])
     fila_medio=ft.Row(controls=[columna_izquierda, columna_derecha], vertical_alignment=ft.CrossAxisAlignment.START)
     datos=ft.Column(controls=[fila_superior, fila_medio])
     contenedor=ft.Container(

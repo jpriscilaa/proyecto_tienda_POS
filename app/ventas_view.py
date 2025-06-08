@@ -194,7 +194,7 @@ def venta_view(page: ft.Page, usuario: Usuario):
     )
 
     fila_superior = ft.Row(
-        controls=[btn_volver_dashboard, ft.Text("Gestión de Ventas")]
+        controls=[btn_volver_dashboard, ft.Text("Gestión de Ventas",size=24, weight=ft.FontWeight.BOLD)]
     )
 
     fila_medio = ft.Row(

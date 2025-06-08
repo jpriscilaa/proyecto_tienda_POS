@@ -158,7 +158,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
     )
 
     #Estructura
-    fila_superior=ft.Row(controls=[btn_volver, ft.Text("TPV - Punto de Venta", size=24)])
+    fila_superior=ft.Row(controls=[btn_volver, ft.Text("TPV - Punto de Venta",size=24, weight=ft.FontWeight.BOLD)])
     contenedor_tabla=ft.Container(
         height=400, 
         content=ft.Column([tabla_lineas], 
