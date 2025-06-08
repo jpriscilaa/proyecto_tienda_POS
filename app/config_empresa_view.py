@@ -126,23 +126,36 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
         page.update()
 
     def guardar_nueva_categoria(e):
-        nombre=categoria_nombre_input.value.strip()
-        if not nombre:
-            return  # no va hacer nada si esta vacio
+        nombre = categoria_nombre_input.value.strip()
 
-        if categoria_id_actual.value:  
-            categoria_existente=Categoria.buscar_por_id(categoria_id_actual.value)
+        # Si el campo está vacío y está deshabilitado, solo lo habilitamos para que escriba
+        if not nombre and categoria_nombre_input.disabled:
+            categoria_nombre_input.disabled = False
+            page.update()
+            return
+
+        # Si está vacío pero habilitado, no hacemos nada
+        if not nombre:
+            return
+
+        # Si hay una categoría seleccionada (edición)
+        if categoria_id_actual.value:
+            categoria_existente = Categoria.buscar_por_id(categoria_id_actual.value)
             if categoria_existente:
-                categoria_existente.nombre=nombre
+                categoria_existente.nombre = nombre
                 categoria_existente.guardar()
-        else:  
+        else:
+            # Crear nueva categoría
             Categoria(nombre=nombre).guardar()
 
-        
-        categoria_id_actual.value=""
-        categoria_nombre_input.value=""
-        campos_categoria_abrir_cerrar(e, True)
+        # Limpiar y deshabilitar campo después de guardar
+        categoria_id_actual.value = ""
+        categoria_nombre_input.value = ""
+        categoria_nombre_input.disabled = True
+
         actualizar_tabla(buscador_input.value)
+        page.update()
+
 
 
     buscador_input.on_change=lambda e: actualizar_tabla(buscador_input.value)
