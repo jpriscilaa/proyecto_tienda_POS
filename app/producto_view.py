@@ -159,7 +159,8 @@ def producto_view(page: ft.Page, usuario: Usuario):
         #borro controls y agrego la tabla
         tabla_productos.controls.clear()
         tabla_productos.controls.append(
-            ft.Container(height=400,
+            ft.Container(expand=True,
+                height=400,
                          content=ft.Column(
                              controls=[data_table],
                              scroll=ft.ScrollMode.AUTO
@@ -226,33 +227,40 @@ def producto_view(page: ft.Page, usuario: Usuario):
     #iva_dropdown.value=Iva.buscar_por_nombre("Exento").iva_id
 
     #Estructura de la vista
-    columna_izquierda=ft.Container(alignment=ft.alignment.top_center, 
-                                            expand=True,
-
-        content=ft.Column(
+    columna_izquierda = ft.Container(
+    alignment=ft.alignment.top_center,
+    expand=True,
+    content=ft.Column(
+        expand=True,
         controls=[
-        n_ref,
-        nombre,
-        precio,
-        prod_id_actual,
-        categoria_dropdown,
-        iva_dropdown,
-        ft.Row(controls=[btn_guardar_prod, btn_editar_prod, btn_limpiar_prod])
-    ])
+            n_ref,
+            nombre,
+            precio,
+            prod_id_actual,
+            categoria_dropdown,
+            iva_dropdown,
+            ft.Row(controls=[btn_guardar_prod, btn_editar_prod, btn_limpiar_prod])
+        ]
     )
+)
 
-    columna_derecha=ft.Container(alignment=ft.alignment.top_center,
-                                         expand=True,
 
-        content=ft.Column(
+    columna_derecha = ft.Container(
+    alignment=ft.alignment.top_center,
+    expand=True,
+    content=ft.Column(
+        expand=True,
+        scroll=ft.ScrollMode.AUTO,
         controls=[
-        buscador_input,
-        tabla_productos
-    ])
+            buscador_input,
+            tabla_productos
+        ]
     )
+)
+
     fila_superior=ft.Row(expand=True,controls=[btn_volver_dashboard, ft.Text("Gestión de Producto", size=24)])
     fila_medio=ft.Row(expand=True,controls=[columna_izquierda, columna_derecha], vertical_alignment=ft.CrossAxisAlignment.START)
-    datos=ft.Column(controls=[fila_superior, fila_medio])
+    datos=ft.Column(expand=True,controls=[fila_superior, fila_medio])
     contenedor=ft.Container(
         expand=True,
         alignment=ft.alignment.top_center,
