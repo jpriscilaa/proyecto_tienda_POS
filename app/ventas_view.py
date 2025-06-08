@@ -1,5 +1,5 @@
 import flet as ft
-from backend import Constantes
+from backend import Constantes, PDF
 from backend.modelo.Cliente import Cliente
 from backend.modelo.Venta import Venta
 
@@ -12,7 +12,15 @@ def venta_view(page: ft.Page):
     def actualizar_tabla(filtro=None):
         lista = Venta.obtener_todos()
         if filtro:
-            lista = [v for v in lista if filtro.lower() in v.cliente.nombre.lower()]
+            palabras = filtro.lower().split()
+            lista_filtrada = []
+
+            for v in lista:
+                texto_busqueda = f"{v.fecha} {v.pago} {v.cliente.nombre} {v.cliente.apellido}".lower()
+                if all(palabra in texto_busqueda for palabra in palabras):
+                    lista_filtrada.append(v)
+
+            lista = lista_filtrada 
 
         filas = []
         for v in lista:
@@ -70,7 +78,7 @@ def venta_view(page: ft.Page):
     cantidad_prod = ft.TextField(label="Cantidad de productos")
     total = ft.TextField(label="Total (€)")
 
-    buscador_ventas = ft.TextField(label="Buscar venta", prefix_icon=ft.Icons.SEARCH)
+    buscador_ventas = ft.TextField(label="Buscar venta", prefix_icon=ft.Icons.SEARCH , on_change = lambda e: actualizar_tabla(buscador_ventas.value))
 
     btn_volver_dashboard = ft.ElevatedButton(
         text="Volver al Dashboard",
@@ -100,6 +108,21 @@ def venta_view(page: ft.Page):
         height=80
     )
 
+    def seleccionar_venta(venta):
+        venta_id.value = str(venta.id)
+        fecha.value = venta.fecha
+        pago.value = venta.pago
+        cliente_nombre.value = venta.cliente.nombre
+        cliente_apellido.value = venta.cliente.apellido
+        cantidad_prod.value = str(venta.cantidad_prod)
+        total.value = str(venta.total)
+        page.update()
+
+    def guardar_pdf (self, e):
+        nuevo_pdf = PDF()
+        PDF.PDF.add_page
+        column_width = [10,40,20,80,40]
+    
    
 
     #meto los textfield en dos columnas

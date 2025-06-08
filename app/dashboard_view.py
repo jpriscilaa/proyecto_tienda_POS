@@ -1,7 +1,9 @@
 import flet as ft
 from backend import Constantes
 
-def dashboard_view(page: ft.Page):
+def dashboard_view(page: ft.Page, usuario):
+    #por argumento para que reciba el usuario
+
     def abrir_config_empresa(e):
         from app.config_empresa_view import config_empresa_view
         page.clean()
@@ -26,7 +28,7 @@ def dashboard_view(page: ft.Page):
         from app.usuario_view import usuario_view
         page.clean()
         page.add(usuario_view(page))
-    
+
     def abrir_ventas(e):
         from app.ventas_view import venta_view
         page.clean()
@@ -37,8 +39,7 @@ def dashboard_view(page: ft.Page):
         page.clean()
         page.add(login_view(page))
 
-
-    # Botón estilizado reutilizable
+    # Botón reutilizable
     def crear_boton(texto, icono, on_click, color_bg=None, color_text=None):
         return ft.Container(
             content=ft.ElevatedButton(
@@ -58,29 +59,37 @@ def dashboard_view(page: ft.Page):
             padding=5
         )
 
-    # Lista de botones en diseño grid (2 columnas)
-    grid_botones=ft.ResponsiveRow(
-        columns=12,
-        controls=[
-            ft.Container(col=6, content=crear_boton("CONFIGURACIÓN", ft.Icons.BUSINESS, abrir_config_empresa)),
-            ft.Container(col=6, content=crear_boton("PRODUCTOS", ft.Icons.SHOPPING_CART, abrir_productos)),
-            ft.Container(col=6, content=crear_boton("CLIENTES", ft.Icons.PEOPLE, abrir_clientes)),
-            ft.Container(col=6, content=crear_boton("TPV", ft.Icons.POINT_OF_SALE, abrir_tpv)),
-            ft.Container(col=6, content=crear_boton("USUARIOS", ft.Icons.PERSON, abrir_usuario)),
-            ft.Container(col=6, content=crear_boton("VENTAS", ft.Icons.LIST, abrir_ventas)),
+    botones = []
 
-            ft.Container(col=6, content=crear_boton("SALIR", ft.Icons.EXIT_TO_APP, salir, color_bg=ft.Colors.RED, color_text=ft.Colors.WHITE)),
-        ]
+    # Creamos una lista de botones y vamos agregando los botones condicionalmente
+    botones.append(ft.Container(col=6, content=crear_boton("CLIENTES", ft.Icons.PEOPLE, abrir_clientes)))
+    botones.append(ft.Container(col=6, content=crear_boton("TPV", ft.Icons.POINT_OF_SALE, abrir_tpv)))
+    botones.append(ft.Container(col=6, content=crear_boton("VENTAS", ft.Icons.LIST, abrir_ventas)))
+
+    # botones SOLO para ADMINISTRADOR
+    if usuario.rol.upper() == "ADMINISTRADOR":
+        botones.append(ft.Container(col=6, content=crear_boton("CONFIGURACIÓN", ft.Icons.BUSINESS, abrir_config_empresa)))
+        botones.append(ft.Container(col=6, content=crear_boton("PRODUCTOS", ft.Icons.SHOPPING_CART, abrir_productos)))
+        botones.append(ft.Container(col=6, content=crear_boton("USUARIOS", ft.Icons.PERSON, abrir_usuario)))
+
+    # Botón de salida siempre visible
+    botones.append(
+        ft.Container(
+            col=6,
+            content=crear_boton("SALIR", ft.Icons.EXIT_TO_APP, salir, color_bg=ft.Colors.RED, color_text=ft.Colors.WHITE)
+        )
     )
 
-    tarjeta_menu=ft.Container(
+    grid_botones = ft.ResponsiveRow(columns=12, controls=botones)
+
+    tarjeta_menu = ft.Container(
         padding=30,
         border_radius=20,
         width=700,
         bgcolor=getattr(Constantes, "COLOR_BORDE_CLARO", ft.Colors.WHITE),
         content=ft.Column(
             controls=[
-                ft.Text("Panel Principal", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
+                ft.Text(f"Panel Principal - {usuario.rol}", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
                 ft.Divider(),
                 grid_botones
             ],
@@ -95,7 +104,7 @@ def dashboard_view(page: ft.Page):
         )
     )
 
-    fondo=ft.Container(
+    fondo = ft.Container(
         expand=True,
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_center,
@@ -103,14 +112,12 @@ def dashboard_view(page: ft.Page):
             colors=[ft.Colors.BLUE_900, ft.Colors.BLUE_700]
         ),
         content=ft.Row(
-            controls=[
-                ft.Column(
-                    controls=[tarjeta_menu],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    expand=True
-                )
-            ],
+            controls=[ft.Column(
+                controls=[tarjeta_menu],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                expand=True
+            )],
             alignment=ft.MainAxisAlignment.CENTER,
             expand=True
         )

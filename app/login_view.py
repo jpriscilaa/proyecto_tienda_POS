@@ -17,7 +17,7 @@ def login_view(page: ft.Page):
         if usuario and usuario.contrasena == contrasena_login.value:
             from app.dashboard_view import dashboard_view
             page.clean()
-            page.add(dashboard_view(page))
+            page.add(dashboard_view(page, usuario))
         else:
             mostrar_dialogo()
 
