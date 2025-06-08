@@ -1,4 +1,5 @@
 import flet as ft
+from app import ventana_alerta
 from backend import Constantes
 from backend.modelo.Cliente import Cliente
 from backend.modelo.Usuario import Usuario
@@ -55,8 +56,12 @@ def clientes_view(page: ft.Page, usuario: Usuario):
 
                 salida=cliente_nuevo.guardar()
                 if salida:
+                    page.open(ventana_alerta.barra_ok_mensaje("CLIENTE GUARDADO"))
+
                     log.info("Se ha insertado corrextamente")
                 else:
+                    page.open(ventana_alerta.barra_error_mensaje("ERROR AL GUARDAR"))
+
                     log.info("Ha fallado a la hora se guardar el prodoucto")
 
                 actualizar_tabla()

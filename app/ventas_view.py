@@ -1,6 +1,7 @@
 from datetime import datetime
 import flet as ft
 from fpdf import FPDF
+from app import ventana_alerta
 from backend import Constantes
 from backend.modelo.Venta import Venta
 import logging
@@ -36,6 +37,8 @@ def venta_view(page: ft.Page, usuario):
 
         file_name = datetime.now().strftime("VENTAS_%Y-%m-%d_%H-%M-%S") + ".pdf"
         pdf.output(file_name)
+        page.open(ventana_alerta.barra_ok_mensaje("PDF CREADO Y GUARDADO"))
+
 
 
     def volver_al_dashboard(e):

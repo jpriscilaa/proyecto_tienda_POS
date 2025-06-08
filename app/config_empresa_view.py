@@ -1,4 +1,5 @@
 import flet as ft
+from app import ventana_alerta
 from backend import Constantes
 from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Categoria import Categoria
@@ -42,8 +43,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
     # ------------------------------------------ Categorías ------------------------------------------
     categoria_nombre_input=ft.TextField(label="Nombre Categoría")
     buscador_input=ft.TextField(label="Buscar categoría", prefix_icon=ft.Icons.SEARCH)
-    categoria_id_actual=ft.TextField(visible=False)  # Para almacenar el ID de la categoría seleccionada
-
+    categoria_id_actual=ft.TextField(visible=False)  
     tabla_categorias=ft.Column()
 
     
@@ -84,7 +84,6 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
  
         page.update()
 
-        #creamos lista para meter datarow
         filas=[]
         for c in lista:
             fila=ft.DataRow(
@@ -99,7 +98,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
                     )
                 ],
                 selected=False,
-                data=c,  # Guardamos la categoría en el DataRow
+                data=c, 
                 on_select_changed=lambda e: seleccionar_categoria(e.control.data)
                 )
             filas.append(fila)
@@ -128,27 +127,29 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
     def guardar_nueva_categoria(e):
         nombre = categoria_nombre_input.value.strip()
 
-        # Si el campo está vacío y está deshabilitado, solo lo habilitamos para que escriba
         if not nombre and categoria_nombre_input.disabled:
             categoria_nombre_input.disabled = False
             page.update()
             return
 
-        # Si está vacío pero habilitado, no hacemos nada
+        #siesta vacío pero habilitado, no hacemos nada
         if not nombre:
             return
 
-        # Si hay una categoría seleccionada (edición)
+        #si hay una categoría seleccionada (edición)
         if categoria_id_actual.value:
             categoria_existente = Categoria.buscar_por_id(categoria_id_actual.value)
             if categoria_existente:
                 categoria_existente.nombre = nombre
                 categoria_existente.guardar()
-        else:
-            # Crear nueva categoría
-            Categoria(nombre=nombre).guardar()
+                page.open(ventana_alerta.barra_ok_mensaje("CATEGORIA ACTUALIZADA"))
 
-        # Limpiar y deshabilitar campo después de guardar
+        else:
+          
+            Categoria(nombre=nombre).guardar()
+            page.open(ventana_alerta.barra_ok_mensaje("CATEGORIA GUARDADO"))
+
+
         categoria_id_actual.value = ""
         categoria_nombre_input.value = ""
         categoria_nombre_input.disabled = True
@@ -254,9 +255,14 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
                 iva_existente.nombre=nombre
                 iva_existente.porcentaje=porcentaje
                 iva_existente.guardar()
+                page.open(ventana_alerta.barra_ok_mensaje("IVA ACTUALIZADO"))
+
+
         else:  
             nuevo_iva=Iva(nombre=nombre, porcentaje=porcentaje)
             nuevo_iva.guardar()
+            page.open(ventana_alerta.barra_ok_mensaje("IVA GUARDADO"))
+
 
         iva_id_actual.value=""
         iva_nombre.value=""
