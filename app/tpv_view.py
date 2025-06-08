@@ -20,7 +20,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
     page.update()
 
     carrito=[]
-    total_venta=0.0
+    total_venta=[0.00]  #Lista con un solo float
     cantidad_products=1
     tabla_lineas=ft.Column()
     
@@ -102,7 +102,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
         tabla_lineas.controls.clear()
         tabla_lineas.controls.append(data_table)
         total_texto.value=f"Total: {total:.2f} €"
-        total_venta[:]=total #el [:] significa que hace uso del primer total_venta que declaro al incio
+        total_venta[0]=total
         
         page.update()
 
@@ -114,7 +114,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
             def procesar_venta():
                 venta=Venta(
                     cantidad_prod=cantidad_products,
-                    total=total_venta,
+                    total=str(total_venta[0]),
                     fecha=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                     pago=metodo_pago.value
                 )
@@ -140,6 +140,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
         
         carrito[:].clear()
         actualizar_tabla()
+        page.update()
 
     #Componentes
     total_texto=ft.Text(value="Total: 0.00 €", size=40, weight=ft.FontWeight.BOLD)
