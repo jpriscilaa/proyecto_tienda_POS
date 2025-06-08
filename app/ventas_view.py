@@ -6,7 +6,6 @@ from backend.modelo.Venta import Venta
 def venta_view(page: ft.Page):
     def seleccionar_venta(venta):
         print("Venta seleccionada:", venta.id)
-        # Puedes añadir más lógica aquí si deseas mostrar sus datos
 
     tabla_ventas = ft.Column()
 
@@ -45,7 +44,6 @@ def venta_view(page: ft.Page):
             rows=filas
         )
 
-        # Aquí ahora sí, tabla_ventas es un Column y puede usar .controls
         tabla_ventas.controls.clear()
         tabla_ventas.controls.append(
             ft.Container(
