@@ -122,7 +122,7 @@ def venta_view(page: ft.Page):
         nuevo_pdf = PDF()
         PDF.PDF.add_page
         column_width = [10,40,20,80,40]
-    
+        
    
 
     #meto los textfield en dos columnas

@@ -11,7 +11,7 @@ from datetime import datetime
 
 logger=logging.getLogger(__name__)
 
-def tpv_view(page: ft.Page):
+def tpv_view(page: ft.Page, usuario):
 
     page.clean()
     page.window.center=True
@@ -26,7 +26,7 @@ def tpv_view(page: ft.Page):
     #Metodos
     def volver_al_dashboard(e):
         page.clean()
-        page.add(dashboard_view(page))
+        page.add(dashboard_view(page,usuario))
         page.update()
 
     def buscar_producto(e):

@@ -19,7 +19,7 @@ def dashboard_view(page: ft.Page, usuario):
     def abrir_tpv(e):
         from app.tpv_view import tpv_view
         page.clean()
-        page.add(tpv_view(page))
+        page.add(tpv_view(page,usuario))
 
     def abrir_usuario(e):
         from app.usuario_view import usuario_view
