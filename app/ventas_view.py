@@ -1,5 +1,6 @@
 from datetime import datetime
 import flet as ft
+from fpdf import FPDF
 from backend import Constantes
 from backend.modelo.Venta import Venta
 import logging
@@ -7,6 +8,45 @@ import logging
 log = logging.getLogger(__name__)
 
 def venta_view(page: ft.Page, usuario):
+    def guardar_pdf(e):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+
+        column_width = [40, 30, 50, 30, 30]
+        header = ("FECHA", "PAGO", "CLIENTE", "CANTIDAD", "TOTAL")
+        data = [header]
+
+        ventas = Venta.obtener_todos()
+        for v in ventas:
+            cliente_str = f"{v.cliente.nombre} {v.cliente.apellido}" if v.cliente else "Cliente desconocido"
+            data.append([
+                v.fecha,
+                v.pago,
+                cliente_str,
+                str(v.cantidad_prod),
+                f"{v.total:.2f} EUR"
+
+            ])
+
+        for row in data:
+            for item, width in zip(row, column_width):
+                pdf.cell(width, 10, str(item), border=1)
+            pdf.ln()
+
+        file_name = datetime.now().strftime("VENTAS_%Y-%m-%d_%H-%M-%S") + ".pdf"
+        pdf.output(file_name)
+
+
+    def volver_al_dashboard(e):
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        dashboard = dashboard_view(page, usuario)
+        page.add(dashboard)
+        page.update()
+
+
+    
     tabla_ventas = ft.Column()
 
     buscador_ventas = ft.TextField(
@@ -17,9 +57,6 @@ def venta_view(page: ft.Page, usuario):
 
     def eliminar_venta(e, venta_id):
         Venta.borrar_por_id(venta_id)
-        # Aquí puedes poner un mensaje o snackbar si quieres:
-        # page.snack_bar = ft.SnackBar(ft.Text("Venta eliminada"))
-        # page.snack_bar.open = True
         actualizar_tabla(buscador_ventas.value)
         page.update()
 
@@ -83,14 +120,19 @@ def venta_view(page: ft.Page, usuario):
         )
         page.update()
 
-
+    btn_pdf = ft.ElevatedButton(
+        text="Generar PDF",
+        icon=ft.Icons.PICTURE_AS_PDF,
+        on_click=guardar_pdf
+    )
 
     btn_volver_dashboard = ft.ElevatedButton(
         text="Volver al Dashboard",
         icon=ft.Icons.ARROW_BACK,
         bgcolor=Constantes.COLOR_FONDO_PRINCIPAL,
         color=Constantes.COLOR_BOTON_PRIMARIO,
-        on_click=lambda e: page.go_back()
+        on_click=volver_al_dashboard
+
     )
 
     contenedor = ft.Container(
@@ -100,6 +142,7 @@ def venta_view(page: ft.Page, usuario):
             controls=[
                 ft.Row([btn_volver_dashboard, ft.Text("Gestión de Ventas", size=24, weight=ft.FontWeight.BOLD)]),
                 buscador_ventas,
+                btn_pdf,
                 tabla_ventas,
             ]
         ),
