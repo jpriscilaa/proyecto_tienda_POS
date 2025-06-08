@@ -60,7 +60,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
         total=0.00
         filas=[]
         cantidad_products=1
-        for p in carrito:
+        for p in carrito[:]:
             prod=p["producto"]
             cant=p["cantidad"]
             subtotal=round(cant * prod.precio, 2)
@@ -138,7 +138,7 @@ def tpv_view(page: ft.Page, usuario: Usuario):
 
             page.open(ventana_alerta.finalizar_venta(page, metodo_pago, procesar_venta))
         
-        carrito.clear()
+        carrito[:].clear()
         actualizar_tabla()
 
     #Componentes
