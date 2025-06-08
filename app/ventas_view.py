@@ -2,8 +2,11 @@ import flet as ft
 from backend import Constantes, PDF
 from backend.modelo.Cliente import Cliente
 from backend.modelo.Venta import Venta
+from backend.modelo.Usuario import Usuario
+import logging
+logger=logging.getLogger(__name__)
 
-def venta_view(page: ft.Page):
+def venta_view(page: ft.Page, usuario: Usuario):
     def seleccionar_venta(venta):
         print("Venta seleccionada:", venta.id)
 

@@ -2,12 +2,13 @@ import flet as ft
 from backend.modelo.Producto import Producto
 from backend.modelo.Iva import Iva
 from backend.modelo.Categoria import Categoria
+from backend.modelo.Usuario import Usuario
 from backend import Constantes
 from app import ventana_alerta
 import logging
 logger=logging.getLogger(__name__)
 
-def producto_view(page: ft.Page):
+def producto_view(page: ft.Page, usuario: Usuario):
     
     page.clean()
     page.window.width=1080

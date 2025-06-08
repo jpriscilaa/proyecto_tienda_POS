@@ -4,6 +4,8 @@ import json
 from backend import Constantes
 from backend.modelo.Producto import Producto
 from backend.modelo.Venta import Venta
+import logging
+logger=logging.getLogger(__name__)
 
 class Venta_Linea:
     def __init__(self, venta: Venta, producto: Producto, cantidad, precio_unitario, iva, total_linea, id=None):

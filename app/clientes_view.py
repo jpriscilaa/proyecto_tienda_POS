@@ -1,9 +1,12 @@
 import flet as ft
 from backend import Constantes
 from backend.modelo.Cliente import Cliente
+from backend.modelo.Usuario import Usuario
 import uuid
+import logging
+logger=logging.getLogger(__name__)
 
-def clientes_view(page: ft.Page):
+def clientes_view(page: ft.Page, usuario: Usuario):
 
     cliente_seleccionado: Cliente=None
     page.clean()
@@ -96,7 +99,6 @@ def clientes_view(page: ft.Page):
                     ft.DataCell(ft.Text(cl.documento)),
                     ft.DataCell(ft.Text(cl.telefono)),
                     ft.DataCell(ft.Text(cl.direccion)),
-
                     ft.DataCell(ft.IconButton(
                         icon=ft.Icons.DELETE,
                         tooltip="Eliminar producto",

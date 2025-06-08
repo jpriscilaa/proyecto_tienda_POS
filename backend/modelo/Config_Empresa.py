@@ -1,6 +1,8 @@
 import sqlite3
 import uuid
 from backend import Constantes
+import logging
+logger=logging.getLogger(__name__)
 
 class Config_Empresa:
     def __init__(self, empresa_id=None, nombre="", direccion="", telefono="", moneda=""):

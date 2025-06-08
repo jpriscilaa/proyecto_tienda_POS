@@ -1,29 +1,24 @@
 import flet as ft
 from backend.modelo.Usuario import Usuario
+from backend import Constantes
 from app import ventana_alerta
+from backend.modelo.Usuario import Usuario
+import logging
+logger=logging.getLogger(__name__)
 
+def usuario_view(page: ft.Page, usuario: Usuario):
 
-def usuario_view(page: ft.Page):
+    #metodos
     def mostrar_dialogo():
         page.open(ventana_alerta.alerta_error("Error", "Ya existe este usuario"))
         pass
-			
-    buscador_input=ft.TextField(label="Buscar usuario", prefix_icon=ft.Icons.SEARCH)
-    nombre_usuario=ft.TextField(label="Nombre de usuario", autofocus=True, width=300)
-    nombre_trabajador=ft.TextField(label="Nombre del trabajador")
-    apellido=ft.TextField(label="Apellido del vendedor")
-    ntelefono=ft.TextField(label="Numero de telefono")
-    contrasena_usuario=ft.TextField(label="Contraseña", password=True, width=300)
-    rol_usuario=ft.Dropdown(
-        label="Rol de usuario",
-        options=[
-            ft.dropdown.Option("ADMINISTRADOR"),
-            ft.dropdown.Option("VENDEDOR")
-        ],
-        width=300
-    )
-    tabla_usuarios=ft.Column()
-    
+
+    def volver_al_dashboard(e):
+        from app.dashboard_view import dashboard_view
+        page.clean()
+        dashboard=dashboard_view(page)
+        page.add(dashboard)
+        page.update()
 
     def actualizar_tabla(filtro=None):
         lista=Usuario.obtener_todos()
@@ -77,8 +72,6 @@ def usuario_view(page: ft.Page):
         )
         page.update()
     
-
-
     def guardar_usuario(e):
         if Usuario.obtener_por_nombre_usuario(nombre_usuario.value):
             mostrar_dialogo()
@@ -101,17 +94,42 @@ def usuario_view(page: ft.Page):
             nuevo_usuario.guardar()
             print("Usuario creado correctamente")
 
-        # Limpiar campos
-        nombre_usuario.value=""
-        contrasena_usuario.value=""
-        nombre_trabajador.value =""
-        apellido.value=""
-        ntelefono.value=""
+    def limpiar_campos():
+        #Limpiar campos
+        nombre_usuario.value=None
+        contrasena_usuario.value=None
+        nombre_trabajador.value=None
+        apellido.value=None
+        ntelefono.value=None
         rol_usuario.value=None
         page.update()
         actualizar_tabla()
 
+    #Componentes
+    buscador_input=ft.TextField(label="Buscar usuario", prefix_icon=ft.Icons.SEARCH)
+    nombre_usuario=ft.TextField(label="Nombre de usuario", autofocus=True, width=300)
+    nombre_trabajador=ft.TextField(label="Nombre del trabajador")
+    apellido=ft.TextField(label="Apellido del vendedor")
+    ntelefono=ft.TextField(label="Numero de telefono")
+    contrasena_usuario=ft.TextField(label="Contraseña", password=True, width=300)
+    rol_usuario=ft.Dropdown(
+        label="Rol de usuario",
+        options=[
+            ft.dropdown.Option("ADMINISTRADOR"),
+            ft.dropdown.Option("VENDEDOR")
+        ],
+        width=300
+    )
+    tabla_usuarios=ft.Column()
+
     buscador_input.on_change=lambda e: actualizar_tabla(buscador_input.value)
+    btn_volver_dashboard=ft.ElevatedButton(
+        text="Volver al Dashboard",
+        icon=ft.Icons.ARROW_BACK,
+        on_click=volver_al_dashboard,
+        bgcolor=Constantes.COLOR_FONDO_PRINCIPAL,
+        color=Constantes.COLOR_BOTON_PRIMARIO
+    )
 
     layout=ft.Container(
         padding=20,
@@ -120,13 +138,13 @@ def usuario_view(page: ft.Page):
                 buscador_input,
                 ft.Row(
                     controls=[
+                        btn_volver_dashboard,
                         nombre_usuario,
                         nombre_trabajador,
                         apellido,
                         ntelefono,
                         contrasena_usuario,
                         rol_usuario,
-                        
                         ft.ElevatedButton("Guardar", on_click=guardar_usuario),
                     ],
                     spacing=10,

@@ -1,6 +1,8 @@
 import os
 from backend import Constantes
 import sqlite3
+import logging
+logger=logging.getLogger(__name__)
 
 def ruta_ejecucion():
     return os.getcwd()

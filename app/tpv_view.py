@@ -6,12 +6,12 @@ from backend.modelo.Cliente import Cliente
 from backend import Constantes
 from app import ventana_alerta
 from app.dashboard_view import dashboard_view
-import logging
+from backend.modelo.Usuario import Usuario
 from datetime import datetime
-
+import logging
 logger=logging.getLogger(__name__)
 
-def tpv_view(page: ft.Page, usuario):
+def tpv_view(page: ft.Page, usuario: Usuario):
 
     page.clean()
     page.window.center=True

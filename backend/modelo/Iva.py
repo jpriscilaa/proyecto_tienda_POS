@@ -1,6 +1,8 @@
 import sqlite3
 import uuid
 from backend import Constantes
+import logging
+logger=logging.getLogger(__name__)
 
 class Iva:
     def __init__(self, iva_id=None, nombre="", porcentaje=""):

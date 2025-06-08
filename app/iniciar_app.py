@@ -4,6 +4,8 @@ from backend.servicios import config_empr_service
 from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Usuario import Usuario
 from app.login_view import login_view
+import logging
+logger=logging.getLogger(__name__)
 
 def iniciar_app(page: ft.Page):
 

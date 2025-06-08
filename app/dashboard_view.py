@@ -1,35 +1,39 @@
 import flet as ft
+from backend.modelo.Usuario import Usuario
 from backend import Constantes
-def dashboard_view(page: ft.Page, usuario):
+import logging
+logger=logging.getLogger(__name__)
+
+def dashboard_view(page: ft.Page, usuario: Usuario):
     def abrir_config_empresa(e):
         from app.config_empresa_view import config_empresa_view
         page.clean()
-        page.add(config_empresa_view(page))
+        page.add(config_empresa_view(page, usuario))
 
     def abrir_productos(e):
         from app.producto_view import producto_view
         page.clean()
-        page.add(producto_view(page))
+        page.add(producto_view(page, usuario))
 
     def abrir_clientes(e):
         from app.clientes_view import clientes_view
         page.clean()
-        page.add(clientes_view(page))
+        page.add(clientes_view(page, usuario))
 
     def abrir_tpv(e):
         from app.tpv_view import tpv_view
         page.clean()
-        page.add(tpv_view(page,usuario))
+        page.add(tpv_view(page, usuario))
 
     def abrir_usuario(e):
         from app.usuario_view import usuario_view
         page.clean()
-        page.add(usuario_view(page))
+        page.add(usuario_view(page, usuario))
 
     def abrir_ventas(e):
         from app.ventas_view import venta_view
         page.clean()
-        page.add(venta_view(page))
+        page.add(venta_view(page, usuario))
 
     def salir(e):
         from app.login_view import login_view

@@ -3,7 +3,11 @@ from backend import Constantes
 from backend.modelo.Config_Empresa import Config_Empresa
 from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
-def config_empresa_view(page: ft.Page):
+from backend.modelo.Usuario import Usuario
+import logging
+logger=logging.getLogger(__name__)
+
+def config_empresa_view(page: ft.Page, usuario: Usuario):
     empresa=Config_Empresa.obtener_config_empresa()
     
     nombre_empresa=ft.TextField(label="Nombre empresa", value=empresa.nombre, border=ft.InputBorder.UNDERLINE, border_radius=9, disabled=True)

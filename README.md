@@ -5,7 +5,7 @@
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Version](https://img.shields.io/badge/version-0.0.1-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 POS Multiplataforma es una solución de punto de venta (TPV) totalmente funcional, moderna y multiplataforma, ideal para tiendas, supermercados y pequeños negocios que buscan una herramienta intuitiva y eficiente para gestionar sus ventas, productos y clientes desde cualquier sistema operativo.
 
@@ -43,22 +43,22 @@ Version en fase alfa...cargando mejoras...proximamente lo lanzamos para el públ
 ### 🚀 Instalación rápida
 
 ```bash
-git clone https://github.com/tu_usuario/proyecto_tienda_POS.git
+git clone https://github.com/jpriscilaa/proyecto_tienda_POS.git
 cd proyecto_tienda_POS
 pip install -r requirements.txt
 python main.py
+```
+✍️  Autor:
 
-✍️ Autor
+🙋🏽‍♀️  Priscila Terrazas Sullcani
+💻  Desarrolladora junior en java y python, enfocada en crear soluciones sencillas para problemas complejos.
+📧  jazminpriscilajazmin2003@gmail.com
+🔗  LinkedIn (Priscila Terrazas)
 
-Priscila Terrazas
-Desarrolladora junior en java y python, enfocada en crear soluciones sencillas para problemas complejos.
-📧 jazminpriscilajazmin2003@gmail.com
-🔗 LinkedIn (Priscila Terrazas)
+📄  Licencia:
 
-📄 Licencia
+Este proyecto está licenciado bajo los términos de la [Licencia Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
+Puedes usar, modificar y compartir el código libremente, siempre que no lo utilices con fines comerciales y des atribución al autor original.
 
-Este proyecto está licenciado bajo la licencia MIT. Libre para uso, modificación y distribución.
-
-❤️ ¿Te fue útil?
-
-¡Dejá una estrella en el repo y ayudá a más gente a conocerlo!
+❤️  ¿Te fue útil?
+Déjame una estrella en el repo y así ayudarás a más gente a conocerlo!!

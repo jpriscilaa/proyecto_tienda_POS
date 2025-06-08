@@ -2,6 +2,8 @@ import sqlite3
 import uuid
 from backend import Constantes
 from backend.bddTienda import get_connection
+import logging
+logger=logging.getLogger(__name__)
 
 class Usuario:
     def __init__(self, id_usuario=None, nombre_usuario="",trabajador="", apellido="", ntelefono="", contrasena="", rol=""):

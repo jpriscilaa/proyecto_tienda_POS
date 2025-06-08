@@ -5,6 +5,8 @@ from backend import Constantes
 from backend.bddTienda import get_connection
 from backend.modelo.Categoria import Categoria
 from backend.modelo.Iva import Iva
+import logging
+logger=logging.getLogger(__name__)
 
 class Producto:
     def __init__(self, precio, nombre, n_referencia, categoria: Categoria, iva: Iva, id=None):

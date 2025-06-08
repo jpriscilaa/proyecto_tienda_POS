@@ -1,6 +1,6 @@
-
 from backend.modelo.Config_Empresa import Config_Empresa
 import logging
+logger=logging.getLogger(__name__)
 
 def crearEmpresa(empresa: Config_Empresa):
     empresa.guardar()
