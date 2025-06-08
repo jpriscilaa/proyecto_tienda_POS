@@ -107,7 +107,7 @@ def producto_view(page: ft.Page, usuario: Usuario):
     def volver_al_dashboard(e):
         from app.dashboard_view import dashboard_view
         page.clean()
-        dashboard=dashboard_view(page)
+        dashboard=dashboard_view(page,usuario)
         page.add(dashboard)
         page.update()
     

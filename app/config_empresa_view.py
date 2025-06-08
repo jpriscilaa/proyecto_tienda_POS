@@ -272,7 +272,7 @@ def config_empresa_view(page: ft.Page, usuario: Usuario):
     def volver_al_dashboard(e):
         from app.dashboard_view import dashboard_view
         page.clean()
-        page.add(dashboard_view(page))
+        page.add(dashboard_view(page,usuario))
         page.update()
     btn_volver_dashboard=ft.ElevatedButton(text="Volver al Dashboard",icon=ft.Icons.ARROW_BACK,on_click=volver_al_dashboard,bgcolor=ft.Colors.BLUE,color=ft.Colors.WHITE)
 
