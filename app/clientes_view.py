@@ -68,7 +68,7 @@ def clientes_view(page: ft.Page, usuario: Usuario):
                 limpiar_campos()
                 
             else:
-                log.info("Faltan datos necesarios para crear producto")
+                log.info("Faltan datos necesarios para crear cliente")
             pass
     def volver_al_dashboard(e):
         from app.dashboard_view import dashboard_view
