@@ -6,7 +6,7 @@ from backend import Constantes
 from backend.modelo.Cliente import Cliente  
 
 class Venta:
-    def __init__(self, fecha, pago, cliente: Cliente, cantidad_prod, total, id=None):
+    def __init__(self, fecha, pago, cantidad_prod, total, id=None, cliente: Cliente=None):
         self.id = id or str(uuid.uuid4())
         self.fecha = fecha or datetime.now().strftime("%Y-%m-%d")
         self.pago = pago
@@ -18,14 +18,14 @@ class Venta:
         try:
             conexion = sqlite3.connect(Constantes.RUTA_BD)
             cursor = conexion.cursor()
-
+            cliente_id = self.cliente.id if self.cliente else None
             if Venta.existe(self.id):
                 cursor.execute(Constantes.UPDATE_VENTA, (
-                    self.fecha, self.pago, self.cliente.id, self.cantidad_prod, self.total, self.id
+                    self.fecha, self.pago, cliente_id, self.cantidad_prod, self.total, self.id
                 ))
             else:
                 cursor.execute(Constantes.INSERT_VENTA, (
-                    self.id, self.fecha, self.pago, self.cliente.id, self.cantidad_prod, self.total
+                    self.id, self.fecha, self.pago, cliente_id, self.cantidad_prod, self.total
                 ))
 
             conexion.commit()

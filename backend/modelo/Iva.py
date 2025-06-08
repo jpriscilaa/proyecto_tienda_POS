@@ -42,6 +42,19 @@ class Iva:
             return Iva(*fila)
         else:
             return None
+        
+    @staticmethod
+    def buscar_por_nombre(nombre):
+        conexion=sqlite3.connect(Constantes.RUTA_BD)
+        cursor=conexion.cursor()
+        cursor.execute("SELECT * FROM IVA WHERE NOMBRE=?", [nombre])
+        fila=cursor.fetchone()
+        conexion.close()
+
+        if fila:
+            return Iva(*fila)
+        else:
+            return None
 
     @staticmethod
     def obtener_todos():
