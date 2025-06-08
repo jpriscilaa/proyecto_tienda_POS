@@ -1,9 +1,6 @@
 import flet as ft
 from backend import Constantes
-
 def dashboard_view(page: ft.Page, usuario):
-    #por argumento para que reciba el usuario
-
     def abrir_config_empresa(e):
         from app.config_empresa_view import config_empresa_view
         page.clean()
@@ -39,68 +36,47 @@ def dashboard_view(page: ft.Page, usuario):
         page.clean()
         page.add(login_view(page))
 
-    # Botón reutilizable
     def crear_boton(texto, icono, on_click, color_bg=None, color_text=None):
         return ft.Container(
             content=ft.ElevatedButton(
                 text=texto,
                 icon=icono,
                 on_click=on_click,
-                style=ft.ButtonStyle(
-                    padding=20,
-                    shape=ft.RoundedRectangleBorder(radius=12),
-                    bgcolor=color_bg,
-                    color=color_text,
-                    elevation=4
-                ),
                 expand=True
             ),
             height=80,
             padding=5
         )
 
-    botones = []
+    #aquo ponemos directamente los botones con ifs
+    controles_botones = []
 
-    # Creamos una lista de botones y vamos agregando los botones condicionalmente
-    botones.append(ft.Container(col=6, content=crear_boton("CLIENTES", ft.Icons.PEOPLE, abrir_clientes)))
-    botones.append(ft.Container(col=6, content=crear_boton("TPV", ft.Icons.POINT_OF_SALE, abrir_tpv)))
-    botones.append(ft.Container(col=6, content=crear_boton("VENTAS", ft.Icons.LIST, abrir_ventas)))
-
-    # botones SOLO para ADMINISTRADOR
     if usuario.rol.upper() == "ADMINISTRADOR":
-        botones.append(ft.Container(col=6, content=crear_boton("CONFIGURACIÓN", ft.Icons.BUSINESS, abrir_config_empresa)))
-        botones.append(ft.Container(col=6, content=crear_boton("PRODUCTOS", ft.Icons.SHOPPING_CART, abrir_productos)))
-        botones.append(ft.Container(col=6, content=crear_boton("USUARIOS", ft.Icons.PERSON, abrir_usuario)))
+        controles_botones.append(ft.Container(col=6, content=crear_boton("CONFIGURACIÓN", ft.Icons.BUSINESS, abrir_config_empresa)))
+        controles_botones.append(ft.Container(col=6, content=crear_boton("PRODUCTOS", ft.Icons.SHOPPING_CART, abrir_productos)))
+        controles_botones.append(ft.Container(col=6, content=crear_boton("USUARIOS", ft.Icons.PERSON, abrir_usuario)))
 
-    # Botón de salida siempre visible
-    botones.append(
-        ft.Container(
-            col=6,
-            content=crear_boton("SALIR", ft.Icons.EXIT_TO_APP, salir, color_bg=ft.Colors.RED, color_text=ft.Colors.WHITE)
-        )
-    )
+    #estos botones son comunes a todos
+    controles_botones.append(ft.Container(col=6, content=crear_boton("CLIENTES", ft.Icons.PEOPLE, abrir_clientes)))
+    controles_botones.append(ft.Container(col=6, content=crear_boton("TPV", ft.Icons.POINT_OF_SALE, abrir_tpv)))
+    controles_botones.append(ft.Container(col=6, content=crear_boton("VENTAS", ft.Icons.LIST, abrir_ventas)))
+    controles_botones.append(ft.Container(col=6, content=crear_boton("SALIR", ft.Icons.EXIT_TO_APP, salir, color_bg=ft.Colors.RED, color_text=ft.Colors.WHITE)))
 
-    grid_botones = ft.ResponsiveRow(columns=12, controls=botones)
+    grid_botones = ft.ResponsiveRow(columns=12, controls=controles_botones)
 
     tarjeta_menu = ft.Container(
         padding=30,
         border_radius=20,
         width=700,
-        bgcolor=getattr(Constantes, "COLOR_BORDE_CLARO", ft.Colors.WHITE),
+        bgcolor=Constantes.COLOR_BORDE_CLARO,
         content=ft.Column(
             controls=[
-                ft.Text(f"Panel Principal - {usuario.rol}", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
+                ft.Text("Panel Principal", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
                 ft.Divider(),
                 grid_botones
             ],
             spacing=25,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        ),
-        shadow=ft.BoxShadow(
-            spread_radius=1,
-            blur_radius=12,
-            color=ft.Colors.with_opacity(0.25, ft.Colors.BLACK),
-            offset=ft.Offset(2, 6)
         )
     )
 
@@ -112,14 +88,8 @@ def dashboard_view(page: ft.Page, usuario):
             colors=[ft.Colors.BLUE_900, ft.Colors.BLUE_700]
         ),
         content=ft.Row(
-            controls=[ft.Column(
-                controls=[tarjeta_menu],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                expand=True
-            )],
-            alignment=ft.MainAxisAlignment.CENTER,
-            expand=True
+            controls=[ft.Column(controls=[tarjeta_menu], alignment=ft.MainAxisAlignment.CENTER)],
+            alignment=ft.MainAxisAlignment.CENTER
         )
     )
 
